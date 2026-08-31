@@ -1,0 +1,27 @@
+{
+  "builtAt": "2026-08-31T07:57:18.152Z",
+  "surahs": 114,
+  "ayaat": 6236,
+  "words": 77429,
+  "segments": 130031,
+  "isnadSymbols": 25058,
+  "discoveries": 9484,
+  "motifs": 400,
+  "sources": {
+    "morphology": {
+      "url": "https://raw.githubusercontent.com/mustafa0x/quran-morphology/master/quran-morphology.txt",
+      "file": "quran-morphology.txt"
+    },
+    "text": {
+      "url": "https://raw.githubusercontent.com/risan/quran-json/main/dist/quran.json",
+      "file": "quran.json"
+    }
+  },
+  "detectorOptions": {
+    "stitchWindow": 8,
+    "echoWindow": 22,
+    "minAbsenceRun": 2,
+    "minNarrativeRun": 4,
+    "minScore": 0.28
+  }
+}
