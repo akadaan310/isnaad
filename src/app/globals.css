@@ -106,6 +106,12 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* Uthmani stacks marks well above and below the baseline, so a heading set
+     with `leading-tight` collides with whatever sits under it. */
+  .quran-tight {
+    line-height: 1.85;
+  }
+
   .glass {
     @apply border border-white/[0.07] bg-white/[0.035] backdrop-blur-xl;
   }

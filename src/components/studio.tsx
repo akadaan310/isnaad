@@ -386,7 +386,7 @@ function SurahHeader({ surah, activeAyah }: { surah: Surah; activeAyah: number }
     <header className="shrink-0 border-b border-white/[0.06] px-4 py-2.5">
       <div className="flex items-baseline justify-between gap-3">
         <div className="flex items-baseline gap-2.5">
-          <h1 className="quran text-[1.7rem] leading-tight">{surah.name}</h1>
+          <h1 className="quran quran-tight text-[1.7rem]">{surah.name}</h1>
           <span className="text-[0.66rem] text-muted-foreground">
             {surah.type === 'makkiyyah' ? 'مكية' : 'مدنية'} · {arabicNumber(surah.ayahCount)} آية ·{' '}
             {arabicNumber(surah.wordCount)} كلمة

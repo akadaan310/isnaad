@@ -227,7 +227,7 @@ function SurahRow({ m, active, onClick }: { m: SurahMeta; active: boolean; onCli
         >
           {arabicNumber(m.id)}
         </span>
-        <span className="quran flex-1 truncate text-[1.05rem] leading-tight">{m.name}</span>
+        <span className="quran quran-tight flex-1 truncate text-[1.05rem]">{m.name}</span>
         {total > 0 && (
           <span className="flex shrink-0 items-center gap-0.5 text-[0.58rem] tabular-nums text-muted-foreground">
             <Sparkles className="h-2.5 w-2.5" />

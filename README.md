@@ -16,10 +16,12 @@ database, and no configuration.
 
 | | |
 |---|---|
+| `/explore` | **القرآن الغامر** — pick any of the 114 and play it. Entered through الاستعاذة, once. |
 | `/` | **مرصد الإسناد** — the three-pane studio. Opens on هود ٢٩. |
 | `/compose` | **التأليف** — build a recitation out of أعلام. |
 | `/gallery` | **المعرض** — published recitations, public. |
-| `/watch/<id>` | **الفرقان** — the immersive player. |
+| `/watch/surah/<n>` | **الفرقان** — a whole sūrah, recited through the sky. |
+| `/watch/<id>` | **الفرقان** — a composed recitation. |
 
 ---
 
@@ -213,6 +215,7 @@ data/index/ayaat.json   per-āyah vector index (6,236 rows)
 data/index/roots.json   1,651 roots → where each occurs
 data/index/aalam.json   the أعلام registry resolved to its occurrences
 data/compositions/      saved compositions, when not using Supabase
+data/sky/sky.json       5,044 stars and 89 constellation figures
 ```
 
 | | |
@@ -253,6 +256,7 @@ npm run ingest           # rebuild /data from cache, downloading if absent
 npm run ingest:refresh   # re-download the sources first
 npm run verify           # the three passages, as acceptance tests
 npm run seed             # assemble and publish one worked composition
+npm run ingest:sky       # build the naked-eye sky (stars + 89 figures)
 npm run build            # production build
 ```
 

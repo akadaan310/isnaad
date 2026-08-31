@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-08-31T12:15:12.179Z",
+  "builtAt": "2026-08-31T16:48:49.412Z",
   "surahs": 114,
   "ayaat": 6236,
   "words": 77429,
@@ -8,8 +8,8 @@
   "discoveries": 7057,
   "motifs": 400,
   "roots": 1651,
-  "aalam": 21,
-  "aalamHits": 572,
+  "aalam": 32,
+  "aalamHits": 628,
   "sources": {
     "morphology": {
       "url": "https://raw.githubusercontent.com/mustafa0x/quran-morphology/master/quran-morphology.txt",

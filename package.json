@@ -12,7 +12,8 @@
     "ingest:refresh": "tsx scripts/ingest-quran.ts --refresh",
     "verify": "tsx scripts/verify-exemplars.ts",
     "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
-    "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts"
+    "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts",
+    "ingest:sky": "tsx scripts/ingest-sky.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -32,6 +33,7 @@
     "autoprefixer": "10.4.20",
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.15",
+    "playwright": "^1.47.2",
     "postcss": "8.4.47",
     "tailwindcss": "3.4.13",
     "tailwindcss-animate": "1.0.7",

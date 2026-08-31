@@ -67,6 +67,7 @@ export function mineAlam(spec: AlamSpec, surah: Surah): AlamHit[] {
       if (match.roots && (!s.root || !match.roots.includes(s.root))) return false;
       if (match.phrase && (!s.lemma || !match.phrase[0].includes(s.lemma))) return false;
       if (match.excludeRoots && s.root && match.excludeRoots.includes(s.root)) return false;
+      if (match.cls && s.cls !== match.cls) return false;
       if (match.gcase && s.gcase !== match.gcase) return false;
       if (match.indef !== undefined && !!s.indef !== match.indef) return false;
       return true;

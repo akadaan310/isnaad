@@ -40,8 +40,8 @@ export default async function GalleryPage() {
             href={`/watch/${c.id}`}
             className="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 transition-all hover:border-gold/35 hover:bg-white/[0.05]"
           >
-            <div className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-gold/10 blur-2xl transition-opacity group-hover:opacity-100 sm:opacity-0" />
-            <h2 className="quran relative text-[1.35rem] leading-tight text-foreground/95">{c.title}</h2>
+            <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-gold/10 blur-2xl transition-opacity group-hover:opacity-100 sm:opacity-0" />
+            <h2 className="quran quran-tight relative text-[1.35rem] text-foreground/95">{c.title}</h2>
             {c.subtitle && <p className="relative mt-0.5 text-[0.7rem] text-muted-foreground">{c.subtitle}</p>}
             {c.intent && (
               <p className="relative mt-2 line-clamp-3 text-[0.72rem] leading-relaxed text-foreground/60">{c.intent}</p>

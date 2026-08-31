@@ -19,13 +19,13 @@ import * as React from 'react';
 import Link from 'next/link';
 import {
   Orbit, Sun, Moon, Share2, ChevronRight, ChevronLeft, Maximize2, Minimize2,
-  X, Repeat, Loader2,
+  X, Repeat, Loader2, Stars,
 } from 'lucide-react';
 import type { Composition, Station } from '@/lib/composition';
 import { flatten } from '@/lib/composition';
 import { DISCOVERY_STYLE, PERSON_STYLE, KHALQ_HEX } from '@/lib/view';
 import { arabicNumber, cn } from '@/lib/utils';
-import { Sky } from './sky';
+import { Celestial, useSky, anchorFor } from './celestial';
 
 interface RenderedWord {
   idx: number;
@@ -59,7 +59,9 @@ export function FurqanPlayer({ composition }: { composition: Composition }) {
   const stations = React.useMemo(() => flatten(composition), [composition]);
 
   const [pos, setPos] = React.useState(0);
-  const [orbit, setOrbit] = React.useState(false);
+  // الفَلَك runs from the start: the experience navigates itself, and the
+  // reader takes over only if they want to.
+  const [orbit, setOrbit] = React.useState(true);
   const [loop, setLoop] = React.useState(true);
   const [siraj, setSiraj] = React.useState(0.7);
   const [moon, setMoon] = React.useState(false);
@@ -68,6 +70,8 @@ export function FurqanPlayer({ composition }: { composition: Composition }) {
   const [revealed, setRevealed] = React.useState(0);
   const [copied, setCopied] = React.useState(false);
   const [full, setFull] = React.useState(false);
+  const [figures, setFigures] = React.useState(true);
+  const sky = useSky();
 
   const current = stations[pos];
   const dwellMs = ((current?.station.dwell ?? composition.dwell) || 9) * 1000;
@@ -213,16 +217,33 @@ export function FurqanPlayer({ composition }: { composition: Composition }) {
 
   const seamSet = new Set(ayah?.seams ?? []);
   const focus = current.station.focus;
+  const anchorId = anchorFor(sky, current.mi, current.si);
+  const constellationName =
+    sky?.constellations.find((c) => c.id === anchorId)?.ar ?? null;
 
   return (
     <div className="relative flex h-dvh flex-col overflow-hidden bg-background">
-      <Sky intensity={siraj} moon={moon} pulseKey={pos} />
+      <Celestial
+        data={sky}
+        target={anchorFor(sky, current?.mi ?? 0, current?.si ?? 0)}
+        intensity={siraj}
+        figures={figures}
+        pulseKey={pos}
+      />
+      {/* The text has to stay readable over a live sky. */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 52% 38% at 50% 46%, rgba(15,23,42,0.82), rgba(15,23,42,0.24) 64%, transparent 84%)',
+        }}
+      />
 
       {/* ── the برج this station belongs to ── */}
       <header className="relative z-10 flex items-start justify-between gap-4 px-5 pt-4">
         <div className="min-w-0">
           <p className="truncate text-[0.7rem] text-muted-foreground">{composition.title}</p>
-          <h1 className="quran truncate text-[1.5rem] leading-tight text-gold">
+          <h1 className="quran quran-tight truncate text-[1.5rem] text-gold">
             {current.movement.title}
           </h1>
           {current.movement.note && (
@@ -339,6 +360,9 @@ export function FurqanPlayer({ composition }: { composition: Composition }) {
         setSiraj={setSiraj}
         moon={moon}
         setMoon={setMoon}
+        figures={figures}
+        setFigures={setFigures}
+        constellation={constellationName}
       />
     </div>
   );
@@ -404,6 +428,7 @@ function ReflectedPane({
 
 function Controls({
   composition, stations, pos, go, orbit, setOrbit, loop, setLoop, siraj, setSiraj, moon, setMoon,
+  figures, setFigures, constellation,
 }: {
   composition: Composition;
   stations: ReturnType<typeof flatten>;
@@ -417,6 +442,9 @@ function Controls({
   setSiraj: (v: number) => void;
   moon: boolean;
   setMoon: (f: (v: boolean) => boolean) => void;
+  figures: boolean;
+  setFigures: (f: (v: boolean) => boolean) => void;
+  constellation: string | null;
 }) {
   const current = stations[pos];
   const inMovement = stations.filter((s) => s.mi === current.mi);
@@ -427,6 +455,11 @@ function Controls({
       {/* البروج — the movements */}
       <div className="mb-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
         <span className="shrink-0 text-[0.6rem] text-gold/70">البروج</span>
+        {constellation && (
+          <span className="quran shrink-0 rounded-full border border-gold/25 bg-gold/[0.07] px-2 py-0.5 text-[0.85rem] text-gold/85">
+            {constellation}
+          </span>
+        )}
         {composition.movements.map((m, mi) => {
           const at = stations.findIndex((s) => s.mi === mi);
           const active = current.mi === mi;
@@ -530,6 +563,9 @@ function Controls({
           </div>
           <IconBtn onClick={() => setMoon((v) => !v)} title="القمر المنير — المقام المقابل" active={moon}>
             <Moon className="h-4 w-4" />
+          </IconBtn>
+          <IconBtn onClick={() => setFigures((v) => !v)} title="صُوَر البروج" active={figures}>
+            <Stars className="h-4 w-4" />
           </IconBtn>
         </div>
       </div>
