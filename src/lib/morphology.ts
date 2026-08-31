@@ -27,6 +27,9 @@ export interface ParsedFeatures {
   mood?: string;
   passive?: boolean;
   clitic?: boolean;
+  gcase?: 'NOM' | 'ACC' | 'GEN';
+  indef?: boolean;
+  adj?: boolean;
 }
 
 /**
@@ -44,6 +47,13 @@ export function parseFeatures(cls: string, raw: string): ParsedFeatures {
     else if (f.startsWith('MOOD:')) out.mood = f.slice(5);
     else if (f.startsWith('FAM:')) continue; // particle family, read separately
     else if (f === 'PERF' || f === 'IMPF' || f === 'IMPV') out.tense = f;
+    else if (f === 'NOM' || f === 'ACC' || f === 'GEN') {
+      // ACC is also the tag for the نواسخ family; a particle is not declined,
+      // so the case reading only applies to nouns.
+      if (cls === 'N') out.gcase = f;
+      else if (!out.tag) out.tag = f;
+    } else if (f === 'INDEF') out.indef = true;
+    else if (f === 'ADJ') out.adj = true;
     else if (f === 'PASS') out.passive = true;
     else if (f === 'PREF' || f === 'SUFF') out.clitic = true;
     else {
@@ -119,6 +129,7 @@ export const VERB_FORM_AR = ['', 'فَعَلَ', 'فَعَّلَ', 'فَاعَل
 
 export function describeSegment(s: Segment): string {
   const bits: string[] = [TAG_AR[s.tag] ?? s.tag];
+  if (s.adj) bits.push('صفة');
   if (s.tense) bits.push(TENSE_AR[s.tense]);
   if (s.vf && VERB_FORM_AR[s.vf]) bits.push(`وزن ${VERB_FORM_AR[s.vf]}`);
   if (s.passive) bits.push('مبني للمجهول');
@@ -128,5 +139,7 @@ export function describeSegment(s: Segment): string {
     if (s.gender) parts.push(GENDER_AR[s.gender]);
     bits.push(parts.join(' '));
   }
+  if (s.gcase) bits.push(TAG_AR[s.gcase] ?? s.gcase);
+  if (s.indef) bits.push('نكرة');
   return bits.join(' · ');
 }

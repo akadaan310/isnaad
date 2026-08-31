@@ -49,6 +49,10 @@ export interface Segment {
   feats: string[];
   root?: string;
   lemma?: string;
+  /** الإعراب — NOM (مرفوع), ACC (منصوب), GEN (مجرور). */
+  gcase?: 'NOM' | 'ACC' | 'GEN';
+  indef?: boolean;
+  adj?: boolean;
   person?: Person;
   num?: Num;
   gender?: Gender;
@@ -135,8 +139,12 @@ export interface SurahMeta {
   juzRange: [number, number];
   vec: { p1: number; p2: number; p3: number };
   distance: number;
-  /** Counts of each discovery kind mined in this surah. */
-  discoveries: Record<string, number>;
+  /**
+     * How many of each discovery kind were mined here. Named apart from the
+     * `discoveries` array on the wire payload so the two can never collide -
+     * spreading a Surah into that payload used to silently drop these counts.
+     */
+  discoveryCounts: Record<string, number>;
   /** Deepest quotation nesting found. */
   maxDepth: number;
 }

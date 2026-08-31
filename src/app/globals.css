@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── self-hosted faces (SIL OFL 1.1) ──────────────────────────────────────
+   Amiri Quran carries the full Uthmani mark repertoire; Noto Kufi Arabic is
+   the interface face. Both are served from /public/fonts so that rendering
+   never depends on reaching a CDN. */
+@font-face {
+  font-family: 'Amiri Quran';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/amiri-quran-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1,
+    U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF,
+    U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'Amiri Quran';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/amiri-quran-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/noto-kufi-arabic-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Kufi Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/noto-kufi-arabic-600.woff2') format('woff2');
+}
+
+:root {
+  --font-quran: 'Amiri Quran';
+  --font-arabic: 'Noto Kufi Arabic';
+}
+
+@layer base {
+  :root {
+    /* Deep midnight slate ground, emerald depth, gold trim. */
+    --background: 222 47% 7%;
+    --foreground: 210 40% 94%;
+    --card: 222 44% 10%;
+    --card-foreground: 210 40% 94%;
+    --popover: 222 46% 9%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 160 84% 20%;
+    --primary-foreground: 150 60% 96%;
+    --secondary: 217 33% 16%;
+    --secondary-foreground: 210 40% 94%;
+    --muted: 217 33% 15%;
+    --muted-foreground: 215 20% 62%;
+    --accent: 43 45% 57%;
+    --accent-foreground: 222 47% 8%;
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 210 40% 96%;
+    --border: 217 33% 19%;
+    --input: 217 33% 19%;
+    --ring: 43 45% 52%;
+    --radius: 0.7rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    /* A quiet field of light behind the studio, so the panes read as glass
+       laid over depth rather than as flat boxes. */
+    background-image:
+      radial-gradient(ellipse 70% 50% at 50% -10%, hsl(160 60% 14% / 0.5), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 90% 100%, hsl(200 60% 14% / 0.32), transparent 70%),
+      radial-gradient(ellipse 40% 35% at 5% 90%, hsl(43 45% 20% / 0.18), transparent 70%);
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  /* ── Uthmani typography ────────────────────────────────────────────────
+     Rendering the muṣḥaf needs generous leading: the diacritics stack high
+     and low, and cramped lines make the isnād colouring illegible. */
+  .quran {
+    font-family: var(--font-quran, 'Amiri Quran'), 'Amiri Quran', 'Scheherazade New',
+      'Traditional Arabic', 'Times New Roman', serif;
+    line-height: 2.35;
+    /* A Uthmani word must wrap as a unit; breaking inside one splits the
+       letter joins and the marks land on the wrong base. */
+    word-break: normal;
+    overflow-wrap: normal;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'ccmp' 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  .glass {
+    @apply border border-white/[0.07] bg-white/[0.035] backdrop-blur-xl;
+  }
+
+  .glass-strong {
+    @apply border border-white/[0.1] bg-[hsl(222_46%_9%_/_0.92)] backdrop-blur-2xl;
+  }
+
+  /* Hairline gold rule used to separate stations and headers. */
+  .rule-gold {
+    background-image: linear-gradient(
+      to left,
+      transparent,
+      rgb(200 164 92 / 0.42) 18%,
+      rgb(200 164 92 / 0.42) 82%,
+      transparent
+    );
+  }
+
+  .pane-title {
+    @apply flex items-center gap-2 text-[0.8rem] font-semibold tracking-wide text-gold/85;
+  }
+
+  /* Range input: the track is painted by an inline gradient (see ui/Slider),
+     so only the thumb needs styling here. */
+  .isnad-range::-webkit-slider-thumb {
+    @apply h-3.5 w-3.5 cursor-pointer appearance-none rounded-full border-2 border-background bg-gold shadow-md;
+  }
+  .isnad-range::-moz-range-thumb {
+    @apply h-3.5 w-3.5 cursor-pointer rounded-full border-2 border-background bg-gold shadow-md;
+  }
+  .isnad-range:focus-visible {
+    @apply outline-none ring-1 ring-gold/60 ring-offset-2 ring-offset-background;
+  }
+
+  /* ── word states ───────────────────────────────────────────────────────
+     Colour lands on the word's own baseline via a soft underline plus a low
+     tint, never as a filled block: a solid highlight behind Uthmani script
+     swallows the diacritics. */
+  .w {
+    @apply relative cursor-pointer rounded-[0.3rem] px-[0.13em] transition-colors duration-150;
+  }
+  .w-seam::after {
+    content: '';
+    @apply pointer-events-none absolute -bottom-[0.34em] right-1/2 h-[0.3em] w-[0.3em] translate-x-1/2 rotate-45 rounded-[1px] bg-gold/70;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .thin-scroll::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+  }
+  .thin-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .thin-scroll::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-white/10;
+  }
+  .thin-scroll:hover::-webkit-scrollbar-thumb {
+    @apply bg-white/20;
+  }
+}

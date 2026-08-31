@@ -33,6 +33,8 @@ import { buildSurah, analyze, parseCorpus, type CorpusRow, type SurahSource } fr
 import { contourOf } from '../src/lib/isnad';
 import { DEFAULT_OPTIONS } from '../src/lib/engine/detectors';
 import { mineMotifs, encodeContour, type ContourPosition } from '../src/lib/engine/motifs';
+import { mineAlam } from '../src/lib/engine/aalam-miner';
+import { AALAM, type AlamIndex } from '../src/lib/aalam';
 import type { Discovery, SurahMeta } from '../src/lib/types';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -142,6 +144,11 @@ async function main() {
     s: number; a: number; sig: string; d: number;
     v: [number, number, number]; c: number; w: number; k: number;
   }[] = [];
+  /** root -> every (surah, ayah) it occurs in. Feeds the chamber walk. */
+  const rootIndex = new Map<string, Set<string>>();
+  /** أعلام -> every occurrence. Feeds the composer and the gallery. */
+  const alamIndex: AlamIndex = {};
+  for (const spec of AALAM) alamIndex[spec.id] = { id: spec.id, hits: [], spread: 0 };
 
   let totalWords = 0;
 
@@ -170,6 +177,17 @@ async function main() {
       if (w.person === null) continue;
       contourPositions.push({ surah: id, ayah: w.ayah, wordIdx: w.idx });
     }
+
+    for (const w of surah.words) {
+      for (const seg of w.segments) {
+        if (!seg.root || seg.clitic) continue;
+        const set = rootIndex.get(seg.root) ?? new Set<string>();
+        set.add(`${id}:${w.ayah}`);
+        rootIndex.set(seg.root, set);
+      }
+    }
+    for (const spec of AALAM) alamIndex[spec.id].hits.push(...mineAlam(spec, surah));
+
     contourChunks.push(encodeContour(contourOf(surah.words)));
 
     for (const a of surah.ayaat) {
@@ -216,12 +234,26 @@ async function main() {
 
   const topDiscoveries = [...allDiscoveries].sort((a, b) => b.score - a.score).slice(0, 2500);
 
+  const roots: Record<string, [number, number][]> = {};
+  for (const [root, places] of rootIndex) {
+    roots[root] = [...places].map((p) => p.split(':').map(Number) as [number, number]);
+  }
+  log(`indexed ${Object.keys(roots).length.toLocaleString()} roots`);
+
+  for (const entry of Object.values(alamIndex)) {
+    entry.spread = new Set(entry.hits.map((h) => h.surah)).size;
+  }
+  const alamTotal = Object.values(alamIndex).reduce((n, e) => n + e.hits.length, 0);
+  log(`resolved ${AALAM.length} أعلام to ${alamTotal.toLocaleString()} occurrences`);
+
   await Promise.all([
     writeFile(path.join(DATA, 'corpus', 'meta.json'), JSON.stringify(meta)),
     writeFile(path.join(DATA, 'surahs.json'), JSON.stringify(metas)),
     writeFile(path.join(DATA, 'index', 'motifs.json'), JSON.stringify(motifs)),
     writeFile(path.join(DATA, 'index', 'ayaat.json'), JSON.stringify(ayahIndex)),
     writeFile(path.join(DATA, 'index', 'discoveries.json'), JSON.stringify(topDiscoveries)),
+    writeFile(path.join(DATA, 'index', 'roots.json'), JSON.stringify(roots)),
+    writeFile(path.join(DATA, 'index', 'aalam.json'), JSON.stringify(alamIndex)),
     writeFile(
       path.join(DATA, 'index', 'manifest.json'),
       JSON.stringify(
@@ -234,6 +266,9 @@ async function main() {
           isnadSymbols: encoded.length - (contourChunks.length - 1),
           discoveries: allDiscoveries.length,
           motifs: motifs.length,
+          roots: Object.keys(roots).length,
+          aalam: AALAM.length,
+          aalamHits: alamTotal,
           sources: SOURCES,
           detectorOptions: DEFAULT_OPTIONS,
         },

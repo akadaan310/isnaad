@@ -11,7 +11,8 @@
     "ingest": "tsx scripts/ingest-quran.ts",
     "ingest:refresh": "tsx scripts/ingest-quran.ts --refresh",
     "verify": "tsx scripts/verify-exemplars.ts",
-    "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql"
+    "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
+    "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -21,6 +22,7 @@
     "next": "14.2.15",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "server-only": "^0.0.1",
     "tailwind-merge": "2.5.2"
   },
   "devDependencies": {

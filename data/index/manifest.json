@@ -1,12 +1,15 @@
 {
-  "builtAt": "2026-08-31T07:57:18.152Z",
+  "builtAt": "2026-08-31T12:15:12.179Z",
   "surahs": 114,
   "ayaat": 6236,
   "words": 77429,
   "segments": 130031,
-  "isnadSymbols": 25058,
-  "discoveries": 9484,
+  "isnadSymbols": 23784,
+  "discoveries": 7057,
   "motifs": 400,
+  "roots": 1651,
+  "aalam": 21,
+  "aalamHits": 572,
   "sources": {
     "morphology": {
       "url": "https://raw.githubusercontent.com/mustafa0x/quran-morphology/master/quran-morphology.txt",

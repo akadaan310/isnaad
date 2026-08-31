@@ -83,7 +83,7 @@ function resolveSpeaker(words: Word[], verbIdx: number, end: number): Frame['spe
     const w = words[i];
     const stem = w.segments.find((s) => !s.clitic && s.cls === 'N');
     if (!stem) continue;
-    if (!stem.feats.includes('NOM')) break;
+    if (stem.gcase !== 'NOM') break;
     return {
       label: namedActor(w) ?? w.text,
       person: 3,
@@ -128,7 +128,7 @@ function quoteStart(words: Word[], verbIdx: number, end: number): number {
     const stem = w.segments.find((s) => !s.clitic);
     if (!stem) break;
     const startsWithLam = w.segments.some((s) => s.clitic && s.tag === 'P' && s.lemma === 'ل');
-    const nominativeSubject = stem.cls === 'N' && stem.feats.includes('NOM') && stem.tag !== 'DEM';
+    const nominativeSubject = stem.cls === 'N' && stem.gcase === 'NOM' && stem.tag !== 'DEM';
     if (startsWithLam || nominativeSubject) i++;
     else break;
   }

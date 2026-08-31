@@ -9,6 +9,7 @@ import type { Ayah, Discovery, Person, Word } from '../types';
 import { findSeams, type Seam, DISTANCE_OF } from '../isnad';
 import { AGENCY_ROOTS, KHALQ_LEMMAS, RUSUL_LEMMAS, ZAMAN_LEMMAS, QASAS_ACTORS } from '../lexicon';
 import { frameAt, type Frame } from './frames';
+import { arabicNumber as ar, PERSON_NAME } from '../numerals';
 
 export interface DetectorContext {
   surah: number;
@@ -186,12 +187,15 @@ export function detectIstihdar(ctx: DetectorContext, opt: DetectorOptions): Disc
       score,
       title: 'استحضار الغائب إلى الخطاب',
       note:
-        `سُبِق الملتقى بـ${run} من مواضع الإسناد إلى الغائب، ثم انعطف اللسان عند «${pivot.text}»` +
-        `${selfAnchor ? ' إلى المتكلم' : ''}، ولم يفصل بينه وبين الخطاب المباشر إلا ${gap} من الكلم.` +
+        `سُبِق الملتقى بـ${ar(run)} من مواضع الإسناد إلى الغائب، ثم انعطف اللسان عند «${pivot.text}»` +
+        `${selfAnchor ? ' إلى المتكلم' : ''}، ` +
+        (gap === 0
+          ? 'ووقع الخطاب المباشر في الكلمة نفسها.'
+          : `ولم يفصل بينه وبين الخطاب المباشر إلا ${ar(gap)} من الكلم.`) +
         (mirrored ? ` وقد حُمِل الطرفان على ناسخٍ واحد (${famBefore}).` : ''),
       evidence: {
-        'طول الغيبة': run,
-        'مسافة الخطاب': gap,
+        'طول الغيبة': ar(run),
+        'مسافة الخطاب': ar(gap),
         'مرساة المتكلم': selfAnchor ? 'نعم' : 'لا',
         'تقابل النواسخ': mirrored ? (famBefore as string) : 'لا',
         'جذور رابطة': stitch.shared.slice(0, 6),
@@ -278,10 +282,10 @@ export function detectRootReturn(ctx: DetectorContext, opt: DetectorOptions): Di
         seam: j,
         score,
         title: `رجع الجذر «${root}»`,
-        note: `${flavour}: «${wi.text}» ← ${j - i} كلمة → «${wj.text}».`,
+        note: `${flavour}: «${wi.text}» ← ${ar(j - i)} كلمة → «${wj.text}».`,
         evidence: {
           'الجذر': root,
-          'المسافة': j - i,
+          'المسافة': ar(j - i),
           'دخول القول': enteredSpeech ? 'نعم' : 'لا',
           'مطابقة القائل': corefers ? (fj?.speaker.label ?? 'نعم') : 'لا',
           'انقلاب البناء': voiceFlipped ? 'نعم' : 'لا',
@@ -352,13 +356,15 @@ export function detectNabaBridge(ctx: DetectorContext, opt: DetectorOptions): Di
       score,
       title: 'جسر النبأ إلى الزمن الحاضر',
       note:
-        `سرد غائبٌ ماضٍ امتدّ ${run} من مواضع الإسناد (${perf} منها بالماضي)، ثم انتقل عند «${pivot.text}»` +
-        ` إلى المتكلم بالمضارع، واستمرّ ${sustain} من المواضع.` +
-        (stitch.shared.length ? ` وقد عبَر الجسرَ ${stitch.shared.length} من الجذور نفسها.` : ''),
+        `سرد غائبٌ ماضٍ امتدّ ${ar(run)} من مواضع الإسناد (${ar(perf)} منها بالماضي)، ثم انتقل عند ` +
+        `«${pivot.text}» إلى المتكلم بالمضارع، واستمرّ ${ar(sustain)} من المواضع.` +
+        (stitch.shared.length
+          ? ` وقد عبَر الجسرَ ${ar(stitch.shared.length)} من الجذور نفسها: ${stitch.shared.slice(0, 4).join('، ')}.`
+          : ''),
       evidence: {
-        'طول السرد': run,
-        'مواضع الماضي': perf,
-        'امتداد المضارع': sustain,
+        'طول السرد': ar(run),
+        'مواضع الماضي': ar(perf),
+        'امتداد المضارع': ar(sustain),
         'جذور عابرة': stitch.shared.slice(0, 6),
       },
     });
@@ -395,11 +401,12 @@ export function detectRibat(ctx: DetectorContext, opt: DetectorOptions): Discove
       score,
       title: 'رِباط الملتقى — ثبات اللفظ وحركة الإسناد',
       note:
-        `تحوّل الإسناد من ${s.from} إلى ${s.to} ${dir}` +
-        `${s.tense ? ' مع تغيّر الزمن' : ''}، ومع ذلك بقي ${stitch.shared.length} من الجذور مشتركًا بين ضفّتي الملتقى.`,
+        `تحوّل الإسناد من ${PERSON_NAME[s.from]} إلى ${PERSON_NAME[s.to]} ${dir}` +
+        `${s.tense ? ' مع تغيّر الزمن' : ''}، ومع ذلك بقي ${ar(stitch.shared.length)} من الجذور ` +
+        `مشتركًا بين ضفّتي الملتقى: ${stitch.shared.slice(0, 4).join('، ')}.`,
       evidence: {
-        'من': s.from,
-        'إلى': s.to,
+        'من': PERSON_NAME[s.from],
+        'إلى': PERSON_NAME[s.to],
         'حركة المحور': Number(s.axisDelta.toFixed(2)),
         'تغيّر الزمن': s.tense ? 'نعم' : 'لا',
         'الجذور الرابطة': stitch.shared.slice(0, 8),
@@ -436,8 +443,15 @@ export function detectNasikhMirror(ctx: DetectorContext, opt: DetectorOptions): 
       seam: b.w.idx,
       score,
       title: `تقابل الناسخ «${a.fam}»`,
-      note: `حُمِل «${a.w.text}» على الإسناد إلى ${a.w.person}، وحُمِل «${b.w.text}» على الناسخ نفسه بالإسناد إلى ${b.w.person}.`,
-      evidence: { 'الناسخ': a.fam as string, 'من': a.w.person as number, 'إلى': b.w.person as number, 'المسافة': b.w.idx - a.w.idx },
+      note:
+        `حُمِل «${a.w.text}» على الإسناد إلى ${PERSON_NAME[a.w.person!]}، ` +
+        `وحُمِل «${b.w.text}» على الناسخ نفسه بالإسناد إلى ${PERSON_NAME[b.w.person!]}.`,
+      evidence: {
+        'الناسخ': a.fam as string,
+        'من': PERSON_NAME[a.w.person!],
+        'إلى': PERSON_NAME[b.w.person!],
+        'المسافة': ar(b.w.idx - a.w.idx),
+      },
     });
   }
   return out;
@@ -454,17 +468,26 @@ export function detectKhalq(ctx: DetectorContext, opt: DetectorOptions): Discove
     const stem = w.segments.find((s) => !s.clitic && s.lemma && KHALQ_LEMMAS[s.lemma]);
     if (!stem?.lemma) continue;
     const entry = KHALQ_LEMMAS[stem.lemma];
-    const nominative = stem.feats.includes('NOM');
+    const nominative = stem.gcase === 'NOM';
     const vocative = w.segments.some((s) => s.tag === 'VOC');
 
     // Find an agency verb agreeing with it in the immediate neighbourhood.
     let agent: Word | undefined;
     let speech = false;
+    let commanded = false;
     for (let k = Math.max(0, w.idx - 3); k <= Math.min(words.length - 1, w.idx + 3); k++) {
       const v = words[k].segments.find((s) => s.cls === 'V' && s.root && AGENCY_ROOTS.has(s.root));
       if (!v) continue;
+      // An imperative aimed at a vocative creature (يَٰٓأَرْضُ ٱبْلَعِى) seats it
+      // in the chair just as squarely as a verb it performs, but the two are
+      // not the same act and must not be reported as though they were.
+      if (v.tense === 'IMPV' && vocative) {
+        agent = words[k];
+        commanded = true;
+        break;
+      }
       // A verb preceding its subject stays singular in Arabic, so agreement is
-      // checked on gender and person only, not on number.
+      // checked on person, not on number.
       if (v.person !== 3) continue;
       agent = words[k];
       if (v.root === 'قول' || v.root === 'نطق' || v.root === 'حدث' || v.root === 'شهد') speech = true;
@@ -473,11 +496,19 @@ export function detectKhalq(ctx: DetectorContext, opt: DetectorOptions): Discove
     if (!agent && !nominative && !vocative) continue;
 
     const score = clamp01(
-      0.2 + (speech ? 0.42 : agent ? 0.28 : 0) + (nominative ? 0.18 : 0) + (vocative ? 0.16 : 0),
+      0.2 +
+        (speech ? 0.42 : commanded ? 0.36 : agent ? 0.28 : 0) +
+        (nominative ? 0.18 : 0) +
+        (vocative ? 0.16 : 0),
     );
     if (score < opt.minScore) continue;
 
-    w.khalq = { root: stem.root ?? stem.lemma, label: entry.label, category: entry.category, speech };
+    w.khalq = {
+      root: stem.root ?? stem.lemma,
+      label: entry.label,
+      category: entry.category,
+      speech: speech || commanded,
+    };
 
     out.push({
       id: `${ctx.surah}:khalq:${w.idx}`,
@@ -490,15 +521,17 @@ export function detectKhalq(ctx: DetectorContext, opt: DetectorOptions): Discove
       seam: w.idx,
       score,
       title: `${entry.label} في مقعد الإسناد`,
-      note: speech
-        ? `أُسند القول أو الشهادة إلى ${entry.label} عند «${agent?.text ?? w.text}».`
-        : agent
-          ? `أُسند فعلٌ إلى ${entry.label} عند «${agent.text}».`
-          : `وقع ${entry.label} مرفوعًا في موضع الإسناد إليه.`,
+      note: commanded
+        ? `نودي ${entry.label} وخوطب بالأمر عند «${agent!.text}»، فوقع في مقعد المخاطَب.`
+        : speech
+          ? `أُسند القول أو الشهادة إلى ${entry.label} عند «${agent?.text ?? w.text}».`
+          : agent
+            ? `أُسند فعلٌ إلى ${entry.label} عند «${agent.text}».`
+            : `وقع ${entry.label} مرفوعًا في موضع الإسناد إليه.`,
       evidence: {
         'الكيان': entry.label,
         'الصنف': entry.category,
-        'نطق': speech ? 'نعم' : 'لا',
+        'الحال': commanded ? 'مخاطَب بالأمر' : speech ? 'ناطق' : agent ? 'فاعل' : 'مرفوع',
         'الفعل': agent?.text ?? '—',
       },
     });
@@ -529,9 +562,10 @@ export function detectTabaqat(ctx: DetectorContext, opt: DetectorOptions): Disco
         to: f.to,
         seam: f.open,
         score: clamp01(0.35 + f.depth * 0.2),
-        title: `قولٌ في جوف قول — الطبقة ${f.depth + 1}`,
+        title: `قولٌ في جوف قول — الطبقة ${ar(f.depth + 1)}`,
         note: `سلسلة الإسناد: ${chain.join(' ← ')}.`,
         evidence: { 'العمق': f.depth + 1, 'السلسلة': chain, 'القائل': f.speaker.label },
+        // `العمق` stays numeric: verify-exemplars sorts on it.
       };
     })
     .filter((d) => d.score >= opt.minScore);
@@ -597,6 +631,29 @@ export function clockOf(words: Word[]): Ayah['clock'] {
   };
 }
 
+/**
+ * Detectors that scan a sliding window fire once per qualifying position, so a
+ * single passage can yield a handful of findings whose spans nearly coincide.
+ * Keep the strongest of each overlapping cluster: the reader wants the passage
+ * pointed at once, not five times with the numbers nudged.
+ */
+function dedupe(items: Discovery[], overlapRatio = 0.6): Discovery[] {
+  const kept: Discovery[] = [];
+  for (const d of [...items].sort((a, b) => b.score - a.score)) {
+    const clash = kept.some((k) => {
+      if (k.kind !== d.kind) return false;
+      const lo = Math.max(k.from, d.from);
+      const hi = Math.min(k.to, d.to);
+      if (hi < lo) return false;
+      const shared = hi - lo + 1;
+      const shortest = Math.min(k.to - k.from + 1, d.to - d.from + 1);
+      return shared / shortest >= overlapRatio;
+    });
+    if (!clash) kept.push(d);
+  }
+  return kept;
+}
+
 // ── the full sweep ──────────────────────────────────────────────────────────
 export function runAllDetectors(
   ctx: DetectorContext,
@@ -612,7 +669,7 @@ export function runAllDetectors(
     ...detectTabaqat(ctx, opt),
     ...detectRusul(ctx, opt),
   ];
-  return all.sort((a, b) => b.score - a.score);
+  return dedupe(all).sort((a, b) => b.score - a.score);
 }
 
 export const KIND_AR: Record<string, { label: string; short: string; hint: string }> = {

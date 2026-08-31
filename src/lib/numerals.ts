@@ -1,0 +1,13 @@
+/** Eastern Arabic numerals, for anything shown inside the Arabic reading flow. */
+const AR_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+
+export function arabicNumber(n: number): string {
+  return String(n).replace(/\d/g, (d) => AR_DIGITS[Number(d)]);
+}
+
+/** Person names, so prose never prints a bare 1, 2 or 3 at the reader. */
+export const PERSON_NAME: Record<number, string> = {
+  1: 'المتكلم',
+  2: 'المخاطب',
+  3: 'الغائب',
+};

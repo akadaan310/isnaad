@@ -85,36 +85,23 @@ export function parseCorpus(text: string): CorpusRow[] {
  */
 export function buildSurah(id: number, rows: CorpusRow[], src: SurahSource): Surah {
   const words: Word[] = [];
-  const ayaat: Ayah[] = [];
+  /** Āyah boundaries only; the aggregates need resolved spines and come after. */
+  const bounds: { n: number; from: number; to: number }[] = [];
 
   let curAyah = -1;
   let curWord = -1;
   let word: Word | null = null;
   let ayahStart = 0;
 
-  const flushAyah = () => {
+  const closeAyah = () => {
     if (curAyah < 0) return;
-    const span = words.slice(ayahStart);
-    const vec = personVector(span);
-    ayaat.push({
-      n: curAyah,
-      text: span.map((w) => w.text).join(' '),
-      uthmani: src.uthmani[curAyah - 1],
-      from: ayahStart,
-      to: words.length,
-      juz: juzOf(id, curAyah),
-      vec,
-      distance: distanceOf(vec),
-      sig: signature(span),
-      dominant: dominantPerson(vec),
-      clock: clockOf(span),
-    });
+    bounds.push({ n: curAyah, from: ayahStart, to: words.length });
     ayahStart = words.length;
   };
 
   for (const r of rows) {
     if (r.a !== curAyah) {
-      flushAyah();
+      closeAyah();
       curAyah = r.a;
       curWord = -1;
     }
@@ -133,12 +120,17 @@ export function buildSurah(id: number, rows: CorpusRow[], src: SurahSource): Sur
       root: f.root, lemma: f.lemma, person: f.person, num: f.num,
       gender: f.gender ?? undefined, tense: f.tense, vf: f.vf,
       passive: f.passive, mood: f.mood, clitic: f.clitic,
+      gcase: f.gcase, indef: f.indef, adj: f.adj,
     });
     word!.text += r.form;
   }
-  flushAyah();
+  closeAyah();
 
-  // Resolve each word's isnād spine now that all of its segments are present.
+  // Resolve every word's isnād spine before anything aggregates over it.
+  // The āyah vector, its signature, its distance on the proximity axis and its
+  // dominant person are all functions of the spine, so they cannot be computed
+  // in the pass above - doing so reads `person: null` for every word and
+  // silently yields empty signatures across the whole muṣḥaf.
   for (const w of words) {
     const spine = assignRoles(w.segments);
     w.person = spine.person;
@@ -152,6 +144,24 @@ export function buildSurah(id: number, rows: CorpusRow[], src: SurahSource): Sur
     w.root = stem?.root;
     w.lemma = stem?.lemma;
   }
+
+  const ayaat: Ayah[] = bounds.map((b) => {
+    const span = words.slice(b.from, b.to);
+    const vec = personVector(span);
+    return {
+      n: b.n,
+      text: span.map((w) => w.text).join(' '),
+      uthmani: src.uthmani[b.n - 1],
+      from: b.from,
+      to: b.to,
+      juz: juzOf(id, b.n),
+      vec,
+      distance: distanceOf(vec),
+      sig: signature(span),
+      dominant: dominantPerson(vec),
+      clock: clockOf(span),
+    };
+  });
 
   const frames = buildFrames(words, ayaat);
   applyDepth(words, frames);
@@ -167,7 +177,7 @@ export function buildSurah(id: number, rows: CorpusRow[], src: SurahSource): Sur
     juzRange: [ayaat[0]?.juz ?? 1, ayaat[ayaat.length - 1]?.juz ?? 1],
     vec,
     distance: distanceOf(vec),
-    discoveries: {},
+    discoveryCounts: {},
     maxDepth: maxDepth(frames),
     ayaat,
     words,
@@ -207,7 +217,7 @@ export function analyze(
 
   const counts: Record<string, number> = {};
   for (const d of discoveries) counts[d.kind] = (counts[d.kind] ?? 0) + 1;
-  surah.discoveries = counts;
+  surah.discoveryCounts = counts;
 
   return { surah, frames, seams, discoveries };
 }

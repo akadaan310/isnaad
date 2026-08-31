@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#0F172A"/>
+  <!-- the three seats of الإسناد, stacked on the proximity axis -->
+  <circle cx="16" cy="8"  r="3" fill="#D97706"/>
+  <circle cx="16" cy="16" r="3" fill="#059669"/>
+  <circle cx="16" cy="24" r="3" fill="#0284C7"/>
+  <path d="M16 8 L16 24" stroke="#C8A45C" stroke-width="1.2" stroke-opacity=".55"/>
+</svg>
