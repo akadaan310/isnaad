@@ -112,6 +112,30 @@
     line-height: 1.85;
   }
 
+  /* Labels for the WebGL field: DOM, because Arabic needs real shaping and a
+     glyph atlas would break the joins. Positioned imperatively each frame. */
+  .cosmos-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    font-family: var(--font-arabic), system-ui, sans-serif;
+    font-size: 0.66rem;
+    color: rgb(148 163 184);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+    will-change: transform, opacity;
+  }
+  .cosmos-label.is-branch {
+    color: rgb(200 164 92);
+    font-size: 0.72rem;
+  }
+  .cosmos-label.is-focus {
+    color: #fde68a;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-shadow: 0 0 14px rgba(253, 230, 138, 0.55), 0 1px 6px rgba(0, 0, 0, 0.9);
+  }
+
   .glass {
     @apply border border-white/[0.07] bg-white/[0.035] backdrop-blur-xl;
   }

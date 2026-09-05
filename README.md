@@ -16,8 +16,9 @@ database, and no configuration.
 
 | | |
 |---|---|
+| `/` | **الكون** — a thousand āyāt placed in isnād space, in WebGL. Flown freely. |
 | `/explore` | **القرآن الغامر** — pick any of the 114 and play it. Entered through الاستعاذة, once. |
-| `/` | **مرصد الإسناد** — the three-pane studio. Opens on هود ٢٩. |
+| `/studio` | **مرصد الإسناد** — the three-pane studio. Opens on هود ٢٩. |
 | `/compose` | **التأليف** — build a recitation out of أعلام. |
 | `/gallery` | **المعرض** — published recitations, public. |
 | `/watch/surah/<n>` | **الفرقان** — a whole sūrah, recited through the sky. |
@@ -216,6 +217,7 @@ data/index/roots.json   1,651 roots → where each occurs
 data/index/aalam.json   the أعلام registry resolved to its occurrences
 data/compositions/      saved compositions, when not using Supabase
 data/sky/sky.json       5,044 stars and 89 constellation figures
+data/cosmos/nodes.json  the thousand placed āyāt and their سنابل
 ```
 
 | | |
@@ -257,6 +259,7 @@ npm run ingest:refresh   # re-download the sources first
 npm run verify           # the three passages, as acceptance tests
 npm run seed             # assemble and publish one worked composition
 npm run ingest:sky       # build the naked-eye sky (stars + 89 figures)
+npm run ingest:cosmos    # place the thousand āyāt in isnād space
 npm run build            # production build
 ```
 

@@ -1,9 +1,12 @@
-import { getSurahMetas } from '@/lib/data.server';
-import { Studio } from '@/components/studio';
+import { Cosmos } from '@/components/cosmos/cosmos';
 
 export const dynamic = 'force-dynamic';
 
-export default async function Page() {
-  const metas = await getSurahMetas();
-  return <Studio metas={metas} />;
+export const metadata = {
+  title: 'مرصد الإسناد — الكون',
+  description: 'ألف آية موضوعةٌ في فضاء الإسناد، تُطاف بالسنابل ويُصعد فيها بالسلّم.',
+};
+
+export default function Page() {
+  return <Cosmos />;
 }

@@ -13,7 +13,8 @@
     "verify": "tsx scripts/verify-exemplars.ts",
     "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
     "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts",
-    "ingest:sky": "tsx scripts/ingest-sky.ts"
+    "ingest:sky": "tsx scripts/ingest-sky.ts",
+    "ingest:cosmos": "tsx scripts/ingest-cosmos.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",
@@ -24,12 +25,14 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "server-only": "^0.0.1",
-    "tailwind-merge": "2.5.2"
+    "tailwind-merge": "2.5.2",
+    "three": "^0.169.0"
   },
   "devDependencies": {
     "@types/node": "20.16.10",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.0",
+    "@types/three": "^0.169.0",
     "autoprefixer": "10.4.20",
     "eslint": "8.57.1",
     "eslint-config-next": "14.2.15",
