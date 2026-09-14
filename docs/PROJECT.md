@@ -80,14 +80,36 @@ the question.
 | `/studio` | **مرصد الإسناد** — three-pane studio: reader, waveform, تدبر matrix |
 | `/compose` · `/gallery` · `/watch/…` | author recitations, publish them, play them in الفرقان |
 
-**الكون.** Placement is meaning: **direction** is the برج realm from that
-constellation's real RA/Dec; **radius** is discourse distance, so flying inward
-*is* moving toward المخاطب; **colour** is the dominant person. Navigation is the
-text's own — **السنابل**, seven branches per grain after `سَبْعَ سَنَابِلَ` (2:261),
-7,000 edges; **السُّلَّم**, which rescales discourse distance itself
+**الكون.** **Radius** is discourse distance, so flying inward *is* moving toward
+المخاطب; **colour** is the dominant person. Navigation is the text's own —
+**السنابل**, seven branches per grain after `سَبْعَ سَنَابِلَ` (2:261), 7,000 edges;
+**السُّلَّم**, which rescales discourse distance itself
 (`أَمْ لَهُمْ سُلَّمٌ يَسْتَمِعُونَ فِيهِ`); and **الإسناد as the camera** — المتكلم seats
 you *at* the āyah looking out, المخاطب places it before you, الغائب watches from
 outside.
+
+**الخيوط.** The corpus engine addresses everything by موقع; the field addresses
+everything by node index. The join between them turns relations the engine had
+already found into things you can see and follow: 2,015 motif strands, 1,054
+root strands, 257 detector strands, resonance per focused āyah, and رِباط's
+`حركة المحور` as an actual displacement between two person shells whose radial
+extent is exactly the delta the detector measured. Each carries the engine's own
+evidence, never a paraphrase, because a line on a canvas reads as an assertion.
+
+~10,300 relations exist; a frame draws a few hundred, round-robined across the
+families so one detector's high scores cannot wear the whole field. The 7,000
+سنابل stay a navigation layer and never become 7,000 lines.
+
+**الأساس.** Drawing the strands exposed something the numbers had not. Under the
+برج placement, two *related* āyāt land 14% **further** apart than two picked at
+random (`npm run basis`) — direction was a label dressed as a cause, and no
+cluster could ever form. Three derived bases are now selectable and blendable
+against it, with قُربُ المرتبطات shown live: the isnād mix reaches 0.616, a
+spectral embedding of the strand graph 0.697, and reading the contour as a
+base-three fraction reaches 1.033 — no better than random, an honest negative.
+البروج remains the default and the celestial reference; nothing moves until the
+reader moves it. Radius is untouched by every basis: it was the one component
+that already meant something.
 
 **لوح الزمن** is shaped as an aircraft CDU, because a flight computer does not
 *show* a route — you enter legs and it flies them. Enter `ماضٍ → لَوْ → لَنْ`; LEGS
@@ -106,6 +128,7 @@ scrubber, الفَلَك the circuit, السِّراج the isnād burn, القم
 | | |
 |---|---|
 | āyāt / words / segments | 6,236 · 77,429 · 130,031 |
+| computed relations | 10,326 strands · 282 رِباط displacements |
 | discoveries mined | 7,057 · 400 repeated contours · 1,651 roots |
 | cosmos | 1,000 nodes · 7,000 سنابل edges · 12 modalities |
 | sky | 5,044 stars to magnitude 6 · 89 figures, all Arabic-named · 103 Arabic star names |
@@ -150,10 +173,37 @@ lexicon and will miss entities not in it.
 - `كُلَّمَا` matched **zero**: Arabic diacritics have no canonical order, and the
   declared string ordered fatḥa before shadda where the corpus does the reverse.
   The cosmos ingest now **fails the build** if any declared lemma matches nothing.
+- رِباط's `حركة المحور` was first drawn by adding the detector's delta to the
+  node's own `d`. That put 238 of 282 displacements outside the proximity axis:
+  `d` is the āyah's aggregate over every attribution in it, the delta is measured
+  between two single person positions, and the two are not on the same footing.
+  A clamp would have concealed it.
+- السنابل were fed to the community detection, where — seven neighbours per node,
+  derived from isnād and time similarity — they welded 996 of 1,000 āyāt into a
+  single label. That is not a community but the absence of one.
 
 ---
 
-## 6 · Not built yet
+## 6 · What is in the field
+
+`npm run structures` asks whether any grouping deserves more than a line, on two
+measures: **support** — how many independent families of relation agree on it —
+and **shape**, from PCA over the member positions. Label propagation over the
+3,326 relations that owe nothing to placement finds 283 communities (43, 31, 23,
+22, 22, 21, 20 …); 41 groupings of ≥8 āyāt are linear with three-family support
+and 11 are planar.
+
+Two things hold this back from becoming surfaces, and they are recorded rather
+than worked around. Support is basis-independent, but **shape is not** — the
+same groupings are 30 filaments and 74 sheets under البروج, 82 and 15 under
+isnād — so any affordance keyed to shape is keyed to a choice of basis. And none
+of them is local: median extent 154 where the widest spans 233. These are
+threads and sections through the *whole* field, not places in it, which reads
+for a trajectory to follow and against a surface to stand on.
+
+---
+
+## 7 · Not built yet
 
 - **Typed word/phrase → custom tarteel.** Planned as a deterministic corpus
   version first (works with zero keys), with OpenRouter / Google AI Studio /
