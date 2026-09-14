@@ -161,9 +161,10 @@ returns six, three of them a different root entirely. Likewise `فَلَك` (the
 orbit) twice, `مَوَٰقِع` once, `بُرُوج` four times, `ٱلْفُلْكِ ٱلْمَشْحُونِ` three
 times — the third of which sits two āyāt from `فَٱلْتَقَمَهُ ٱلْحُوتُ`.
 
-Twenty-one markers ship, across seven families (الكتاب واللسان، الأنباء،
-الأمثال، الفُلك والفَلَك، الفرقان ومواقعه، السبيل، الكيد والقائل), resolving to
-572 occurrences. Adding one means adding a spec; nothing else changes.
+Thirty-two markers ship, across eight families (الكتاب واللسان، الأنباء،
+الأمثال، الفُلك والفَلَك، الفرقان ومواقعه، السبيل، الكيد والقائل، الكهف —
+مقام الزمن), resolving to 628 occurrences. Adding one means adding a spec;
+nothing else changes.
 
 ## التأليف — the composer
 
@@ -254,6 +255,8 @@ that layer in milliseconds and it is ~180,000 rows.
 
 ```bash
 npm run dev              # the studio
+npm run fihris           # rebuild docs/fihris.json — the machine-readable فهرس
+npm run fihris:check     # fail if the فهرس has drifted from the tree
 npm run ingest           # rebuild /data from cache, downloading if absent
 npm run ingest:refresh   # re-download the sources first
 npm run verify           # the three passages, as acceptance tests

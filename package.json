@@ -11,6 +11,8 @@
     "ingest": "tsx scripts/ingest-quran.ts",
     "ingest:refresh": "tsx scripts/ingest-quran.ts --refresh",
     "verify": "tsx scripts/verify-exemplars.ts",
+    "fihris": "tsx scripts/build-fihris.ts",
+    "fihris:check": "tsx scripts/build-fihris.ts --check",
     "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
     "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts",
     "ingest:sky": "tsx scripts/ingest-sky.ts",

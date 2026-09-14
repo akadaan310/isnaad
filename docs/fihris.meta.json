@@ -1,0 +1,425 @@
+{
+  "universe": {
+    "name": "مرصد الإسناد · Isnād Observatory",
+    "one_line": "A computational universe for reading the Qur'an through الإسناد — grammatical attribution — and for finding the places where the attribution moves.",
+    "language_of_record": "Arabic. There are no translations in the application, by design. Code comments and this فهرس are bilingual.",
+    "epistemic_stance": "Everything the engine surfaces is استنباط آلي — computational extraction from morphological tagging. It points at where to look. It does not interpret, and it is not tafsīr. Any exposition served over this protocol inherits that stance and must not launder a structural finding into a claim about meaning.",
+    "master_metric": "lexicalContinuity × isnādDelta — maximum grammatical motion held against maximum lexical continuity. It fell out of three passages (هود ٢٩، ق ٢، القصص ٤-٥) rather than being imposed on them.",
+    "runs_on": "a fresh clone with no network, no database and no configuration: /data is committed."
+  },
+
+  "addressing": {
+    "scheme": "isnaad://<space>/<path>[#<symbol>]",
+    "note": "Every address below resolves to something this repository actually contains. An address that does not resolve is a malformed request, not an invitation to invent.",
+    "spaces": [
+      { "space": "module", "form": "isnaad://module/<file>", "resolves_to": "a library under src/lib", "example": "isnaad://module/isnad#findSeams" },
+      { "space": "engine", "form": "isnaad://engine/<file>", "resolves_to": "a library under src/lib/engine", "example": "isnaad://engine/detectors#detectRibat" },
+      { "space": "surface", "form": "isnaad://surface/<file>", "resolves_to": "a React or WebGL component under src/components", "example": "isnaad://surface/cosmos/scene" },
+      { "space": "app", "form": "isnaad://app/<file>", "resolves_to": "a file under src/app", "example": "isnaad://app/api/chamber/route" },
+      { "space": "script", "form": "isnaad://script/<name>", "resolves_to": "an ingestion or acceptance script", "example": "isnaad://script/verify-exemplars" },
+      { "space": "api", "form": "isnaad://api/<route>", "resolves_to": "an HTTP endpoint", "example": "isnaad://api/surah/[id]" },
+      { "space": "page", "form": "isnaad://page/<route>", "resolves_to": "a rendered surface", "example": "isnaad://page/studio" },
+      { "space": "data", "form": "isnaad://data/<file>", "resolves_to": "a committed data file", "example": "isnaad://data/index/motifs.json" },
+      { "space": "kind", "form": "isnaad://kind/<id>", "resolves_to": "one of the eight discovery kinds", "example": "isnaad://kind/jisr-al-naba" },
+      { "space": "alam", "form": "isnaad://alam/<id>", "resolves_to": "one of the declarative markers", "example": "isnaad://alam/qail-minhum" },
+      { "space": "modality", "form": "isnaad://modality/<id>", "resolves_to": "one of the twelve time modalities", "example": "isnaad://modality/law" },
+      { "space": "operation", "form": "isnaad://operation/<id>", "resolves_to": "one of the six chamber-walk operations", "example": "isnaad://operation/root-return" },
+      { "space": "locus", "form": "isnaad://locus/<surah>:<ayah>[:<word>]", "resolves_to": "a place in the muṣḥaf", "example": "isnaad://locus/28:5" },
+      { "space": "invariant", "form": "isnaad://invariant/<id>", "resolves_to": "a rule the codebase is not allowed to break", "example": "isnaad://invariant/spine-before-vector" },
+      { "space": "curriculum", "form": "isnaad://curriculum/<id>", "resolves_to": "an ordered study route", "example": "isnaad://curriculum/mabda" }
+    ]
+  },
+
+  "verbs": [
+    {
+      "verb": "FIHRIS",
+      "ar": "فهرس",
+      "asks_for": "Enumerate what is addressable under a prefix.",
+      "returns": "A flat list of addresses, one line of gloss each. No prose, no narrative, no opinion.",
+      "use_when": "You do not yet know what exists and need the shape of the territory.",
+      "example": "verb: FIHRIS · target: isnaad://engine/"
+    },
+    {
+      "verb": "SHARH",
+      "ar": "شرح",
+      "asks_for": "Exposition of one node: what it is for, how it works, what it consumes and emits.",
+      "returns": "purpose · mechanism · inputs · outputs · the neighbours it depends on · citations.",
+      "use_when": "You have an address and need to understand the thing at it.",
+      "example": "verb: SHARH · target: isnaad://engine/detectors#detectRibat · depth: 2"
+    },
+    {
+      "verb": "NASAB",
+      "ar": "نسب",
+      "asks_for": "Provenance of a number, a claim, or a datum.",
+      "returns": "The chain from raw open source → ingestion script → committed data file → module that reads it → surface that shows it, each link cited.",
+      "use_when": "A figure is quoted at you (23,784 isnād symbols; 628 marker occurrences) and you want to know who computed it and where.",
+      "example": "verb: NASAB · target: isnaad://data/index/manifest.json#isnadSymbols"
+    },
+    {
+      "verb": "TATABBUA",
+      "ar": "تتبّع",
+      "asks_for": "Trace one datum end-to-end through the pipeline.",
+      "returns": "Ordered stages; at each stage the module, the function, and the shape the datum has there.",
+      "use_when": "You want the pipeline itself, not a module: how does a morphology row become a coloured word on screen?",
+      "example": "verb: TATABBUA · target: isnaad://locus/11:29 · lens: row→segment→word→seam→discovery→wire→reader"
+    },
+    {
+      "verb": "HUJJA",
+      "ar": "حجّة",
+      "asks_for": "The evidence for a claim, in code and data.",
+      "returns": "Verbatim excerpts with path and line, plus the command that reproduces the result on a fresh clone.",
+      "use_when": "You do not want to be told; you want to be shown.",
+      "example": "verb: HUJJA · target: isnaad://alam/qail-minhum · claim: occurs exactly three times"
+    },
+    {
+      "verb": "HADD",
+      "ar": "حدّ",
+      "asks_for": "The boundary: what this does NOT do.",
+      "returns": "Declared heuristics, capped depths, closed lexicons, known misses, and where the code itself admits a guess.",
+      "use_when": "Before you rely on anything here. The answer is never 'nothing'.",
+      "example": "verb: HADD · target: isnaad://engine/frames"
+    },
+    {
+      "verb": "MITHAL",
+      "ar": "مثال",
+      "asks_for": "A worked example at a real locus.",
+      "returns": "A concrete locus, the actual values the engine computes there, and the emitted record.",
+      "use_when": "An abstraction has stopped being legible and needs to touch the text.",
+      "example": "verb: MITHAL · target: isnaad://kind/nasikh-mirror · at: isnaad://locus/11:29"
+    },
+    {
+      "verb": "TATHIR",
+      "ar": "تأثير",
+      "asks_for": "The blast radius of a proposed change.",
+      "returns": "Modules, data files, invariants and acceptance checks the change touches, and whether /data must be rebuilt.",
+      "use_when": "Before editing. Cheap to ask, expensive to skip.",
+      "example": "verb: TATHIR · target: isnaad://module/isnad#DISTANCE_OF · change: place المتكلم at 0 instead of المخاطب"
+    },
+    {
+      "verb": "TAMRIN",
+      "ar": "تمرين",
+      "asks_for": "An exercise that tests whether you have actually understood.",
+      "returns": "A task, the command that verifies it, and the observable that proves you were right.",
+      "use_when": "You have read enough and want to find out what you misread.",
+      "example": "verb: TAMRIN · target: isnaad://curriculum/istinbat · level: 2"
+    }
+  ],
+
+  "request": {
+    "envelope": "⟨FIHRIS/1⟩ then one `key: value` per line.",
+    "fields": {
+      "verb": "required · one of the nine verbs",
+      "target": "required · one isnaad:// address",
+      "depth": "optional · 0 orientation · 1 working knowledge · 2 mechanism · 3 line by line (default 1)",
+      "lens": "optional · comma-separated angles: mechanism, invariant, failure-mode, provenance, performance, arabic, extension",
+      "at": "optional · a locus to ground the answer in",
+      "budget": "optional · soft word ceiling for the response (default 600)",
+      "lang": "optional · ar · en · ar+en (default ar+en; Arabic terms are never translated away, they are glossed)"
+    },
+    "batching": "Several envelopes may be sent in one message. They are answered in order, and a later one may depend on an earlier one's answer."
+  },
+
+  "response": {
+    "envelope": "⟨FIHRIS/1 · <VERB> · <target>⟩ then the verb's contract.",
+    "obligations": [
+      "Cite. Every factual claim carries path or path:line. A claim that cannot be cited is marked استنباط — an inference — or is not made.",
+      "Bound. Every response ends with حدّ: what the answer did not cover and where it would break.",
+      "Never interpret. Structural findings are reported as structure. Exegesis is out of scope for the engine and for this protocol.",
+      "Do not invent addresses. If the target does not resolve, say so and offer the nearest addresses that do.",
+      "Do not translate the Arabic vocabulary away. الإسناد is الإسناد; a gloss may follow it, never replace it.",
+      "Prefer the code's own words. This codebase documents itself in comments; quote them before paraphrasing them."
+    ]
+  },
+
+  "layers": [
+    { "id": "asl", "label": "الأصل", "gloss": "Ingestion: two open sources fetched, cached, parsed, and mined into /data. Everything else reads what this layer wrote." },
+    { "id": "sarf", "label": "الصرف", "gloss": "Morphology and the core shapes: a corpus row becomes segments, segments become a word, words become an āyah." },
+    { "id": "isnad", "label": "الإسناد", "gloss": "The attribution model itself: which segment seats a referent, the proximity axis, seams, contours, signatures." },
+    { "id": "istinbat", "label": "الاستنباط", "gloss": "The eight detectors, the quotation frames they read, and the closed lexicons they consult." },
+    { "id": "tadin", "label": "التعدين", "gloss": "Global mining over the whole muṣḥaf at once: repeated contours by suffix automaton, declarative markers resolved to occurrences." },
+    { "id": "khariita", "label": "الخريطة", "gloss": "The muṣḥaf as a space: resonance between āyāt, the greedy walk through عربي operations, placement in isnād space, twelve time modalities." },
+    { "id": "talif", "label": "التأليف", "gloss": "Authoring: a marker becomes a برج, a برج becomes a composition, a composition is stored as loci and never as text." },
+    { "id": "khidma", "label": "الخدمة", "gloss": "The server boundary: bounded caches, runtime-tunable thresholds, the wire shape, HTTP routes, optional Postgres." },
+    { "id": "mashhad", "label": "المشهد", "gloss": "Surfaces: the three-pane studio, the WebGL cosmos, the فرقان player, the استعاذة sequence." },
+    { "id": "lisan", "label": "اللسان", "gloss": "The Arabic-facing vocabulary: labels, person colours, Eastern numerals — so nothing reaches the reader as a bare Latin token." }
+  ],
+
+  "invariants": [
+    {
+      "id": "spine-before-vector",
+      "ar": "الإسناد قبل المتّجه",
+      "rule": "Every word's isnād spine must be resolved before anything aggregates over it. Āyah vectors, signatures, proximity distance and dominant person are all functions of the spine.",
+      "cost_of_breaking": "Computing them in the same pass reads person: null for every word and silently yields 6,236 empty signatures — the whole mined layer becomes vacuous while every test still passes. This shipped once and was caught.",
+      "cite": ["src/lib/corpus.ts#buildSurah"]
+    },
+    {
+      "id": "subject-vs-reference",
+      "ar": "الإسناد ليس الإحالة",
+      "rule": "A person tag is not attribution. Only verb-subject, subject-enclitic, detached and nasikh-subject seat a referent in the chair; object, possessive, prepositional and vocative merely point at one.",
+      "cost_of_breaking": "رَبِّهِمْ would count as predicating to a third person, and every downstream metric would measure reference density instead of attribution.",
+      "cite": ["src/lib/types.ts#SUBJECT_ROLES", "src/lib/isnad.ts#assignRoles", "src/lib/isnad.ts#roleWeight"]
+    },
+    {
+      "id": "proximity-axis",
+      "ar": "محور القرب",
+      "rule": "المخاطب sits at 0, المتكلم at 0.5, الغائب at 1. Direct address is the nearest a discourse can stand.",
+      "cost_of_breaking": "It is not a person ordering; it is a discourse-distance ordering. Re-sorting it as 1-2-3 inverts the cosmos radius, the resonance distance term, and every reading of 'flying inward'.",
+      "cite": ["src/lib/isnad.ts#DISTANCE_OF", "src/lib/isnad.ts#distanceOf"]
+    },
+    {
+      "id": "three-exemplars",
+      "ar": "المواضع الثلاثة",
+      "rule": "هود ٢٩، ق ٢، القصص ٤-٥ are the standard the engine is held to. npm run verify pins all three. If a change stops finding them, the change is wrong.",
+      "cost_of_breaking": "The detectors were derived from these passages. Losing them means the tuning drifted off the thing it was tuned to.",
+      "cite": ["scripts/verify-exemplars.ts#CHECKS"]
+    },
+    {
+      "id": "no-interpretation",
+      "ar": "استنباط لا تفسير",
+      "rule": "Detectors report structural configurations present in the morphology. None of them interpret, and the engine's prose never becomes tafsīr.",
+      "cost_of_breaking": "The project's entire claim to honesty. Where a reading is the author's it is rendered in a distinct register labelled قراءة المؤلِّف, never as a finding.",
+      "cite": ["src/lib/engine/detectors.ts", "src/lib/types.ts#Discovery"]
+    },
+    {
+      "id": "no-translation",
+      "ar": "لا ترجمة",
+      "rule": "The application is Arabic only. No translations anywhere, by design.",
+      "cost_of_breaking": "A translation would silently become the object of study in place of the text.",
+      "cite": ["src/lib/numerals.ts#arabicNumber", "src/lib/view.ts#PERSON_STYLE"]
+    },
+    {
+      "id": "one-source-of-truth",
+      "ar": "أصل واحد",
+      "rule": "/data holds only the raw corpus and the globally-mined indices. Spines, seams, frames and discoveries are rebuilt on request — ~80 ms for al-Baqarah — then cached.",
+      "cost_of_breaking": "Pre-baking them took /data from 11 MB to 48 MB and froze detector thresholds that are supposed to be tunable per request.",
+      "cite": ["src/lib/data.server.ts#loadSurah", "src/lib/data.server.ts#optionsFromQuery"]
+    },
+    {
+      "id": "render-time-text",
+      "ar": "الفرقان لا تسجيل",
+      "rule": "A composition stores loci and framing, never rendered text. The āyah, its words and its isnād are fetched from the corpus at watch time.",
+      "cost_of_breaking": "The player's controls are controls of the text — السِّراج burns the isnād, القمر holds the paired āyah. Freeze the text and they become controls of a timeline.",
+      "cite": ["src/lib/composition.ts#Station", "src/app/api/render/route.ts#POST"]
+    },
+    {
+      "id": "declared-lemma-must-match",
+      "ar": "اللفظ المُعلَن يجب أن يقع",
+      "rule": "A declared lemma that matches nothing fails the build rather than passing silently.",
+      "cost_of_breaking": "كُلَّمَا once matched zero occurrences: Arabic diacritics have no canonical order and the declared string ordered fatḥa before shadda where the corpus does the reverse. Nothing complained.",
+      "cite": ["scripts/ingest-cosmos.ts", "src/lib/time-module.ts#MODALITIES"]
+    },
+    {
+      "id": "id-path-safety",
+      "ar": "المعرّف لا يخرج",
+      "rule": "Composition ids arrive from the URL and are used as filenames, so they must never be able to escape the directory.",
+      "cost_of_breaking": "Path traversal on every file-backed deployment.",
+      "cite": ["src/lib/compositions.server.ts#isSafeId"]
+    },
+    {
+      "id": "optional-postgres",
+      "ar": "سوباباس اختياري",
+      "rule": "The studio runs fully without Supabase: notes fall back to localStorage, compositions to JSON files, and the UI badge says which backend is live.",
+      "cost_of_breaking": "A fresh clone would stop working, which is the property the whole /data commitment exists to protect.",
+      "cite": ["src/lib/notes.ts#notesBackend", "src/lib/compositions.server.ts#storageKind"]
+    },
+    {
+      "id": "thresholds-at-the-edge",
+      "ar": "الحدود عند الطلب",
+      "rule": "Detector thresholds are read from the query string and clamped at the server boundary, not baked into the data.",
+      "cost_of_breaking": "Tuning would require a re-ingest, and no reader could ask the corpus a slightly different question.",
+      "cite": ["src/lib/data.server.ts#optionsFromQuery", "src/lib/engine/detectors.ts#DEFAULT_OPTIONS"]
+    }
+  ],
+
+  "vocabularies": {
+    "discovery_kinds": {
+      "source": "src/lib/engine/detectors.ts",
+      "gloss": "The eight. Each reports a structural configuration; none interpret.",
+      "ids": ["istihdar", "raj-al-jidhr", "jisr-al-naba", "ribat", "nasikh-mirror", "alsinat-al-khalq", "tabaqat-al-isnad", "rusul-echo"]
+    },
+    "isnad_roles": {
+      "source": "src/lib/types.ts",
+      "gloss": "The grammatical office a person-bearing segment holds. The first four seat a referent; the last four only point.",
+      "ids": ["verb-subject", "subject-enclitic", "detached", "nasikh-subject", "object", "possessive", "prepositional", "vocative"]
+    },
+    "alam_families": {
+      "source": "src/lib/aalam.ts",
+      "gloss": "The seven-plus-one families the declarative markers group into.",
+      "ids": ["كتاب", "أنباء", "أمثال", "فلك", "فرقان", "سبيل", "كيد", "كهف"]
+    },
+    "alam_ids": {
+      "source": "src/lib/aalam.ts",
+      "gloss": "Every marker that ships. Adding one means adding a spec; nothing else changes.",
+      "ids": ["arabi", "kitab", "tawrat", "quran-form", "anba-al-rusul", "anba-al-ghayb", "ghayb", "kull-mathal", "mathal", "fulk-safina", "falak-madar", "fulk-mashhun", "hut", "furqan", "buruj", "mawaqi-al-nujum", "nujum", "sabil-al-rushd", "rushd", "qail-minhum", "kayd", "fata", "sakhra", "safar", "ghad", "athar", "mia-alf", "ratq", "najm-shajar", "hibal", "dar-al-qarar", "lisan-sidq"]
+    },
+    "time_modalities": {
+      "source": "src/lib/time-module.ts",
+      "gloss": "Twelve, deliberately not one axis: لَن forecloses a future, لَو opens one that never was, كُلَّمَا refuses to happen once, أَبَدًا removes the question.",
+      "ids": ["madi", "hadir", "mustaqbal", "amr", "idh", "idha", "law", "in", "lan", "abad", "kullama", "saa"]
+    },
+    "chamber_operations": {
+      "source": "src/lib/engine/graph.ts",
+      "gloss": "The edges of the walk are the عربي operations themselves. The walk may not repeat an operation immediately, so it composes a tartīl of different operations rather than a list of similar āyāt.",
+      "ids": ["motif", "inversion", "root-return", "bridge", "khalq", "distance-flip"]
+    },
+    "resonance_kinds": {
+      "source": "src/lib/engine/graph.ts",
+      "gloss": "How one āyah can answer another across the muṣḥaf.",
+      "ids": ["identical", "inverted", "mirrored", "vector"]
+    },
+    "istiadha_phases": {
+      "source": "src/lib/istiadha.ts",
+      "gloss": "The entrance sequence: required once, offered thereafter.",
+      "ids": ["tahyia", "khal3", "alwah", "fata-hut", "nujum", "dukhul"]
+    }
+  },
+
+  "curricula": [
+    {
+      "id": "mabda",
+      "label": "المبدأ — orientation",
+      "for": "An agent that has just been handed this address space and knows nothing.",
+      "outcome": "You can say what the project claims, what it refuses to claim, and where any number came from.",
+      "requests": [
+        { "verb": "SHARH", "target": "isnaad://module/types", "why": "Everything downstream speaks these shapes. Read the vocabulary before the sentences." },
+        { "verb": "SHARH", "target": "isnaad://invariant/no-interpretation", "why": "Learn the refusal before the capability; it constrains every answer you will get." },
+        { "verb": "NASAB", "target": "isnaad://data/index/manifest.json", "why": "Every headline number in one place, with the script that produced it." },
+        { "verb": "FIHRIS", "target": "isnaad://engine/", "why": "The territory of the استنباط layer." },
+        { "verb": "MITHAL", "target": "isnaad://kind/ribat", "at": "isnaad://locus/28:5", "why": "The master metric, on the passage it was derived from." },
+        { "verb": "HADD", "target": "isnaad://engine/frames", "why": "The largest declared heuristic in the system. Meet it early." },
+        { "verb": "TAMRIN", "target": "isnaad://curriculum/mabda", "why": "Find out what you misread." }
+      ]
+    },
+    {
+      "id": "isnad",
+      "label": "الإسناد — the attribution model",
+      "for": "Understanding what this project means by attribution, which is not what a person tag means.",
+      "outcome": "You can decide, for any segment, whether it seats a referent or merely references one, and say why the distinction carries the whole system.",
+      "requests": [
+        { "verb": "SHARH", "target": "isnaad://module/morphology#parseFeatures", "why": "Where a corpus feature string becomes structure — including the rule that person tags carry a leading digit and noun number/gender never do." },
+        { "verb": "SHARH", "target": "isnaad://module/isnad#assignRoles", "why": "The chair: which office wins when a word carries several." },
+        { "verb": "SHARH", "target": "isnaad://invariant/subject-vs-reference", "why": "Stated as a rule, with the cost of breaking it." },
+        { "verb": "SHARH", "target": "isnaad://module/isnad#findSeams", "why": "Where the attribution turns — the unit every detector is built on." },
+        { "verb": "SHARH", "target": "isnaad://module/isnad#contourSymbol", "why": "One symbol per isnād-bearing word: the alphabet the whole muṣḥaf is re-written in." },
+        { "verb": "TATABBUA", "target": "isnaad://locus/11:29", "why": "Row to segment to word to spine to seam to signature 1312, in order." },
+        { "verb": "TAMRIN", "target": "isnaad://curriculum/isnad", "why": "Given a word, predict its role and its contour symbol before running anything." }
+      ]
+    },
+    {
+      "id": "istinbat",
+      "label": "الاستنباط — the eight detectors",
+      "for": "Understanding what is actually being detected, and on what evidence.",
+      "outcome": "You can read any Discovery record, reproduce its score, and state which part of it is measurement and which is threshold.",
+      "requests": [
+        { "verb": "SHARH", "target": "isnaad://engine/detectors#DEFAULT_OPTIONS", "why": "Five numbers govern the whole suite. Learn them first." },
+        { "verb": "SHARH", "target": "isnaad://engine/frames#buildFrames", "why": "Quotation boundaries are not in the corpus. This is how they are guessed, and where the guess is capped." },
+        { "verb": "SHARH", "target": "isnaad://engine/detectors#detectIstihdar", "why": "The clearest of the eight: absence, then address." },
+        { "verb": "SHARH", "target": "isnaad://engine/detectors#detectRibat", "why": "The master metric in code." },
+        { "verb": "HUJJA", "target": "isnaad://kind/nasikh-mirror", "why": "One particle family carrying two persons — shown, not described." },
+        { "verb": "HADD", "target": "isnaad://engine/detectors#detectKhalq", "why": "A closed lexicon. It will miss entities not in it, and says so." },
+        { "verb": "SHARH", "target": "isnaad://engine/detectors#runAllDetectors", "why": "Dedupe and ranking: why a passage is pointed at once rather than five times." },
+        { "verb": "TATHIR", "target": "isnaad://engine/detectors#DEFAULT_OPTIONS", "why": "What moves if you loosen a threshold — including whether /data must be rebuilt." }
+      ]
+    },
+    {
+      "id": "tadin",
+      "label": "التعدين — mining the whole muṣḥaf at once",
+      "for": "The two global passes: repeated contours, and declarative markers.",
+      "outcome": "You can explain why a suffix automaton was the right instrument, and why a marker is not a keyword search.",
+      "requests": [
+        { "verb": "SHARH", "target": "isnaad://engine/motifs#mineMotifs", "why": "23,784 symbols over a twelve-letter alphabet; every right-maximal repeated contour at once, no ceiling on length." },
+        { "verb": "SHARH", "target": "isnaad://engine/motifs#encodeContour", "why": "The alphabet itself." },
+        { "verb": "SHARH", "target": "isnaad://module/aalam#AlamMatch", "why": "Lemma in a case, a run of consecutive words with alternatives per position, co-occurring roots, or hand-named loci." },
+        { "verb": "HUJJA", "target": "isnaad://alam/qail-minhum", "claim": "exactly three occurrences where a loose search returns six", "why": "The argument for declarative precision, in data." },
+        { "verb": "SHARH", "target": "isnaad://engine/aalam-miner#mineAlam", "why": "Stems only: a clitic ال or و is never what a marker is naming." },
+        { "verb": "TAMRIN", "target": "isnaad://curriculum/tadin", "why": "Add a marker spec and predict its occurrence count before mining." }
+      ]
+    },
+    {
+      "id": "khariita",
+      "label": "الخريطة — the muṣḥaf as a space",
+      "for": "Resonance, the chamber walk, placement, and time.",
+      "outcome": "You can explain what makes two āyāt neighbours here, and why the walk refuses to repeat an operation.",
+      "requests": [
+        { "verb": "SHARH", "target": "isnaad://engine/graph#findResonance", "why": "Four kinds of answer one āyah can give another." },
+        { "verb": "SHARH", "target": "isnaad://engine/graph#walkChamber", "why": "Greedy, with a ban on repeating the operation it just used." },
+        { "verb": "SHARH", "target": "isnaad://engine/graph#CHAMBER_SEEDS", "why": "Seeded where the text itself audits elapsed time." },
+        { "verb": "SHARH", "target": "isnaad://module/time-module#MODALITIES", "why": "Twelve modalities, deliberately not one axis." },
+        { "verb": "SHARH", "target": "isnaad://module/cosmos#CosmosNode", "why": "Placement is meaning: direction is the برج realm, radius is discourse distance, colour is the dominant person." },
+        { "verb": "MITHAL", "target": "isnaad://operation/root-return", "at": "isnaad://locus/18:19", "why": "وَرِقِكُمْ to وَرَقَةٍ — a root that occurs in four places in the entire muṣḥaf." }
+      ]
+    },
+    {
+      "id": "talif",
+      "label": "التأليف — authoring and playing",
+      "for": "How a marker becomes a برج, and why the player is not a video.",
+      "outcome": "You can compose, store and play a recitation, and say what is stored and what is not.",
+      "requests": [
+        { "verb": "SHARH", "target": "isnaad://engine/assembler#assembleMovement", "why": "The pacing rule: a marker occurrence, then immediately the strongest thing the engine found at that same locus." },
+        { "verb": "SHARH", "target": "isnaad://module/composition#Composition", "why": "Loci and framing. No text." },
+        { "verb": "SHARH", "target": "isnaad://invariant/render-time-text", "why": "Why that choice is what makes the controls controls of the text." },
+        { "verb": "SHARH", "target": "isnaad://api/render", "why": "Fetch only the āyāt a composition asks for — a few hundred words instead of tens of megabytes." },
+        { "verb": "SHARH", "target": "isnaad://module/compositions.server#saveComposition", "why": "Supabase when configured, JSON files otherwise, and the id that must not escape the directory." }
+      ]
+    },
+    {
+      "id": "khidma",
+      "label": "الخدمة — the server boundary",
+      "for": "Caching, clamping, the wire shape, and the HTTP surface.",
+      "outcome": "You can add an endpoint without breaking the fresh-clone guarantee.",
+      "requests": [
+        { "verb": "FIHRIS", "target": "isnaad://api/", "why": "Every endpoint with its methods and query parameters." },
+        { "verb": "SHARH", "target": "isnaad://module/data.server#loadSurah", "why": "A bounded cache, so a long-lived dev server cannot hold all 114 at once." },
+        { "verb": "SHARH", "target": "isnaad://module/data.server#toWire", "why": "What crosses the boundary, and what is deliberately left behind." },
+        { "verb": "SHARH", "target": "isnaad://invariant/one-source-of-truth", "why": "11 MB instead of 48 MB, and thresholds that can still be tuned." },
+        { "verb": "HADD", "target": "isnaad://module/compositions.server", "why": "A read-only serverless filesystem cannot accept a save; that is why a deployment wants Supabase." }
+      ]
+    },
+    {
+      "id": "tawsia",
+      "label": "التوسعة — extending without breaking",
+      "for": "An agent about to change something.",
+      "outcome": "You can add a detector, a marker or a modality and know before you run what you must rebuild and what must still pass.",
+      "requests": [
+        { "verb": "TATHIR", "target": "isnaad://engine/detectors", "change": "add a ninth detector", "why": "Registration, dedupe, scoring comparability, KIND_AR, DISCOVERY_STYLE, and the /data rebuild." },
+        { "verb": "TATHIR", "target": "isnaad://module/aalam#AALAM", "change": "add a marker spec", "why": "What re-mines, what re-indexes, and what the composer picks up for free." },
+        { "verb": "SHARH", "target": "isnaad://script/verify-exemplars", "why": "The acceptance gate. If a change stops finding the three passages, the change is wrong." },
+        { "verb": "SHARH", "target": "isnaad://invariant/declared-lemma-must-match", "why": "Why a silent zero-match must fail the build — with the diacritic-ordering bug that proved it." },
+        { "verb": "TAMRIN", "target": "isnaad://curriculum/tawsia", "why": "Make a change, predict the acceptance output, then run npm run verify." }
+      ]
+    }
+  ],
+
+  "modules": {
+    "src/lib/types.ts": { "layer": "sarf", "role": "The vocabulary. Every layer downstream speaks these shapes.", "teaches": ["Person as a discourse axis, not a grammar label", "the eight isnād offices", "the Discovery record and its evidence map"], "stands_on": ["subject-vs-reference"] },
+    "src/lib/morphology.ts": { "layer": "sarf", "role": "Turns a raw corpus feature string into structure, and names every tag in Arabic.", "teaches": ["why only person tags carry a leading digit", "the FAM: token that identifies a نسخ family"], "stands_on": ["no-translation"] },
+    "src/lib/corpus.ts": { "layer": "sarf", "role": "The pipeline in one place: parse rows, build a sūrah, analyse it.", "teaches": ["the ordering that the whole mined layer depends on"], "stands_on": ["spine-before-vector"] },
+    "src/lib/isnad.ts": { "layer": "isnad", "role": "The attribution model itself: roles, weights, the proximity axis, seams, contours, signatures.", "teaches": ["seating versus referencing", "the contour alphabet", "the 1↔3 inversion"], "stands_on": ["subject-vs-reference", "proximity-axis"] },
+    "src/lib/lexicon.ts": { "layer": "istinbat", "role": "The closed lexicons: creation lemmas, agency roots, messenger names, قصص actors, time lemmas.", "teaches": ["where the engine knowingly stops being general"], "stands_on": ["no-interpretation"] },
+    "src/lib/engine/frames.ts": { "layer": "istinbat", "role": "Quotation frames, which the corpus does not mark — the system's largest declared heuristic.", "teaches": ["opening at a verb of saying", "nesting decided by the verb's own inflection", "depth capped at 4", "speakers marked مستنبَط when inferred"], "stands_on": ["no-interpretation"] },
+    "src/lib/engine/detectors.ts": { "layer": "istinbat", "role": "The eight. Each reports a structural configuration and none of them interpret.", "teaches": ["the master metric in code", "scoring", "dedupe by overlap ratio"], "stands_on": ["no-interpretation", "three-exemplars", "thresholds-at-the-edge"] },
+    "src/lib/engine/motifs.ts": { "layer": "tadin", "role": "A suffix automaton over the whole muṣḥaf as one 23,784-symbol string.", "teaches": ["right-maximality", "why no length ceiling is the point", "automatic mirror-pair flagging"], "stands_on": [] },
+    "src/lib/aalam.ts": { "layer": "tadin", "role": "The declarative marker registry. A marker is one spec; adding one changes nothing else.", "teaches": ["why a marker is not a keyword search", "associated loci kept separate from matched ones"], "stands_on": [] },
+    "src/lib/engine/aalam-miner.ts": { "layer": "tadin", "role": "Resolves a marker spec against a sūrah.", "teaches": ["stems only — a clitic is never what a marker names"], "stands_on": ["declared-lemma-must-match"] },
+    "src/lib/engine/graph.ts": { "layer": "khariita", "role": "The muṣḥaf as a graph: resonance between āyāt, and the greedy walk whose edges are عربي operations.", "teaches": ["four kinds of resonance", "why the walk bans its own last operation"], "stands_on": [] },
+    "src/lib/time-module.ts": { "layer": "khariita", "role": "Twelve time modalities and the before↔after axis they sit on.", "teaches": ["that time here is not one axis", "tension as how much an āyah does with time"], "stands_on": ["declared-lemma-must-match"] },
+    "src/lib/cosmos.ts": { "layer": "khariita", "role": "The payload the WebGL field and the flight board both read.", "teaches": ["placement as meaning: direction, radius, colour"], "stands_on": ["proximity-axis"] },
+    "src/lib/composition.ts": { "layer": "talif", "role": "Compositions, movements and stations — loci and framing, never rendered text.", "teaches": ["why a station stores a locus and a focus range"], "stands_on": ["render-time-text"] },
+    "src/lib/engine/assembler.ts": { "layer": "talif", "role": "Packs a برج around one عَلَم, interleaving each occurrence with the strongest finding at that same locus.", "teaches": ["the pacing rule that makes a برج not a concordance"], "stands_on": [] },
+    "src/lib/engine/surah-composition.ts": { "layer": "talif", "role": "A whole sūrah as a composition, one strongest annotation per āyah.", "teaches": ["why the first writer of an āyah is already the strongest"], "stands_on": [] },
+    "src/lib/data.server.ts": { "layer": "khidma", "role": "The server boundary: singleton indices, a bounded sūrah cache, clamped options, the wire shape.", "teaches": ["what crosses the wire and what does not", "runtime-tunable thresholds"], "stands_on": ["one-source-of-truth", "thresholds-at-the-edge"] },
+    "src/lib/compositions.server.ts": { "layer": "khidma", "role": "Storage: Supabase when configured, JSON files otherwise.", "teaches": ["why an id from a URL must not be able to escape a directory"], "stands_on": ["id-path-safety", "optional-postgres"] },
+    "src/lib/notes.ts": { "layer": "khidma", "role": "تدبّر notes: Postgres or localStorage, with the live backend named in the UI.", "teaches": ["snake_case at the database, camelCase in the app"], "stands_on": ["optional-postgres"] },
+    "src/lib/istiadha.ts": { "layer": "mashhad", "role": "The الاستعاذة entrance: six phases, its plates, and the final reveal.", "teaches": ["counts never written into copy — they come from the live index"], "stands_on": [] },
+    "src/lib/view.ts": { "layer": "lisan", "role": "Person colours, discovery styling, the three proximity stations.", "teaches": ["colour as attribution, consistently across every surface"], "stands_on": ["no-translation"] },
+    "src/lib/numerals.ts": { "layer": "lisan", "role": "Eastern Arabic numerals and person names, so prose never prints a bare 1, 2 or 3 at the reader.", "teaches": [], "stands_on": ["no-translation"] },
+    "src/lib/engine/labels.ts": { "layer": "lisan", "role": "Arabic labels for discovery kinds.", "teaches": [], "stands_on": ["no-translation"] },
+    "src/lib/utils.ts": { "layer": "lisan", "role": "Class merging, and percentages rendered in Arabic digits.", "teaches": [], "stands_on": ["no-translation"] },
+    "scripts/ingest-quran.ts": { "layer": "asl", "role": "Fetches both open sources, builds every sūrah, mines the global indices, writes /data and the manifest.", "teaches": ["the one place every headline number is produced"], "stands_on": ["one-source-of-truth"] },
+    "scripts/ingest-sky.ts": { "layer": "asl", "role": "Builds the naked-eye sky: 5,044 stars to magnitude 6 and 89 Arabic-named figures.", "teaches": [], "stands_on": [] },
+    "scripts/ingest-cosmos.ts": { "layer": "asl", "role": "Places a thousand āyāt in isnād space with their سنابل edges and time vectors.", "teaches": ["a declared lemma that matches nothing fails the build"], "stands_on": ["declared-lemma-must-match"] },
+    "scripts/verify-exemplars.ts": { "layer": "asl", "role": "The acceptance gate: the three passages the engine was built from.", "teaches": ["what it means to pin an engine to the thing it was derived from"], "stands_on": ["three-exemplars"] },
+    "scripts/seed-composition.ts": { "layer": "asl", "role": "Assembles and publishes one worked composition, so the gallery is not empty on a fresh clone.", "teaches": [], "stands_on": [] },
+    "scripts/build-fihris.ts": { "layer": "asl", "role": "Builds this فهرس from the tree, so the protocol cannot describe a codebase that no longer exists.", "teaches": ["derived indices over hand-maintained ones"], "stands_on": [] }
+  }
+}

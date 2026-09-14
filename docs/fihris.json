@@ -1,0 +1,3883 @@
+{
+  "protocol": "fihris/1.0",
+  "generated_by": "scripts/build-fihris.ts",
+  "generated_from": "the source tree, not by hand",
+  "universe": {
+    "name": "مرصد الإسناد · Isnād Observatory",
+    "one_line": "A computational universe for reading the Qur'an through الإسناد — grammatical attribution — and for finding the places where the attribution moves.",
+    "language_of_record": "Arabic. There are no translations in the application, by design. Code comments and this فهرس are bilingual.",
+    "epistemic_stance": "Everything the engine surfaces is استنباط آلي — computational extraction from morphological tagging. It points at where to look. It does not interpret, and it is not tafsīr. Any exposition served over this protocol inherits that stance and must not launder a structural finding into a claim about meaning.",
+    "master_metric": "lexicalContinuity × isnādDelta — maximum grammatical motion held against maximum lexical continuity. It fell out of three passages (هود ٢٩، ق ٢، القصص ٤-٥) rather than being imposed on them.",
+    "runs_on": "a fresh clone with no network, no database and no configuration: /data is committed.",
+    "package": "isnaad-studio",
+    "version": "1.0.0"
+  },
+  "corpus": {
+    "builtAt": "2026-08-31T16:48:49.412Z",
+    "surahs": 114,
+    "ayaat": 6236,
+    "words": 77429,
+    "segments": 130031,
+    "isnadSymbols": 23784,
+    "discoveries": 7057,
+    "motifs": 400,
+    "roots": 1651,
+    "aalam": 32,
+    "aalamHits": 628,
+    "sources": {
+      "morphology": {
+        "url": "https://raw.githubusercontent.com/mustafa0x/quran-morphology/master/quran-morphology.txt",
+        "file": "quran-morphology.txt"
+      },
+      "text": {
+        "url": "https://raw.githubusercontent.com/risan/quran-json/main/dist/quran.json",
+        "file": "quran.json"
+      }
+    },
+    "detectorOptions": {
+      "stitchWindow": 8,
+      "echoWindow": 22,
+      "minAbsenceRun": 2,
+      "minNarrativeRun": 4,
+      "minScore": 0.28
+    }
+  },
+  "addressing": {
+    "scheme": "isnaad://<space>/<path>[#<symbol>]",
+    "note": "Every address below resolves to something this repository actually contains. An address that does not resolve is a malformed request, not an invitation to invent.",
+    "spaces": [
+      {
+        "space": "module",
+        "form": "isnaad://module/<file>",
+        "resolves_to": "a library under src/lib",
+        "example": "isnaad://module/isnad#findSeams"
+      },
+      {
+        "space": "engine",
+        "form": "isnaad://engine/<file>",
+        "resolves_to": "a library under src/lib/engine",
+        "example": "isnaad://engine/detectors#detectRibat"
+      },
+      {
+        "space": "surface",
+        "form": "isnaad://surface/<file>",
+        "resolves_to": "a React or WebGL component under src/components",
+        "example": "isnaad://surface/cosmos/scene"
+      },
+      {
+        "space": "app",
+        "form": "isnaad://app/<file>",
+        "resolves_to": "a file under src/app",
+        "example": "isnaad://app/api/chamber/route"
+      },
+      {
+        "space": "script",
+        "form": "isnaad://script/<name>",
+        "resolves_to": "an ingestion or acceptance script",
+        "example": "isnaad://script/verify-exemplars"
+      },
+      {
+        "space": "api",
+        "form": "isnaad://api/<route>",
+        "resolves_to": "an HTTP endpoint",
+        "example": "isnaad://api/surah/[id]"
+      },
+      {
+        "space": "page",
+        "form": "isnaad://page/<route>",
+        "resolves_to": "a rendered surface",
+        "example": "isnaad://page/studio"
+      },
+      {
+        "space": "data",
+        "form": "isnaad://data/<file>",
+        "resolves_to": "a committed data file",
+        "example": "isnaad://data/index/motifs.json"
+      },
+      {
+        "space": "kind",
+        "form": "isnaad://kind/<id>",
+        "resolves_to": "one of the eight discovery kinds",
+        "example": "isnaad://kind/jisr-al-naba"
+      },
+      {
+        "space": "alam",
+        "form": "isnaad://alam/<id>",
+        "resolves_to": "one of the declarative markers",
+        "example": "isnaad://alam/qail-minhum"
+      },
+      {
+        "space": "modality",
+        "form": "isnaad://modality/<id>",
+        "resolves_to": "one of the twelve time modalities",
+        "example": "isnaad://modality/law"
+      },
+      {
+        "space": "operation",
+        "form": "isnaad://operation/<id>",
+        "resolves_to": "one of the six chamber-walk operations",
+        "example": "isnaad://operation/root-return"
+      },
+      {
+        "space": "locus",
+        "form": "isnaad://locus/<surah>:<ayah>[:<word>]",
+        "resolves_to": "a place in the muṣḥaf",
+        "example": "isnaad://locus/28:5"
+      },
+      {
+        "space": "invariant",
+        "form": "isnaad://invariant/<id>",
+        "resolves_to": "a rule the codebase is not allowed to break",
+        "example": "isnaad://invariant/spine-before-vector"
+      },
+      {
+        "space": "curriculum",
+        "form": "isnaad://curriculum/<id>",
+        "resolves_to": "an ordered study route",
+        "example": "isnaad://curriculum/mabda"
+      }
+    ]
+  },
+  "verbs": [
+    {
+      "verb": "FIHRIS",
+      "ar": "فهرس",
+      "asks_for": "Enumerate what is addressable under a prefix.",
+      "returns": "A flat list of addresses, one line of gloss each. No prose, no narrative, no opinion.",
+      "use_when": "You do not yet know what exists and need the shape of the territory.",
+      "example": "verb: FIHRIS · target: isnaad://engine/"
+    },
+    {
+      "verb": "SHARH",
+      "ar": "شرح",
+      "asks_for": "Exposition of one node: what it is for, how it works, what it consumes and emits.",
+      "returns": "purpose · mechanism · inputs · outputs · the neighbours it depends on · citations.",
+      "use_when": "You have an address and need to understand the thing at it.",
+      "example": "verb: SHARH · target: isnaad://engine/detectors#detectRibat · depth: 2"
+    },
+    {
+      "verb": "NASAB",
+      "ar": "نسب",
+      "asks_for": "Provenance of a number, a claim, or a datum.",
+      "returns": "The chain from raw open source → ingestion script → committed data file → module that reads it → surface that shows it, each link cited.",
+      "use_when": "A figure is quoted at you (23,784 isnād symbols; 628 marker occurrences) and you want to know who computed it and where.",
+      "example": "verb: NASAB · target: isnaad://data/index/manifest.json#isnadSymbols"
+    },
+    {
+      "verb": "TATABBUA",
+      "ar": "تتبّع",
+      "asks_for": "Trace one datum end-to-end through the pipeline.",
+      "returns": "Ordered stages; at each stage the module, the function, and the shape the datum has there.",
+      "use_when": "You want the pipeline itself, not a module: how does a morphology row become a coloured word on screen?",
+      "example": "verb: TATABBUA · target: isnaad://locus/11:29 · lens: row→segment→word→seam→discovery→wire→reader"
+    },
+    {
+      "verb": "HUJJA",
+      "ar": "حجّة",
+      "asks_for": "The evidence for a claim, in code and data.",
+      "returns": "Verbatim excerpts with path and line, plus the command that reproduces the result on a fresh clone.",
+      "use_when": "You do not want to be told; you want to be shown.",
+      "example": "verb: HUJJA · target: isnaad://alam/qail-minhum · claim: occurs exactly three times"
+    },
+    {
+      "verb": "HADD",
+      "ar": "حدّ",
+      "asks_for": "The boundary: what this does NOT do.",
+      "returns": "Declared heuristics, capped depths, closed lexicons, known misses, and where the code itself admits a guess.",
+      "use_when": "Before you rely on anything here. The answer is never 'nothing'.",
+      "example": "verb: HADD · target: isnaad://engine/frames"
+    },
+    {
+      "verb": "MITHAL",
+      "ar": "مثال",
+      "asks_for": "A worked example at a real locus.",
+      "returns": "A concrete locus, the actual values the engine computes there, and the emitted record.",
+      "use_when": "An abstraction has stopped being legible and needs to touch the text.",
+      "example": "verb: MITHAL · target: isnaad://kind/nasikh-mirror · at: isnaad://locus/11:29"
+    },
+    {
+      "verb": "TATHIR",
+      "ar": "تأثير",
+      "asks_for": "The blast radius of a proposed change.",
+      "returns": "Modules, data files, invariants and acceptance checks the change touches, and whether /data must be rebuilt.",
+      "use_when": "Before editing. Cheap to ask, expensive to skip.",
+      "example": "verb: TATHIR · target: isnaad://module/isnad#DISTANCE_OF · change: place المتكلم at 0 instead of المخاطب"
+    },
+    {
+      "verb": "TAMRIN",
+      "ar": "تمرين",
+      "asks_for": "An exercise that tests whether you have actually understood.",
+      "returns": "A task, the command that verifies it, and the observable that proves you were right.",
+      "use_when": "You have read enough and want to find out what you misread.",
+      "example": "verb: TAMRIN · target: isnaad://curriculum/istinbat · level: 2"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "spine-before-vector",
+      "ar": "الإسناد قبل المتّجه",
+      "rule": "Every word's isnād spine must be resolved before anything aggregates over it. Āyah vectors, signatures, proximity distance and dominant person are all functions of the spine.",
+      "cost_of_breaking": "Computing them in the same pass reads person: null for every word and silently yields 6,236 empty signatures — the whole mined layer becomes vacuous while every test still passes. This shipped once and was caught.",
+      "cite": [
+        "src/lib/corpus.ts#buildSurah"
+      ]
+    },
+    {
+      "id": "subject-vs-reference",
+      "ar": "الإسناد ليس الإحالة",
+      "rule": "A person tag is not attribution. Only verb-subject, subject-enclitic, detached and nasikh-subject seat a referent in the chair; object, possessive, prepositional and vocative merely point at one.",
+      "cost_of_breaking": "رَبِّهِمْ would count as predicating to a third person, and every downstream metric would measure reference density instead of attribution.",
+      "cite": [
+        "src/lib/types.ts#SUBJECT_ROLES",
+        "src/lib/isnad.ts#assignRoles",
+        "src/lib/isnad.ts#roleWeight"
+      ]
+    },
+    {
+      "id": "proximity-axis",
+      "ar": "محور القرب",
+      "rule": "المخاطب sits at 0, المتكلم at 0.5, الغائب at 1. Direct address is the nearest a discourse can stand.",
+      "cost_of_breaking": "It is not a person ordering; it is a discourse-distance ordering. Re-sorting it as 1-2-3 inverts the cosmos radius, the resonance distance term, and every reading of 'flying inward'.",
+      "cite": [
+        "src/lib/isnad.ts#DISTANCE_OF",
+        "src/lib/isnad.ts#distanceOf"
+      ]
+    },
+    {
+      "id": "three-exemplars",
+      "ar": "المواضع الثلاثة",
+      "rule": "هود ٢٩، ق ٢، القصص ٤-٥ are the standard the engine is held to. npm run verify pins all three. If a change stops finding them, the change is wrong.",
+      "cost_of_breaking": "The detectors were derived from these passages. Losing them means the tuning drifted off the thing it was tuned to.",
+      "cite": [
+        "scripts/verify-exemplars.ts#CHECKS"
+      ]
+    },
+    {
+      "id": "no-interpretation",
+      "ar": "استنباط لا تفسير",
+      "rule": "Detectors report structural configurations present in the morphology. None of them interpret, and the engine's prose never becomes tafsīr.",
+      "cost_of_breaking": "The project's entire claim to honesty. Where a reading is the author's it is rendered in a distinct register labelled قراءة المؤلِّف, never as a finding.",
+      "cite": [
+        "src/lib/engine/detectors.ts",
+        "src/lib/types.ts#Discovery"
+      ]
+    },
+    {
+      "id": "no-translation",
+      "ar": "لا ترجمة",
+      "rule": "The application is Arabic only. No translations anywhere, by design.",
+      "cost_of_breaking": "A translation would silently become the object of study in place of the text.",
+      "cite": [
+        "src/lib/numerals.ts#arabicNumber",
+        "src/lib/view.ts#PERSON_STYLE"
+      ]
+    },
+    {
+      "id": "one-source-of-truth",
+      "ar": "أصل واحد",
+      "rule": "/data holds only the raw corpus and the globally-mined indices. Spines, seams, frames and discoveries are rebuilt on request — ~80 ms for al-Baqarah — then cached.",
+      "cost_of_breaking": "Pre-baking them took /data from 11 MB to 48 MB and froze detector thresholds that are supposed to be tunable per request.",
+      "cite": [
+        "src/lib/data.server.ts#loadSurah",
+        "src/lib/data.server.ts#optionsFromQuery"
+      ]
+    },
+    {
+      "id": "render-time-text",
+      "ar": "الفرقان لا تسجيل",
+      "rule": "A composition stores loci and framing, never rendered text. The āyah, its words and its isnād are fetched from the corpus at watch time.",
+      "cost_of_breaking": "The player's controls are controls of the text — السِّراج burns the isnād, القمر holds the paired āyah. Freeze the text and they become controls of a timeline.",
+      "cite": [
+        "src/lib/composition.ts#Station",
+        "src/app/api/render/route.ts#POST"
+      ]
+    },
+    {
+      "id": "declared-lemma-must-match",
+      "ar": "اللفظ المُعلَن يجب أن يقع",
+      "rule": "A declared lemma that matches nothing fails the build rather than passing silently.",
+      "cost_of_breaking": "كُلَّمَا once matched zero occurrences: Arabic diacritics have no canonical order and the declared string ordered fatḥa before shadda where the corpus does the reverse. Nothing complained.",
+      "cite": [
+        "scripts/ingest-cosmos.ts",
+        "src/lib/time-module.ts#MODALITIES"
+      ]
+    },
+    {
+      "id": "id-path-safety",
+      "ar": "المعرّف لا يخرج",
+      "rule": "Composition ids arrive from the URL and are used as filenames, so they must never be able to escape the directory.",
+      "cost_of_breaking": "Path traversal on every file-backed deployment.",
+      "cite": [
+        "src/lib/compositions.server.ts#isSafeId"
+      ]
+    },
+    {
+      "id": "optional-postgres",
+      "ar": "سوباباس اختياري",
+      "rule": "The studio runs fully without Supabase: notes fall back to localStorage, compositions to JSON files, and the UI badge says which backend is live.",
+      "cost_of_breaking": "A fresh clone would stop working, which is the property the whole /data commitment exists to protect.",
+      "cite": [
+        "src/lib/notes.ts#notesBackend",
+        "src/lib/compositions.server.ts#storageKind"
+      ]
+    },
+    {
+      "id": "thresholds-at-the-edge",
+      "ar": "الحدود عند الطلب",
+      "rule": "Detector thresholds are read from the query string and clamped at the server boundary, not baked into the data.",
+      "cost_of_breaking": "Tuning would require a re-ingest, and no reader could ask the corpus a slightly different question.",
+      "cite": [
+        "src/lib/data.server.ts#optionsFromQuery",
+        "src/lib/engine/detectors.ts#DEFAULT_OPTIONS"
+      ]
+    }
+  ],
+  "layers": [
+    {
+      "id": "asl",
+      "label": "الأصل",
+      "gloss": "Ingestion: two open sources fetched, cached, parsed, and mined into /data. Everything else reads what this layer wrote."
+    },
+    {
+      "id": "sarf",
+      "label": "الصرف",
+      "gloss": "Morphology and the core shapes: a corpus row becomes segments, segments become a word, words become an āyah."
+    },
+    {
+      "id": "isnad",
+      "label": "الإسناد",
+      "gloss": "The attribution model itself: which segment seats a referent, the proximity axis, seams, contours, signatures."
+    },
+    {
+      "id": "istinbat",
+      "label": "الاستنباط",
+      "gloss": "The eight detectors, the quotation frames they read, and the closed lexicons they consult."
+    },
+    {
+      "id": "tadin",
+      "label": "التعدين",
+      "gloss": "Global mining over the whole muṣḥaf at once: repeated contours by suffix automaton, declarative markers resolved to occurrences."
+    },
+    {
+      "id": "khariita",
+      "label": "الخريطة",
+      "gloss": "The muṣḥaf as a space: resonance between āyāt, the greedy walk through عربي operations, placement in isnād space, twelve time modalities."
+    },
+    {
+      "id": "talif",
+      "label": "التأليف",
+      "gloss": "Authoring: a marker becomes a برج, a برج becomes a composition, a composition is stored as loci and never as text."
+    },
+    {
+      "id": "khidma",
+      "label": "الخدمة",
+      "gloss": "The server boundary: bounded caches, runtime-tunable thresholds, the wire shape, HTTP routes, optional Postgres."
+    },
+    {
+      "id": "mashhad",
+      "label": "المشهد",
+      "gloss": "Surfaces: the three-pane studio, the WebGL cosmos, the فرقان player, the استعاذة sequence."
+    },
+    {
+      "id": "lisan",
+      "label": "اللسان",
+      "gloss": "The Arabic-facing vocabulary: labels, person colours, Eastern numerals — so nothing reaches the reader as a bare Latin token."
+    }
+  ],
+  "curricula": [
+    {
+      "id": "mabda",
+      "label": "المبدأ — orientation",
+      "for": "An agent that has just been handed this address space and knows nothing.",
+      "outcome": "You can say what the project claims, what it refuses to claim, and where any number came from.",
+      "requests": [
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/types",
+          "why": "Everything downstream speaks these shapes. Read the vocabulary before the sentences."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://invariant/no-interpretation",
+          "why": "Learn the refusal before the capability; it constrains every answer you will get."
+        },
+        {
+          "verb": "NASAB",
+          "target": "isnaad://data/index/manifest.json",
+          "why": "Every headline number in one place, with the script that produced it."
+        },
+        {
+          "verb": "FIHRIS",
+          "target": "isnaad://engine/",
+          "why": "The territory of the استنباط layer."
+        },
+        {
+          "verb": "MITHAL",
+          "target": "isnaad://kind/ribat",
+          "at": "isnaad://locus/28:5",
+          "why": "The master metric, on the passage it was derived from."
+        },
+        {
+          "verb": "HADD",
+          "target": "isnaad://engine/frames",
+          "why": "The largest declared heuristic in the system. Meet it early."
+        },
+        {
+          "verb": "TAMRIN",
+          "target": "isnaad://curriculum/mabda",
+          "why": "Find out what you misread."
+        }
+      ]
+    },
+    {
+      "id": "isnad",
+      "label": "الإسناد — the attribution model",
+      "for": "Understanding what this project means by attribution, which is not what a person tag means.",
+      "outcome": "You can decide, for any segment, whether it seats a referent or merely references one, and say why the distinction carries the whole system.",
+      "requests": [
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/morphology#parseFeatures",
+          "why": "Where a corpus feature string becomes structure — including the rule that person tags carry a leading digit and noun number/gender never do."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/isnad#assignRoles",
+          "why": "The chair: which office wins when a word carries several."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://invariant/subject-vs-reference",
+          "why": "Stated as a rule, with the cost of breaking it."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/isnad#findSeams",
+          "why": "Where the attribution turns — the unit every detector is built on."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/isnad#contourSymbol",
+          "why": "One symbol per isnād-bearing word: the alphabet the whole muṣḥaf is re-written in."
+        },
+        {
+          "verb": "TATABBUA",
+          "target": "isnaad://locus/11:29",
+          "why": "Row to segment to word to spine to seam to signature 1312, in order."
+        },
+        {
+          "verb": "TAMRIN",
+          "target": "isnaad://curriculum/isnad",
+          "why": "Given a word, predict its role and its contour symbol before running anything."
+        }
+      ]
+    },
+    {
+      "id": "istinbat",
+      "label": "الاستنباط — the eight detectors",
+      "for": "Understanding what is actually being detected, and on what evidence.",
+      "outcome": "You can read any Discovery record, reproduce its score, and state which part of it is measurement and which is threshold.",
+      "requests": [
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/detectors#DEFAULT_OPTIONS",
+          "why": "Five numbers govern the whole suite. Learn them first."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/frames#buildFrames",
+          "why": "Quotation boundaries are not in the corpus. This is how they are guessed, and where the guess is capped."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/detectors#detectIstihdar",
+          "why": "The clearest of the eight: absence, then address."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/detectors#detectRibat",
+          "why": "The master metric in code."
+        },
+        {
+          "verb": "HUJJA",
+          "target": "isnaad://kind/nasikh-mirror",
+          "why": "One particle family carrying two persons — shown, not described."
+        },
+        {
+          "verb": "HADD",
+          "target": "isnaad://engine/detectors#detectKhalq",
+          "why": "A closed lexicon. It will miss entities not in it, and says so."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/detectors#runAllDetectors",
+          "why": "Dedupe and ranking: why a passage is pointed at once rather than five times."
+        },
+        {
+          "verb": "TATHIR",
+          "target": "isnaad://engine/detectors#DEFAULT_OPTIONS",
+          "why": "What moves if you loosen a threshold — including whether /data must be rebuilt."
+        }
+      ]
+    },
+    {
+      "id": "tadin",
+      "label": "التعدين — mining the whole muṣḥaf at once",
+      "for": "The two global passes: repeated contours, and declarative markers.",
+      "outcome": "You can explain why a suffix automaton was the right instrument, and why a marker is not a keyword search.",
+      "requests": [
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/motifs#mineMotifs",
+          "why": "23,784 symbols over a twelve-letter alphabet; every right-maximal repeated contour at once, no ceiling on length."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/motifs#encodeContour",
+          "why": "The alphabet itself."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/aalam#AlamMatch",
+          "why": "Lemma in a case, a run of consecutive words with alternatives per position, co-occurring roots, or hand-named loci."
+        },
+        {
+          "verb": "HUJJA",
+          "target": "isnaad://alam/qail-minhum",
+          "claim": "exactly three occurrences where a loose search returns six",
+          "why": "The argument for declarative precision, in data."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/aalam-miner#mineAlam",
+          "why": "Stems only: a clitic ال or و is never what a marker is naming."
+        },
+        {
+          "verb": "TAMRIN",
+          "target": "isnaad://curriculum/tadin",
+          "why": "Add a marker spec and predict its occurrence count before mining."
+        }
+      ]
+    },
+    {
+      "id": "khariita",
+      "label": "الخريطة — the muṣḥaf as a space",
+      "for": "Resonance, the chamber walk, placement, and time.",
+      "outcome": "You can explain what makes two āyāt neighbours here, and why the walk refuses to repeat an operation.",
+      "requests": [
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/graph#findResonance",
+          "why": "Four kinds of answer one āyah can give another."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/graph#walkChamber",
+          "why": "Greedy, with a ban on repeating the operation it just used."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/graph#CHAMBER_SEEDS",
+          "why": "Seeded where the text itself audits elapsed time."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/time-module#MODALITIES",
+          "why": "Twelve modalities, deliberately not one axis."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/cosmos#CosmosNode",
+          "why": "Placement is meaning: direction is the برج realm, radius is discourse distance, colour is the dominant person."
+        },
+        {
+          "verb": "MITHAL",
+          "target": "isnaad://operation/root-return",
+          "at": "isnaad://locus/18:19",
+          "why": "وَرِقِكُمْ to وَرَقَةٍ — a root that occurs in four places in the entire muṣḥaf."
+        }
+      ]
+    },
+    {
+      "id": "talif",
+      "label": "التأليف — authoring and playing",
+      "for": "How a marker becomes a برج, and why the player is not a video.",
+      "outcome": "You can compose, store and play a recitation, and say what is stored and what is not.",
+      "requests": [
+        {
+          "verb": "SHARH",
+          "target": "isnaad://engine/assembler#assembleMovement",
+          "why": "The pacing rule: a marker occurrence, then immediately the strongest thing the engine found at that same locus."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/composition#Composition",
+          "why": "Loci and framing. No text."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://invariant/render-time-text",
+          "why": "Why that choice is what makes the controls controls of the text."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://api/render",
+          "why": "Fetch only the āyāt a composition asks for — a few hundred words instead of tens of megabytes."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/compositions.server#saveComposition",
+          "why": "Supabase when configured, JSON files otherwise, and the id that must not escape the directory."
+        }
+      ]
+    },
+    {
+      "id": "khidma",
+      "label": "الخدمة — the server boundary",
+      "for": "Caching, clamping, the wire shape, and the HTTP surface.",
+      "outcome": "You can add an endpoint without breaking the fresh-clone guarantee.",
+      "requests": [
+        {
+          "verb": "FIHRIS",
+          "target": "isnaad://api/",
+          "why": "Every endpoint with its methods and query parameters."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/data.server#loadSurah",
+          "why": "A bounded cache, so a long-lived dev server cannot hold all 114 at once."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://module/data.server#toWire",
+          "why": "What crosses the boundary, and what is deliberately left behind."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://invariant/one-source-of-truth",
+          "why": "11 MB instead of 48 MB, and thresholds that can still be tuned."
+        },
+        {
+          "verb": "HADD",
+          "target": "isnaad://module/compositions.server",
+          "why": "A read-only serverless filesystem cannot accept a save; that is why a deployment wants Supabase."
+        }
+      ]
+    },
+    {
+      "id": "tawsia",
+      "label": "التوسعة — extending without breaking",
+      "for": "An agent about to change something.",
+      "outcome": "You can add a detector, a marker or a modality and know before you run what you must rebuild and what must still pass.",
+      "requests": [
+        {
+          "verb": "TATHIR",
+          "target": "isnaad://engine/detectors",
+          "change": "add a ninth detector",
+          "why": "Registration, dedupe, scoring comparability, KIND_AR, DISCOVERY_STYLE, and the /data rebuild."
+        },
+        {
+          "verb": "TATHIR",
+          "target": "isnaad://module/aalam#AALAM",
+          "change": "add a marker spec",
+          "why": "What re-mines, what re-indexes, and what the composer picks up for free."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://script/verify-exemplars",
+          "why": "The acceptance gate. If a change stops finding the three passages, the change is wrong."
+        },
+        {
+          "verb": "SHARH",
+          "target": "isnaad://invariant/declared-lemma-must-match",
+          "why": "Why a silent zero-match must fail the build — with the diacritic-ordering bug that proved it."
+        },
+        {
+          "verb": "TAMRIN",
+          "target": "isnaad://curriculum/tawsia",
+          "why": "Make a change, predict the acceptance output, then run npm run verify."
+        }
+      ]
+    }
+  ],
+  "vocabularies": {
+    "discovery_kinds": {
+      "source": "src/lib/engine/detectors.ts",
+      "gloss": "The eight. Each reports a structural configuration; none interpret.",
+      "ids": [
+        "istihdar",
+        "raj-al-jidhr",
+        "jisr-al-naba",
+        "ribat",
+        "nasikh-mirror",
+        "alsinat-al-khalq",
+        "tabaqat-al-isnad",
+        "rusul-echo"
+      ]
+    },
+    "isnad_roles": {
+      "source": "src/lib/types.ts",
+      "gloss": "The grammatical office a person-bearing segment holds. The first four seat a referent; the last four only point.",
+      "ids": [
+        "verb-subject",
+        "subject-enclitic",
+        "detached",
+        "nasikh-subject",
+        "object",
+        "possessive",
+        "prepositional",
+        "vocative"
+      ]
+    },
+    "alam_families": {
+      "source": "src/lib/aalam.ts",
+      "gloss": "The seven-plus-one families the declarative markers group into.",
+      "ids": [
+        "كتاب",
+        "أنباء",
+        "أمثال",
+        "فلك",
+        "فرقان",
+        "سبيل",
+        "كيد",
+        "كهف"
+      ]
+    },
+    "alam_ids": {
+      "source": "src/lib/aalam.ts",
+      "gloss": "Every marker that ships. Adding one means adding a spec; nothing else changes.",
+      "ids": [
+        "arabi",
+        "kitab",
+        "tawrat",
+        "quran-form",
+        "anba-al-rusul",
+        "anba-al-ghayb",
+        "ghayb",
+        "kull-mathal",
+        "mathal",
+        "fulk-safina",
+        "falak-madar",
+        "fulk-mashhun",
+        "hut",
+        "furqan",
+        "buruj",
+        "mawaqi-al-nujum",
+        "nujum",
+        "sabil-al-rushd",
+        "rushd",
+        "qail-minhum",
+        "kayd",
+        "fata",
+        "sakhra",
+        "safar",
+        "ghad",
+        "athar",
+        "mia-alf",
+        "ratq",
+        "najm-shajar",
+        "hibal",
+        "dar-al-qarar",
+        "lisan-sidq"
+      ]
+    },
+    "time_modalities": {
+      "source": "src/lib/time-module.ts",
+      "gloss": "Twelve, deliberately not one axis: لَن forecloses a future, لَو opens one that never was, كُلَّمَا refuses to happen once, أَبَدًا removes the question.",
+      "ids": [
+        "madi",
+        "hadir",
+        "mustaqbal",
+        "amr",
+        "idh",
+        "idha",
+        "law",
+        "in",
+        "lan",
+        "abad",
+        "kullama",
+        "saa"
+      ]
+    },
+    "chamber_operations": {
+      "source": "src/lib/engine/graph.ts",
+      "gloss": "The edges of the walk are the عربي operations themselves. The walk may not repeat an operation immediately, so it composes a tartīl of different operations rather than a list of similar āyāt.",
+      "ids": [
+        "motif",
+        "inversion",
+        "root-return",
+        "bridge",
+        "khalq",
+        "distance-flip"
+      ]
+    },
+    "resonance_kinds": {
+      "source": "src/lib/engine/graph.ts",
+      "gloss": "How one āyah can answer another across the muṣḥaf.",
+      "ids": [
+        "identical",
+        "inverted",
+        "mirrored",
+        "vector"
+      ]
+    },
+    "istiadha_phases": {
+      "source": "src/lib/istiadha.ts",
+      "gloss": "The entrance sequence: required once, offered thereafter.",
+      "ids": [
+        "tahyia",
+        "khal3",
+        "alwah",
+        "fata-hut",
+        "nujum",
+        "dukhul"
+      ]
+    }
+  },
+  "commands": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "ingest": "tsx scripts/ingest-quran.ts",
+    "ingest:refresh": "tsx scripts/ingest-quran.ts --refresh",
+    "verify": "tsx scripts/verify-exemplars.ts",
+    "fihris": "tsx scripts/build-fihris.ts",
+    "fihris:check": "tsx scripts/build-fihris.ts --check",
+    "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
+    "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts",
+    "ingest:sky": "tsx scripts/ingest-sky.ts",
+    "ingest:cosmos": "tsx scripts/ingest-cosmos.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.45.4",
+    "class-variance-authority": "0.7.0",
+    "clsx": "2.1.1",
+    "lucide-react": "0.446.0",
+    "next": "14.2.15",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "2.5.2",
+    "three": "^0.169.0"
+  },
+  "counts": {
+    "modules": 66,
+    "exports": 272,
+    "routes": 13,
+    "pages": 7,
+    "data_files": 12,
+    "code_lines": 11907
+  },
+  "routes": [
+    {
+      "address": "isnaad://api/aalam",
+      "url": "/api/aalam",
+      "path": "src/app/api/aalam/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": "The marker registry joined to its mined occurrences, ready for the composer.",
+      "params": []
+    },
+    {
+      "address": "isnaad://api/assemble",
+      "url": "/api/assemble",
+      "path": "src/app/api/assemble/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": "Pack a برج around one عَلَم. The result is a starting point, then edited.",
+      "params": [
+        "alam",
+        "associated",
+        "interleave",
+        "limit"
+      ]
+    },
+    {
+      "address": "isnaad://api/chamber",
+      "url": "/api/chamber",
+      "path": "src/app/api/chamber/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": null,
+      "params": [
+        "ayah",
+        "stations",
+        "surah"
+      ]
+    },
+    {
+      "address": "isnaad://api/compositions/[id]",
+      "url": "/api/compositions/[id]",
+      "path": "src/app/api/compositions/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "says": null,
+      "params": []
+    },
+    {
+      "address": "isnaad://api/compositions",
+      "url": "/api/compositions",
+      "path": "src/app/api/compositions/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "says": null,
+      "params": [
+        "published"
+      ]
+    },
+    {
+      "address": "isnaad://api/cosmos",
+      "url": "/api/cosmos",
+      "path": "src/app/api/cosmos/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": "The thousand placed āyāt, read once per server process.",
+      "params": []
+    },
+    {
+      "address": "isnaad://api/discoveries",
+      "url": "/api/discoveries",
+      "path": "src/app/api/discoveries/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": null,
+      "params": [
+        "kind",
+        "limit"
+      ]
+    },
+    {
+      "address": "isnaad://api/istiadha",
+      "url": "/api/istiadha",
+      "path": "src/app/api/istiadha/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": "Resolve every plate against the live index. Counts are never written into the copy — they come from here, so a plate cannot claim \"three loci\" while the corpus holds four.",
+      "params": []
+    },
+    {
+      "address": "isnaad://api/motifs",
+      "url": "/api/motifs",
+      "path": "src/app/api/motifs/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": null,
+      "params": [
+        "limit",
+        "minSpread",
+        "surah"
+      ]
+    },
+    {
+      "address": "isnaad://api/render",
+      "url": "/api/render",
+      "path": "src/app/api/render/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "says": "Render just the āyāt a composition asks for. The player never pulls a whole sūrah: a composition of twenty stations across fifteen sūrahs would be tens of megabytes that way, and it needs a few hundred words.",
+      "params": []
+    },
+    {
+      "address": "isnaad://api/resonance",
+      "url": "/api/resonance",
+      "path": "src/app/api/resonance/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": null,
+      "params": [
+        "ayah",
+        "limit",
+        "surah"
+      ]
+    },
+    {
+      "address": "isnaad://api/sky",
+      "url": "/api/sky",
+      "path": "src/app/api/sky/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": "The whole naked-eye sky, read once per server process.",
+      "params": []
+    },
+    {
+      "address": "isnaad://api/surah/[id]",
+      "url": "/api/surah/[id]",
+      "path": "src/app/api/surah/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "says": null,
+      "params": []
+    }
+  ],
+  "pages": [
+    {
+      "address": "isnaad://page/compose",
+      "url": "/compose",
+      "path": "src/app/compose/page.tsx"
+    },
+    {
+      "address": "isnaad://page/explore",
+      "url": "/explore",
+      "path": "src/app/explore/page.tsx"
+    },
+    {
+      "address": "isnaad://page/gallery",
+      "url": "/gallery",
+      "path": "src/app/gallery/page.tsx"
+    },
+    {
+      "address": "isnaad://page/",
+      "url": "/",
+      "path": "src/app/page.tsx"
+    },
+    {
+      "address": "isnaad://page/studio",
+      "url": "/studio",
+      "path": "src/app/studio/page.tsx"
+    },
+    {
+      "address": "isnaad://page/watch/[id]",
+      "url": "/watch/[id]",
+      "path": "src/app/watch/[id]/page.tsx"
+    },
+    {
+      "address": "isnaad://page/watch/surah/[id]",
+      "url": "/watch/surah/[id]",
+      "path": "src/app/watch/surah/[id]/page.tsx"
+    }
+  ],
+  "data": [
+    {
+      "address": "isnaad://data/corpus/<surah>.txt",
+      "path": "data/corpus/<n>.txt",
+      "shape": "sharded-text",
+      "shards": 114,
+      "row": "ayah:word:seg \\t form \\t class \\t features"
+    },
+    {
+      "address": "isnaad://data/compositions/c4470f4df69.json",
+      "path": "data/compositions/c4470f4df69.json",
+      "bytes": 16855,
+      "shape": "object",
+      "keys": 9,
+      "sample": [
+        "id",
+        "title",
+        "subtitle",
+        "intent",
+        "movements",
+        "published",
+        "dwell",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    {
+      "address": "isnaad://data/corpus/meta.json",
+      "path": "data/corpus/meta.json",
+      "bytes": 1358722,
+      "shape": "object",
+      "keys": 114,
+      "sample": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ]
+    },
+    {
+      "address": "isnaad://data/cosmos/nodes.json",
+      "path": "data/cosmos/nodes.json",
+      "bytes": 872151,
+      "shape": "object",
+      "keys": 5,
+      "sample": [
+        "builtAt",
+        "count",
+        "sanabil",
+        "modalities",
+        "nodes"
+      ]
+    },
+    {
+      "address": "isnaad://data/index/aalam.json",
+      "path": "data/index/aalam.json",
+      "bytes": 38073,
+      "shape": "object",
+      "keys": 32,
+      "sample": [
+        "arabi",
+        "kitab",
+        "tawrat",
+        "quran-form",
+        "anba-al-rusul",
+        "anba-al-ghayb",
+        "ghayb",
+        "kull-mathal",
+        "mathal",
+        "fulk-safina"
+      ]
+    },
+    {
+      "address": "isnaad://data/index/ayaat.json",
+      "path": "data/index/ayaat.json",
+      "bytes": 452087,
+      "shape": "array",
+      "length": 6236,
+      "row": [
+        "s",
+        "a",
+        "sig",
+        "d",
+        "v",
+        "c",
+        "w",
+        "k"
+      ]
+    },
+    {
+      "address": "isnaad://data/index/discoveries.json",
+      "path": "data/index/discoveries.json",
+      "bytes": 1469986,
+      "shape": "array",
+      "length": 2500,
+      "row": [
+        "id",
+        "kind",
+        "surah",
+        "ayahFrom",
+        "ayahTo",
+        "from",
+        "to",
+        "seam",
+        "score",
+        "title",
+        "note",
+        "evidence"
+      ]
+    },
+    {
+      "address": "isnaad://data/index/manifest.json",
+      "path": "data/index/manifest.json",
+      "bytes": 702,
+      "shape": "object",
+      "keys": 13,
+      "sample": [
+        "builtAt",
+        "surahs",
+        "ayaat",
+        "words",
+        "segments",
+        "isnadSymbols",
+        "discoveries",
+        "motifs",
+        "roots",
+        "aalam"
+      ]
+    },
+    {
+      "address": "isnaad://data/index/motifs.json",
+      "path": "data/index/motifs.json",
+      "bytes": 442452,
+      "shape": "array",
+      "length": 400,
+      "row": [
+        "id",
+        "pattern",
+        "gloss",
+        "length",
+        "occurrences",
+        "spread",
+        "mirrorOf"
+      ]
+    },
+    {
+      "address": "isnaad://data/index/roots.json",
+      "path": "data/index/roots.json",
+      "bytes": 364419,
+      "shape": "object",
+      "keys": 1651,
+      "sample": [
+        "سمو",
+        "أله",
+        "رحم",
+        "حمد",
+        "ربب",
+        "علم",
+        "ملك",
+        "يوم",
+        "دين",
+        "عبد"
+      ]
+    },
+    {
+      "address": "isnaad://data/sky/sky.json",
+      "path": "data/sky/sky.json",
+      "bytes": 173672,
+      "shape": "object",
+      "keys": 6,
+      "sample": [
+        "builtAt",
+        "source",
+        "magnitudeLimit",
+        "stars",
+        "named",
+        "constellations"
+      ]
+    },
+    {
+      "address": "isnaad://data/surahs.json",
+      "path": "data/surahs.json",
+      "bytes": 39010,
+      "shape": "array",
+      "length": 114,
+      "row": [
+        "id",
+        "name",
+        "transliteration",
+        "type",
+        "ayahCount",
+        "wordCount",
+        "juzRange",
+        "vec",
+        "distance",
+        "discoveryCounts",
+        "maxDepth"
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "address": "isnaad://app/api/aalam/route",
+      "path": "src/app/api/aalam/route.ts",
+      "lines": 32,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/aalam",
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 5
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 8,
+          "doc": "The marker registry joined to its mined occurrences, ready for the composer."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/assemble/route",
+      "path": "src/app/api/assemble/route.ts",
+      "lines": 20,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/engine/assembler"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 7,
+          "doc": "Pack a برج around one عَلَم. The result is a starting point, then edited."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/chamber/route",
+      "path": "src/app/api/chamber/route.ts",
+      "lines": 67,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/data.server",
+        "@/lib/engine/graph"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 11
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 13
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/compositions/[id]/route",
+      "path": "src/app/api/compositions/[id]/route.ts",
+      "lines": 45,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/composition",
+        "@/lib/compositions.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 10
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 12
+        },
+        {
+          "name": "PUT",
+          "kind": "function",
+          "line": 18
+        },
+        {
+          "name": "DELETE",
+          "kind": "function",
+          "line": 41
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/compositions/route",
+      "path": "src/app/api/compositions/route.ts",
+      "lines": 31,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/composition",
+        "@/lib/compositions.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 5
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 7
+        },
+        {
+          "name": "POST",
+          "kind": "function",
+          "line": 14
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/cosmos/route",
+      "path": "src/app/api/cosmos/route.ts",
+      "lines": 23,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 5
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 10,
+          "doc": "The thousand placed āyāt, read once per server process."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/discoveries/route",
+      "path": "src/app/api/discoveries/route.ts",
+      "lines": 15,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/istiadha/route",
+      "path": "src/app/api/istiadha/route.ts",
+      "lines": 90,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/aalam",
+        "@/lib/data.server",
+        "@/lib/istiadha"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 6
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 13,
+          "doc": "Resolve every plate against the live index. Counts are never written into the copy — they come from here, so a plate cannot claim \"three loci\" while the corpus holds four."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/motifs/route",
+      "path": "src/app/api/motifs/route.ts",
+      "lines": 17,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/render/route",
+      "path": "src/app/api/render/route.ts",
+      "lines": 63,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "POST",
+          "kind": "function",
+          "line": 11,
+          "doc": "Render just the āyāt a composition asks for. The player never pulls a whole sūrah: a composition of twenty stations across fifteen sūrahs would be tens of megabytes that way, and it needs a few hundred words."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/resonance/route",
+      "path": "src/app/api/resonance/route.ts",
+      "lines": 30,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/data.server",
+        "@/lib/engine/graph"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 5
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 7
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/sky/route",
+      "path": "src/app/api/sky/route.ts",
+      "lines": 26,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 5
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 10,
+          "doc": "The whole naked-eye sky, read once per server process."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/api/surah/[id]/route",
+      "path": "src/app/api/surah/[id]/route.ts",
+      "lines": 22,
+      "layer": "khidma",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "GET",
+          "kind": "function",
+          "line": 6
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/compose/page",
+      "path": "src/app/compose/page.tsx",
+      "lines": 12,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/composer",
+        "@/lib/compositions.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "metadata",
+          "kind": "const",
+          "line": 6
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 8
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/explore/page",
+      "path": "src/app/explore/page.tsx",
+      "lines": 14,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/explorer",
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "metadata",
+          "kind": "const",
+          "line": 6
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 11
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/gallery/page",
+      "path": "src/app/gallery/page.tsx",
+      "lines": 87,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/composition",
+        "@/lib/compositions.server",
+        "@/lib/utils"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 7
+        },
+        {
+          "name": "metadata",
+          "kind": "const",
+          "line": 9
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 14
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/layout",
+      "path": "src/app/layout.tsx",
+      "lines": 40,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "metadata",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "viewport",
+          "kind": "const",
+          "line": 10
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 16
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/page",
+      "path": "src/app/page.tsx",
+      "lines": 13,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/cosmos/cosmos"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 3
+        },
+        {
+          "name": "metadata",
+          "kind": "const",
+          "line": 5
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/studio/page",
+      "path": "src/app/studio/page.tsx",
+      "lines": 11,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/studio",
+        "@/lib/data.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 4
+        },
+        {
+          "name": "metadata",
+          "kind": "const",
+          "line": 6
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 8
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/watch/[id]/page",
+      "path": "src/app/watch/[id]/page.tsx",
+      "lines": 19,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/furqan/player",
+        "@/lib/compositions.server"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 6
+        },
+        {
+          "name": "generateMetadata",
+          "kind": "function",
+          "line": 8
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 14
+        }
+      ]
+    },
+    {
+      "address": "isnaad://app/watch/surah/[id]/page",
+      "path": "src/app/watch/surah/[id]/page.tsx",
+      "lines": 20,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/furqan/player",
+        "@/lib/data.server",
+        "@/lib/engine/surah-composition"
+      ],
+      "exports": [
+        {
+          "name": "dynamic",
+          "kind": "const",
+          "line": 7
+        },
+        {
+          "name": "generateMetadata",
+          "kind": "function",
+          "line": 9
+        },
+        {
+          "name": "default",
+          "kind": "default",
+          "line": 15
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/composer",
+      "path": "src/components/composer.tsx",
+      "lines": 468,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./ui",
+        "@/lib/aalam",
+        "@/lib/composition",
+        "@/lib/utils"
+      ],
+      "exports": [
+        {
+          "name": "Composer",
+          "kind": "function",
+          "line": 32
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/cosmos/cosmos",
+      "path": "src/components/cosmos/cosmos.tsx",
+      "lines": 391,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./fmc",
+        "./scene",
+        "@/lib/cosmos",
+        "@/lib/time-module",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "Cosmos",
+          "kind": "function",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/cosmos/fmc",
+      "path": "src/components/cosmos/fmc.tsx",
+      "lines": 310,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/cosmos",
+        "@/lib/time-module",
+        "@/lib/utils"
+      ],
+      "exports": [
+        {
+          "name": "FmcPage",
+          "kind": "type",
+          "line": 22
+        },
+        {
+          "name": "RouteState",
+          "kind": "interface",
+          "line": 24
+        },
+        {
+          "name": "routeFilter",
+          "kind": "function",
+          "line": 31,
+          "doc": "Which nodes a route admits. null when no route is programmed."
+        },
+        {
+          "name": "routeSequence",
+          "kind": "function",
+          "line": 47,
+          "doc": "The order the route is flown. Legs are ordered by their own position on the before↔after axis, and within a leg the āyāt that lean hardest that way come first — so a programmed route reads as a movement through time, not a list."
+        },
+        {
+          "name": "TimeBoard",
+          "kind": "function",
+          "line": 69
+        },
+        {
+          "name": "arabicNumber",
+          "kind": "re-export",
+          "line": 309
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/cosmos/scene",
+      "path": "src/components/cosmos/scene.tsx",
+      "lines": 544,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/cosmos"
+      ],
+      "exports": [
+        {
+          "name": "Pov",
+          "kind": "type",
+          "line": 26
+        },
+        {
+          "name": "SceneHandle",
+          "kind": "interface",
+          "line": 109
+        },
+        {
+          "name": "CosmosScene",
+          "kind": "function",
+          "line": 113
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/explorer",
+      "path": "src/components/explorer.tsx",
+      "lines": 162,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./istiadha/sequence",
+        "./waveform",
+        "@/lib/istiadha",
+        "@/lib/types",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "Explorer",
+          "kind": "function",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/furqan/celestial",
+      "path": "src/components/furqan/celestial.tsx",
+      "lines": 292,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "SkyData",
+          "kind": "interface",
+          "line": 15
+        },
+        {
+          "name": "Celestial",
+          "kind": "function",
+          "line": 42
+        },
+        {
+          "name": "useSky",
+          "kind": "function",
+          "line": 245,
+          "doc": "Load the sky once per page."
+        },
+        {
+          "name": "anchorFor",
+          "kind": "function",
+          "line": 269,
+          "doc": "Which constellation a station is shown under. Movements walk البروج — the twelve zodiacal figures, which is what the word names — in order, and stations inside a movement step through the figures neighbouring it. So a composition traverses the sky rather than sitting in front of a fixed backdrop, an"
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/furqan/player",
+      "path": "src/components/furqan/player.tsx",
+      "lines": 575,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./celestial",
+        "@/lib/composition",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "FurqanPlayer",
+          "kind": "function",
+          "line": 58
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/furqan/sky",
+      "path": "src/components/furqan/sky.tsx",
+      "lines": 147,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "Sky",
+          "kind": "function",
+          "line": 24
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/istiadha/sequence",
+      "path": "src/components/istiadha/sequence.tsx",
+      "lines": 492,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/components/furqan/celestial",
+        "@/lib/istiadha",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "Istiadha",
+          "kind": "function",
+          "line": 64
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/matrix",
+      "path": "src/components/matrix.tsx",
+      "lines": 601,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./ui",
+        "./waveform",
+        "@/lib/engine/frames",
+        "@/lib/engine/graph",
+        "@/lib/notes",
+        "@/lib/types",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "MatrixTab",
+          "kind": "type",
+          "line": 23
+        },
+        {
+          "name": "MatrixProps",
+          "kind": "interface",
+          "line": 25
+        },
+        {
+          "name": "Matrix",
+          "kind": "function",
+          "line": 38
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/navigator",
+      "path": "src/components/navigator.tsx",
+      "lines": 247,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./ui",
+        "./waveform",
+        "@/lib/types",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "Filters",
+          "kind": "interface",
+          "line": 13
+        },
+        {
+          "name": "Navigator",
+          "kind": "function",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/reader",
+      "path": "src/components/reader.tsx",
+      "lines": 304,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./ui",
+        "@/lib/morphology",
+        "@/lib/types",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "Overlay",
+          "kind": "type",
+          "line": 18
+        },
+        {
+          "name": "ReaderProps",
+          "kind": "interface",
+          "line": 20
+        },
+        {
+          "name": "Reader",
+          "kind": "function",
+          "line": 39
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/studio",
+      "path": "src/components/studio.tsx",
+      "lines": 485,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "./matrix",
+        "./navigator",
+        "./reader",
+        "./ui",
+        "./waveform",
+        "@/lib/engine/frames",
+        "@/lib/isnad",
+        "@/lib/types",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "Studio",
+          "kind": "function",
+          "line": 29
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/ui/index",
+      "path": "src/components/ui/index.tsx",
+      "lines": 234,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/utils"
+      ],
+      "exports": [
+        {
+          "name": "ButtonProps",
+          "kind": "interface",
+          "line": 36
+        },
+        {
+          "name": "Button",
+          "kind": "const",
+          "line": 40
+        },
+        {
+          "name": "Toggle",
+          "kind": "function",
+          "line": 48,
+          "doc": "── Toggle chip"
+        },
+        {
+          "name": "Slider",
+          "kind": "function",
+          "line": 92,
+          "doc": "── Slider"
+        },
+        {
+          "name": "Tabs",
+          "kind": "function",
+          "line": 133,
+          "doc": "── Tabs"
+        },
+        {
+          "name": "Badge",
+          "kind": "function",
+          "line": 169,
+          "doc": "── Badge"
+        },
+        {
+          "name": "Panel",
+          "kind": "function",
+          "line": 200,
+          "doc": "── Section shell"
+        },
+        {
+          "name": "Empty",
+          "kind": "function",
+          "line": 227
+        }
+      ]
+    },
+    {
+      "address": "isnaad://surface/waveform",
+      "path": "src/components/waveform.tsx",
+      "lines": 293,
+      "layer": "mashhad",
+      "role": null,
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "@/lib/isnad",
+        "@/lib/types",
+        "@/lib/utils",
+        "@/lib/view"
+      ],
+      "exports": [
+        {
+          "name": "WaveformProps",
+          "kind": "interface",
+          "line": 30
+        },
+        {
+          "name": "Waveform",
+          "kind": "function",
+          "line": 41
+        },
+        {
+          "name": "MiniContour",
+          "kind": "function",
+          "line": 272,
+          "doc": "Compact per-āyah sparkline used in the resonance and chamber lists."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/aalam",
+      "path": "src/lib/aalam.ts",
+      "lines": 366,
+      "layer": "tadin",
+      "role": "The declarative marker registry. A marker is one spec; adding one changes nothing else.",
+      "says": "الأعلام — the high-level Qur'anic constructs a composition is built around. Each marker is one declaration. A marker is not a keyword search: it can require a lemma in a particular case, a run of consecutive stems, two roots co-occurring inside one āyah, or a hand-named set of loci. That precision is the point — قَآئِلٌ مِّنْهُمْ occurs exactly three times in the muṣḥaf, and a loose search for قائل returns six, three of which are a different root. To add a marker, add a spec. Nothing else needs ",
+      "teaches": [
+        "why a marker is not a keyword search",
+        "associated loci kept separate from matched ones"
+      ],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "AlamFamily",
+          "kind": "type",
+          "line": 13
+        },
+        {
+          "name": "AlamMatch",
+          "kind": "interface",
+          "line": 16
+        },
+        {
+          "name": "AlamSpec",
+          "kind": "interface",
+          "line": 39
+        },
+        {
+          "name": "AALAM",
+          "kind": "const",
+          "line": 54
+        },
+        {
+          "name": "AALAM_BY_ID",
+          "kind": "const",
+          "line": 335
+        },
+        {
+          "name": "FAMILY_LABEL",
+          "kind": "const",
+          "line": 337
+        },
+        {
+          "name": "AlamHit",
+          "kind": "interface",
+          "line": 349,
+          "doc": "One occurrence of a marker."
+        },
+        {
+          "name": "AlamIndexEntry",
+          "kind": "interface",
+          "line": 358
+        },
+        {
+          "name": "AlamIndex",
+          "kind": "type",
+          "line": 365
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/composition",
+      "path": "src/lib/composition.ts",
+      "lines": 95,
+      "layer": "talif",
+      "role": "Compositions, movements and stations — loci and framing, never rendered text.",
+      "says": "التأليف — compositions, their movements, and the assembler that packs one. A composition is not a playlist of āyāt. It is a sequence of بُرُوج, each built around one عَلَم, and each برج is packed so that a marker occurrence is followed immediately by whatever the isnād engine found at that same locus. That alternation — here is the construct, here is what the tongue does with it — is what gives a برج its pace. Nothing here is stored pre-rendered. A composition holds loci and framing; the text, t",
+      "teaches": [
+        "why a station stores a locus and a focus range"
+      ],
+      "stands_on": [
+        "render-time-text"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "name": "Station",
+          "kind": "interface",
+          "line": 15
+        },
+        {
+          "name": "Movement",
+          "kind": "interface",
+          "line": 33,
+          "doc": "A بُرْج — one movement of the composition."
+        },
+        {
+          "name": "Composition",
+          "kind": "interface",
+          "line": 43
+        },
+        {
+          "name": "DEFAULT_DWELL",
+          "kind": "const",
+          "line": 59
+        },
+        {
+          "name": "emptyComposition",
+          "kind": "function",
+          "line": 61
+        },
+        {
+          "name": "stationCount",
+          "kind": "function",
+          "line": 74
+        },
+        {
+          "name": "flatten",
+          "kind": "function",
+          "line": 79,
+          "doc": "Every station in reading order, tagged with the برج it belongs to."
+        },
+        {
+          "name": "newId",
+          "kind": "function",
+          "line": 88,
+          "doc": "A short, stable, URL-safe id."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/compositions.server",
+      "path": "src/lib/compositions.server.ts",
+      "lines": 123,
+      "layer": "khidma",
+      "role": "Storage: Supabase when configured, JSON files otherwise.",
+      "says": null,
+      "teaches": [
+        "why an id from a URL must not be able to escape a directory"
+      ],
+      "stands_on": [
+        "id-path-safety",
+        "optional-postgres"
+      ],
+      "imports": [
+        "./composition"
+      ],
+      "exports": [
+        {
+          "name": "storageKind",
+          "kind": "const",
+          "line": 30
+        },
+        {
+          "name": "isSafeId",
+          "kind": "function",
+          "line": 34
+        },
+        {
+          "name": "listCompositions",
+          "kind": "function",
+          "line": 49
+        },
+        {
+          "name": "getComposition",
+          "kind": "function",
+          "line": 79
+        },
+        {
+          "name": "saveComposition",
+          "kind": "function",
+          "line": 92
+        },
+        {
+          "name": "deleteComposition",
+          "kind": "function",
+          "line": 111
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/corpus",
+      "path": "src/lib/corpus.ts",
+      "lines": 224,
+      "layer": "sarf",
+      "role": "The pipeline in one place: parse rows, build a sūrah, analyse it.",
+      "says": "Corpus assembly - shared by the ingest script and the request path. Nothing derived is ever stored. The corpus on disk is the morphology rows and the Uthmani text, and every spine, seam, frame and discovery is rebuilt from them on demand (about 80ms for al-Baqarah, the longest surah, then cached). That keeps one source of truth, keeps the repository small, and lets the detector thresholds be tuned live rather than baked in.",
+      "teaches": [
+        "the ordering that the whole mined layer depends on"
+      ],
+      "stands_on": [
+        "spine-before-vector"
+      ],
+      "imports": [
+        "./engine/detectors",
+        "./engine/frames",
+        "./isnad",
+        "./morphology",
+        "./types"
+      ],
+      "exports": [
+        {
+          "name": "CorpusRow",
+          "kind": "interface",
+          "line": 31,
+          "doc": "One morphology row: `ayah:word:seg <tab> form <tab> class <tab> features`."
+        },
+        {
+          "name": "SurahSource",
+          "kind": "interface",
+          "line": 40
+        },
+        {
+          "name": "JUZ_STARTS",
+          "kind": "const",
+          "line": 49,
+          "doc": "Canonical juz' start points (surah, ayah)."
+        },
+        {
+          "name": "juzOf",
+          "kind": "function",
+          "line": 56
+        },
+        {
+          "name": "parseCorpus",
+          "kind": "function",
+          "line": 67,
+          "doc": "Parse a per-surah corpus file. Malformed rows are skipped, not guessed at."
+        },
+        {
+          "name": "buildSurah",
+          "kind": "function",
+          "line": 86,
+          "doc": "Assemble a sūrah from its morphology rows. The reader's word tokens come from the morphology itself rather than from aligning two files, so a word and its analysis cannot drift apart."
+        },
+        {
+          "name": "AnalyzedSurah",
+          "kind": "interface",
+          "line": 187
+        },
+        {
+          "name": "analyze",
+          "kind": "function",
+          "line": 199,
+          "doc": "Run the full detector sweep over an assembled sūrah. `detectKhalq` stamps `word.khalq` as a side effect, so this must run before the words are serialised to the client."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/cosmos",
+      "path": "src/lib/cosmos.ts",
+      "lines": 46,
+      "layer": "khariita",
+      "role": "The payload the WebGL field and the flight board both read.",
+      "says": "The cosmos payload — what the WebGL field and the flight board both read.",
+      "teaches": [
+        "placement as meaning: direction, radius, colour"
+      ],
+      "stands_on": [
+        "proximity-axis"
+      ],
+      "imports": [
+        "./time-module"
+      ],
+      "exports": [
+        {
+          "name": "CosmosNode",
+          "kind": "interface",
+          "line": 6
+        },
+        {
+          "name": "CosmosPayload",
+          "kind": "interface",
+          "line": 35
+        },
+        {
+          "name": "SkyPayload",
+          "kind": "interface",
+          "line": 42
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/data.server",
+      "path": "src/lib/data.server.ts",
+      "lines": 123,
+      "layer": "khidma",
+      "role": "The server boundary: singleton indices, a bounded sūrah cache, clamped options, the wire shape.",
+      "says": null,
+      "teaches": [
+        "what crosses the wire and what does not",
+        "runtime-tunable thresholds"
+      ],
+      "stands_on": [
+        "one-source-of-truth",
+        "thresholds-at-the-edge"
+      ],
+      "imports": [
+        "./aalam",
+        "./corpus",
+        "./engine/detectors",
+        "./engine/graph",
+        "./types"
+      ],
+      "exports": [
+        {
+          "name": "getSurahMetas",
+          "kind": "const",
+          "line": 40
+        },
+        {
+          "name": "getCorpusMeta",
+          "kind": "const",
+          "line": 41
+        },
+        {
+          "name": "getAyahIndex",
+          "kind": "const",
+          "line": 42
+        },
+        {
+          "name": "getMotifs",
+          "kind": "const",
+          "line": 43
+        },
+        {
+          "name": "getRootIndex",
+          "kind": "const",
+          "line": 44
+        },
+        {
+          "name": "getTopDiscoveries",
+          "kind": "const",
+          "line": 45
+        },
+        {
+          "name": "getManifest",
+          "kind": "const",
+          "line": 46
+        },
+        {
+          "name": "getAlamIndex",
+          "kind": "const",
+          "line": 47
+        },
+        {
+          "name": "loadSurah",
+          "kind": "function",
+          "line": 53
+        },
+        {
+          "name": "optionsFromQuery",
+          "kind": "function",
+          "line": 88,
+          "doc": "Read detector options off a query string, clamped to sane bounds."
+        },
+        {
+          "name": "toWire",
+          "kind": "function",
+          "line": 109,
+          "doc": "The client renders from parsed fields, never from raw feature strings, so `feats` is dropped on the way out - it is roughly an eighth of the payload and nothing on the client reads it."
+        },
+        {
+          "name": "WireSurah",
+          "kind": "type",
+          "line": 122
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/aalam-miner",
+      "path": "src/lib/engine/aalam-miner.ts",
+      "lines": 93,
+      "layer": "tadin",
+      "role": "Resolves a marker spec against a sūrah.",
+      "says": "Resolving أعلام specs against an assembled sūrah. Every clause of a spec narrows: lemma or root gives the candidate, case and definiteness filter it, a phrase requires the next stems to follow in order, and coRoots requires company inside the same āyah. A spec with none of those matches nothing, deliberately — a marker that cannot say what it is looking for should return no hits rather than everything.",
+      "teaches": [
+        "stems only — a clitic is never what a marker names"
+      ],
+      "stands_on": [
+        "declared-lemma-must-match"
+      ],
+      "imports": [
+        "../aalam",
+        "../types"
+      ],
+      "exports": [
+        {
+          "name": "mineAlam",
+          "kind": "function",
+          "line": 40
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/assembler",
+      "path": "src/lib/engine/assembler.ts",
+      "lines": 142,
+      "layer": "talif",
+      "role": "Packs a برج around one عَلَم, interleaving each occurrence with the strongest finding at that same locus.",
+      "says": null,
+      "teaches": [
+        "the pacing rule that makes a برج not a concordance"
+      ],
+      "stands_on": [],
+      "imports": [
+        "../aalam",
+        "../composition",
+        "../data.server",
+        "../types",
+        "./labels"
+      ],
+      "exports": [
+        {
+          "name": "AssembleOptions",
+          "kind": "interface",
+          "line": 42
+        },
+        {
+          "name": "DEFAULT_ASSEMBLE",
+          "kind": "const",
+          "line": 51
+        },
+        {
+          "name": "assembleMovement",
+          "kind": "function",
+          "line": 57
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/detectors",
+      "path": "src/lib/engine/detectors.ts",
+      "lines": 685,
+      "layer": "istinbat",
+      "role": "The eight. Each reports a structural configuration and none of them interpret.",
+      "says": "محرك الاستنباط — the detector suite. Every detector reports a *structural* finding: a configuration that is present in the morphology and can be pointed at. None of them interpret. The reading belongs to the reader; the engine only insists on where to look.",
+      "teaches": [
+        "the master metric in code",
+        "scoring",
+        "dedupe by overlap ratio"
+      ],
+      "stands_on": [
+        "no-interpretation",
+        "three-exemplars",
+        "thresholds-at-the-edge"
+      ],
+      "imports": [
+        "../isnad",
+        "../lexicon",
+        "../numerals",
+        "../types",
+        "./frames"
+      ],
+      "exports": [
+        {
+          "name": "DetectorContext",
+          "kind": "interface",
+          "line": 14
+        },
+        {
+          "name": "DetectorOptions",
+          "kind": "interface",
+          "line": 23
+        },
+        {
+          "name": "DEFAULT_OPTIONS",
+          "kind": "const",
+          "line": 36
+        },
+        {
+          "name": "detectIstihdar",
+          "kind": "function",
+          "line": 122,
+          "doc": "١ — استحضار الغائب · Presence Summons A party is spoken of in absence, and within a few words the tongue turns and addresses someone directly — the referent is drawn from the third person into the room. Scored highest when the pivot carries a first-person self-anchor and the address lands immediatel"
+        },
+        {
+          "name": "detectRootReturn",
+          "kind": "function",
+          "line": 216,
+          "doc": "٢ — رجع الجذر · Root Return Across the Seam A root is predicated of a party, and then the same root comes back out of a different attribution frame — most strikingly from the mouth of the very party it was predicated of. Reference instance: ق ٢ — بَلْ عَجِبُوٓا۟ … فَقَالَ ٱلْكَٰفِرُونَ هَٰذَا شَىْءٌ"
+        },
+        {
+          "name": "detectNabaBridge",
+          "kind": "function",
+          "line": 307,
+          "doc": "٣ — جسر النبأ · The Naba' Bridge A sustained third-person past narrative gives way to a first-person imperfect. The account stops being an account: the verb moves into the reader's own tense while the subject matter carries over unbroken. Reference instance: القصص ٤ ← ٥ — إِنَّ فِرْعَوْنَ عَلَا … وَ"
+        },
+        {
+          "name": "detectRibat",
+          "kind": "function",
+          "line": 382,
+          "doc": "٤ — رِباط الملتقى · Seam Stitching ← the master metric Maximum grammatical motion held against maximum lexical continuity. All three of the reference instances above score highly here; this detector is what generalises them to the rest of the muṣḥaf."
+        },
+        {
+          "name": "detectNasikhMirror",
+          "kind": "function",
+          "line": 422,
+          "doc": "٥ — تقابل النواسخ · Mirrored Nāsikh Frame"
+        },
+        {
+          "name": "detectKhalq",
+          "kind": "function",
+          "line": 463,
+          "doc": "٦ — ألسنة الخلق · Creation in the Isnād Chair"
+        },
+        {
+          "name": "detectTabaqat",
+          "kind": "function",
+          "line": 545,
+          "doc": "٧ — تداخل الإسناد · Nested Attribution"
+        },
+        {
+          "name": "detectRusul",
+          "kind": "function",
+          "line": 577,
+          "doc": "٨ — ألسنة الرسل · Messenger Tongues"
+        },
+        {
+          "name": "clockOf",
+          "kind": "function",
+          "line": 609,
+          "doc": "── ساعة الآية"
+        },
+        {
+          "name": "runAllDetectors",
+          "kind": "function",
+          "line": 658,
+          "doc": "── the full sweep"
+        },
+        {
+          "name": "KIND_AR",
+          "kind": "const",
+          "line": 675
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/frames",
+      "path": "src/lib/engine/frames.ts",
+      "lines": 223,
+      "layer": "istinbat",
+      "role": "Quotation frames, which the corpus does not mark — the system's largest declared heuristic.",
+      "says": "Quotation frames and the nested attribution tree. A frame opens at a verb of saying. Whether a later verb of saying *nests* inside it or *replaces* it is the whole difference between a dialogue and a speech-within-a-speech, and the corpus marks no quotation boundaries at all. The rule used here reads the verb's own inflection: A third-person verb (قَالَ، قَالُوا، يَقُولُ) is the narrator reporting, and an imperative (قُلْ) is the narrator commanding the addressee to speak. Both are narrator-leve",
+      "teaches": [
+        "opening at a verb of saying",
+        "nesting decided by the verb's own inflection",
+        "depth capped at 4",
+        "speakers marked مستنبَط when inferred"
+      ],
+      "stands_on": [
+        "no-interpretation"
+      ],
+      "imports": [
+        "../isnad",
+        "../lexicon",
+        "../types"
+      ],
+      "exports": [
+        {
+          "name": "Frame",
+          "kind": "interface",
+          "line": 26
+        },
+        {
+          "name": "buildFrames",
+          "kind": "function",
+          "line": 138
+        },
+        {
+          "name": "applyDepth",
+          "kind": "function",
+          "line": 202,
+          "doc": "Stamp each word with the depth of the innermost frame containing it."
+        },
+        {
+          "name": "frameAt",
+          "kind": "function",
+          "line": 212,
+          "doc": "The innermost frame containing a word, if any."
+        },
+        {
+          "name": "maxDepth",
+          "kind": "function",
+          "line": 220
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/graph",
+      "path": "src/lib/engine/graph.ts",
+      "lines": 343,
+      "layer": "khariita",
+      "role": "The muṣḥaf as a graph: resonance between āyāt, and the greedy walk whose edges are عربي operations.",
+      "says": "Resonance and the walk through حجرة اللاتزمّن. Two structures live here: 1. المثاني - given one āyah, which others carry the same isnād contour, its inversion, or its mirror. Signatures are compared, not words. 2. The chamber walk - a weighted graph over the whole muṣḥaf whose edges are the ʿarabī operations themselves (a shared motif, an inverted contour, a returning root, a bridge into the present, creation taking the chair). The walk is forbidden from using the same operation twice in a row, ",
+      "teaches": [
+        "four kinds of resonance",
+        "why the walk bans its own last operation"
+      ],
+      "stands_on": [],
+      "imports": [
+        "../isnad",
+        "../types"
+      ],
+      "exports": [
+        {
+          "name": "AyahIndexRow",
+          "kind": "interface",
+          "line": 21,
+          "doc": "One row of data/index/ayaat.json - the whole muṣḥaf at ~6k entries."
+        },
+        {
+          "name": "RootIndex",
+          "kind": "type",
+          "line": 32
+        },
+        {
+          "name": "ResonanceKind",
+          "kind": "type",
+          "line": 36
+        },
+        {
+          "name": "Resonance",
+          "kind": "interface",
+          "line": 38
+        },
+        {
+          "name": "findResonance",
+          "kind": "function",
+          "line": 68,
+          "doc": "Rank the muṣḥaf against one āyah. Identical and inverted contours are exact matches and rank above vector similarity, which is a fallback for āyāt whose signature is too short to be distinctive on its own."
+        },
+        {
+          "name": "CHAMBER_SEEDS",
+          "kind": "const",
+          "line": 121,
+          "doc": "Seeds where the text itself audits elapsed time - the sleepers of the cave and their \"how long did you stay\", the hundred years of 2:259, the \"we stayed a day or part of a day\" of the resurrection, and 41:47, to which the knowledge of the Hour is returned."
+        },
+        {
+          "name": "Operation",
+          "kind": "type",
+          "line": 134
+        },
+        {
+          "name": "OPERATION_AR",
+          "kind": "const",
+          "line": 142
+        },
+        {
+          "name": "ChamberInput",
+          "kind": "interface",
+          "line": 151
+        },
+        {
+          "name": "walkChamber",
+          "kind": "function",
+          "line": 187,
+          "doc": "Walk the chamber. Greedy rather than exhaustive: at each station the highest scoring candidate is taken from an operation that has not been used in the last two steps, so the sequence keeps changing what it is doing to the text."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/labels",
+      "path": "src/lib/engine/labels.ts",
+      "lines": 13,
+      "layer": "lisan",
+      "role": "Arabic labels for discovery kinds.",
+      "says": "Arabic labels for discovery kinds, importable from both server and client without dragging in the React-side view module.",
+      "teaches": [],
+      "stands_on": [
+        "no-translation"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "name": "DISCOVERY_LABEL",
+          "kind": "const",
+          "line": 3,
+          "doc": "Arabic labels for discovery kinds, importable from both server and client without dragging in the React-side view module."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/motifs",
+      "path": "src/lib/engine/motifs.ts",
+      "lines": 197,
+      "layer": "tadin",
+      "role": "A suffix automaton over the whole muṣḥaf as one 23,784-symbol string.",
+      "says": "المثاني — mining repeated isnād contours with a suffix automaton. Each spine word contributes one symbol (person × tense), so the whole muṣḥaf becomes a single string over a twelve-letter alphabet. A suffix automaton over that string yields every right-maximal repeated contour at once, with no ceiling on length — which is the point: the interesting مثاني are not the ones we thought to look for.",
+      "teaches": [
+        "right-maximality",
+        "why no length ceiling is the point",
+        "automatic mirror-pair flagging"
+      ],
+      "stands_on": [],
+      "imports": [
+        "../isnad",
+        "../types"
+      ],
+      "exports": [
+        {
+          "name": "encodeContour",
+          "kind": "function",
+          "line": 18
+        },
+        {
+          "name": "decodeContour",
+          "kind": "function",
+          "line": 21
+        },
+        {
+          "name": "encodePattern",
+          "kind": "function",
+          "line": 24
+        },
+        {
+          "name": "MotifMiningOptions",
+          "kind": "interface",
+          "line": 97
+        },
+        {
+          "name": "DEFAULT_MINING",
+          "kind": "const",
+          "line": 106
+        },
+        {
+          "name": "ContourPosition",
+          "kind": "interface",
+          "line": 115,
+          "doc": "Where each symbol of the global contour string came from."
+        },
+        {
+          "name": "mineMotifs",
+          "kind": "function",
+          "line": 126,
+          "doc": "Mine right-maximal repeated contours. A contour is right-maximal when no single-symbol extension preserves its occurrence count — i.e. it is the longest form of its own repetition, not an arbitrary window inside one."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://engine/surah-composition",
+      "path": "src/lib/engine/surah-composition.ts",
+      "lines": 68,
+      "layer": "talif",
+      "role": "A whole sūrah as a composition, one strongest annotation per āyah.",
+      "says": null,
+      "teaches": [
+        "why the first writer of an āyah is already the strongest"
+      ],
+      "stands_on": [],
+      "imports": [
+        "../composition",
+        "../data.server",
+        "../types"
+      ],
+      "exports": [
+        {
+          "name": "surahComposition",
+          "kind": "function",
+          "line": 22
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/isnad",
+      "path": "src/lib/isnad.ts",
+      "lines": 223,
+      "layer": "isnad",
+      "role": "The attribution model itself: roles, weights, the proximity axis, seams, contours, signatures.",
+      "says": "الإسناد — deriving the musnad ilayh from morphology A person tag alone is not إسناد. `رَبِّهِمْ` references a 3rd person; it does not predicate to one. This module separates the segments that seat a referent in the attribution chair (SUBJECT_ROLES) from those that merely point at one — and that distinction is what every downstream detector stands on.",
+      "teaches": [
+        "seating versus referencing",
+        "the contour alphabet",
+        "the 1↔3 inversion"
+      ],
+      "stands_on": [
+        "subject-vs-reference",
+        "proximity-axis"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "exports": [
+        {
+          "name": "QAWL_ROOTS",
+          "kind": "const",
+          "line": 16,
+          "doc": "Verbs of saying — these open a quotation frame."
+        },
+        {
+          "name": "QAWL_STRICT",
+          "kind": "const",
+          "line": 17
+        },
+        {
+          "name": "assignRoles",
+          "kind": "function",
+          "line": 23,
+          "doc": "Assign a grammatical office to every person-bearing segment of one word. Mutates `segments` in place and returns the word's isnād spine."
+        },
+        {
+          "name": "collectRefs",
+          "kind": "function",
+          "line": 78,
+          "doc": "Every person a word touches, in any office."
+        },
+        {
+          "name": "DISTANCE_OF",
+          "kind": "const",
+          "line": 89,
+          "doc": "── محور القرب والبُعد — the proximity axis المخاطب sits at zero: direct address is the nearest a discourse can stand. المتكلم sits mid: the speaker is present and witnessing but not addressed. الغائب sits far: reality narrated as structure, with no one in the room."
+        },
+        {
+          "name": "roleWeight",
+          "kind": "function",
+          "line": 92,
+          "doc": "Subject offices carry full weight; mere reference carries partial weight."
+        },
+        {
+          "name": "personVector",
+          "kind": "function",
+          "line": 101,
+          "doc": "Weighted person profile for a span of words. Uses every reference, not just spines: `أَرَىٰكُمْ` is 1st person predicated but unmistakably proximate, and a distance metric that ignored the كم would misread it."
+        },
+        {
+          "name": "distanceOf",
+          "kind": "function",
+          "line": 115
+        },
+        {
+          "name": "dominantPerson",
+          "kind": "function",
+          "line": 121
+        },
+        {
+          "name": "Seam",
+          "kind": "interface",
+          "line": 129
+        },
+        {
+          "name": "findSeams",
+          "kind": "function",
+          "line": 151,
+          "doc": "Walk the spine-bearing words and record every turn. Words with no spine are transparent — الالتفات is measured between attributions, not between tokens."
+        },
+        {
+          "name": "contourSymbol",
+          "kind": "function",
+          "line": 184
+        },
+        {
+          "name": "contourOf",
+          "kind": "function",
+          "line": 188
+        },
+        {
+          "name": "glossContour",
+          "kind": "function",
+          "line": 197
+        },
+        {
+          "name": "invertContour",
+          "kind": "function",
+          "line": 205,
+          "doc": "The 1↔3 inversion of a contour: المتكلم and الغائب trade seats."
+        },
+        {
+          "name": "signature",
+          "kind": "function",
+          "line": 210,
+          "doc": "Compressed per-ayah person signature, e.g. \"3312\"."
+        },
+        {
+          "name": "ayahWords",
+          "kind": "function",
+          "line": 220
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/istiadha",
+      "path": "src/lib/istiadha.ts",
+      "lines": 184,
+      "layer": "mashhad",
+      "role": "The الاستعاذة entrance: six phases, its plates, and the final reveal.",
+      "says": "الاستعاذة — the entry sequence into the Immersive Qur'an. Structure, not prose. Each plate names a عَلَم and the engine resolves its closed set live, so no count in this file can ever drift from the corpus: the plate says \"ثلاثة مواضع\" only because the index returned three. Two registers are kept strictly apart and are styled differently wherever they are rendered: evidence what the morphology shows. Checkable. Not an opinion. reading the composer's reading of it. Marked as his, never as a findi",
+      "teaches": [
+        "counts never written into copy — they come from the live index"
+      ],
+      "stands_on": [],
+      "imports": [],
+      "exports": [
+        {
+          "name": "Phase",
+          "kind": "type",
+          "line": 17
+        },
+        {
+          "name": "Plate",
+          "kind": "interface",
+          "line": 19
+        },
+        {
+          "name": "KHAL3",
+          "kind": "const",
+          "line": 43,
+          "doc": "The خلع check. Written to what the sources actually say: neither text names him. The ḥadīth (al-Bukhārī 3124, Muslim 1747) says `نَبِيٌّ مِنَ الأَنْبِيَاءِ`, and 18:60 says `فَتَاهُ`. The identification as Yūshaʿ b. Nūn is commentary. Withholding the name is the point being made here, so overstating"
+        },
+        {
+          "name": "PLATES",
+          "kind": "const",
+          "line": 55
+        },
+        {
+          "name": "NUJUM",
+          "kind": "const",
+          "line": 159,
+          "doc": "The final reveal, after the plates."
+        },
+        {
+          "name": "PHASE_LABEL",
+          "kind": "const",
+          "line": 171
+        },
+        {
+          "name": "PHASES",
+          "kind": "const",
+          "line": 180
+        },
+        {
+          "name": "ISTIADHA_KEY",
+          "kind": "const",
+          "line": 183,
+          "doc": "localStorage key. The sequence is required once, then offered."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/lexicon",
+      "path": "src/lib/lexicon.ts",
+      "lines": 131,
+      "layer": "istinbat",
+      "role": "The closed lexicons: creation lemmas, agency roots, messenger names, قصص actors, time lemmas.",
+      "says": "المعاجم — closed lexicons the detectors reason over. Keyed on the corpus LEMMA (normalised in this fork), because many entities share a root with unrelated words: نار and نور both sit under ROOT:نور.",
+      "teaches": [
+        "where the engine knowingly stops being general"
+      ],
+      "stands_on": [
+        "no-interpretation"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "name": "KhalqCategory",
+          "kind": "type",
+          "line": 7
+        },
+        {
+          "name": "KhalqEntry",
+          "kind": "interface",
+          "line": 9
+        },
+        {
+          "name": "KHALQ_LEMMAS",
+          "kind": "const",
+          "line": 15,
+          "doc": "ألسنة الخلق — creation that the Qur'an seats in the isnād chair."
+        },
+        {
+          "name": "AGENCY_ROOTS",
+          "kind": "const",
+          "line": 88,
+          "doc": "Roots that predicate an *act* to their subject — speech, praise, witness, submission, refusal, motion. When one of these takes a خلق subject, that creature is not being described; it is doing something."
+        },
+        {
+          "name": "RUSUL_LEMMAS",
+          "kind": "const",
+          "line": 96,
+          "doc": "أنباء الرسل — messenger names as they lemmatise in the corpus."
+        },
+        {
+          "name": "QASAS_ACTORS",
+          "kind": "const",
+          "line": 109,
+          "doc": "Antagonists and nations — the other pole of the قصص."
+        },
+        {
+          "name": "ZAMAN_LEMMAS",
+          "kind": "const",
+          "line": 119,
+          "doc": "Lemmas that name time itself. Density of these is what lets a قصة declare its own clock — and what makes a shift into the imperfect land as *now*."
+        },
+        {
+          "name": "LABTH_ROOTS",
+          "kind": "const",
+          "line": 126,
+          "doc": "لبث — the verb Al-Kahf uses to suspend and then audit elapsed time."
+        },
+        {
+          "name": "khalqOf",
+          "kind": "function",
+          "line": 128
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/morphology",
+      "path": "src/lib/morphology.ts",
+      "lines": 146,
+      "layer": "sarf",
+      "role": "Turns a raw corpus feature string into structure, and names every tag in Arabic.",
+      "says": "قارئ الصرف — parser for the Quranic Arabic Corpus morphology (v0.4 fork) Line shape: surah:ayah:word:seg \\t form \\t class \\t FEAT|FEAT|KEY:VAL",
+      "teaches": [
+        "why only person tags carry a leading digit",
+        "the FAM: token that identifies a نسخ family"
+      ],
+      "stands_on": [
+        "no-translation"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "exports": [
+        {
+          "name": "ParsedFeatures",
+          "kind": "interface",
+          "line": 17
+        },
+        {
+          "name": "parseFeatures",
+          "kind": "function",
+          "line": 39,
+          "doc": "The first non key:value token is the segment's primary tag. Where the corpus gives none (a bare verb stem) we fall back to the tense, then the class."
+        },
+        {
+          "name": "particleFamily",
+          "kind": "function",
+          "line": 84,
+          "doc": "The FAM: token — the نسخ family a particle belongs to (إنّ، كان، …)."
+        },
+        {
+          "name": "TAG_AR",
+          "kind": "const",
+          "line": 90,
+          "doc": "── معجم المصطلحات — Arabic glosses for every tag we surface"
+        },
+        {
+          "name": "PERSON_AR",
+          "kind": "const",
+          "line": 110
+        },
+        {
+          "name": "PERSON_SHORT",
+          "kind": "const",
+          "line": 111
+        },
+        {
+          "name": "NUM_AR",
+          "kind": "const",
+          "line": 112
+        },
+        {
+          "name": "GENDER_AR",
+          "kind": "const",
+          "line": 113
+        },
+        {
+          "name": "TENSE_AR",
+          "kind": "const",
+          "line": 114
+        },
+        {
+          "name": "ROLE_AR",
+          "kind": "const",
+          "line": 116
+        },
+        {
+          "name": "VERB_FORM_AR",
+          "kind": "const",
+          "line": 128,
+          "doc": "Verbal form I–X in the Arabic numeral convention scholars actually use."
+        },
+        {
+          "name": "describeSegment",
+          "kind": "function",
+          "line": 130
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/notes",
+      "path": "src/lib/notes.ts",
+      "lines": 118,
+      "layer": "khidma",
+      "role": "تدبّر notes: Postgres or localStorage, with the live backend named in the UI.",
+      "says": null,
+      "teaches": [
+        "snake_case at the database, camelCase in the app"
+      ],
+      "stands_on": [
+        "optional-postgres"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "exports": [
+        {
+          "name": "notesBackend",
+          "kind": "const",
+          "line": 27
+        },
+        {
+          "name": "listNotes",
+          "kind": "function",
+          "line": 70
+        },
+        {
+          "name": "addNote",
+          "kind": "function",
+          "line": 82
+        },
+        {
+          "name": "removeNote",
+          "kind": "function",
+          "line": 111
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/numerals",
+      "path": "src/lib/numerals.ts",
+      "lines": 14,
+      "layer": "lisan",
+      "role": "Eastern Arabic numerals and person names, so prose never prints a bare 1, 2 or 3 at the reader.",
+      "says": "Eastern Arabic numerals, for anything shown inside the Arabic reading flow.",
+      "teaches": [],
+      "stands_on": [
+        "no-translation"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "name": "arabicNumber",
+          "kind": "function",
+          "line": 4
+        },
+        {
+          "name": "PERSON_NAME",
+          "kind": "const",
+          "line": 9,
+          "doc": "Person names, so prose never prints a bare 1, 2 or 3 at the reader."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/time-module",
+      "path": "src/lib/time-module.ts",
+      "lines": 174,
+      "layer": "khariita",
+      "role": "Twelve time modalities and the before↔after axis they sit on.",
+      "says": "وحدة الزمن — the time modalities, and how an āyah is read for them. Not a taxonomy imposed on the text. Every modality below is anchored to particles the corpus actually tags, with the counts they actually have, so the flight board is programming real material rather than a metaphor: إِذ 309 · إِذا 383 · لَمّا 154 · قَد 406 · لَن 106 · لَم 348 لَو 189 · إِن 578 · لَوْلا 34 · س 119 · سَوْف 42 · أَبَدًا 28 · كُلَّما 15 The point of the module is that these are not all \"time\" in one sense. لَن fore",
+      "teaches": [
+        "that time here is not one axis",
+        "tension as how much an āyah does with time"
+      ],
+      "stands_on": [
+        "declared-lemma-must-match"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "name": "ModalityId",
+          "kind": "type",
+          "line": 17
+        },
+        {
+          "name": "Modality",
+          "kind": "interface",
+          "line": 31
+        },
+        {
+          "name": "MODALITIES",
+          "kind": "const",
+          "line": 45
+        },
+        {
+          "name": "MODALITY_BY_ID",
+          "kind": "const",
+          "line": 111
+        },
+        {
+          "name": "TimeVector",
+          "kind": "type",
+          "line": 114,
+          "doc": "Counts per modality, in MODALITIES order."
+        },
+        {
+          "name": "TimeSegment",
+          "kind": "interface",
+          "line": 116
+        },
+        {
+          "name": "timeVectorOf",
+          "kind": "function",
+          "line": 123,
+          "doc": "Read one āyah's segments for every modality at once."
+        },
+        {
+          "name": "timeAxisOf",
+          "kind": "function",
+          "line": 140,
+          "doc": "Where an āyah sits on before↔after: each modality pulls toward its own axis position, weighted by how many times it fires. An āyah with no time marking at all sits at zero rather than being forced onto the line."
+        },
+        {
+          "name": "timeTensionOf",
+          "kind": "function",
+          "line": 158,
+          "doc": "How much an āyah *does* with time, as opposed to merely being in it. High where distinct modalities co-occur — a past that carries a counterfactual that carries a foreclosed future."
+        },
+        {
+          "name": "TimeRoute",
+          "kind": "interface",
+          "line": 165,
+          "doc": "A programmed route through modalities — the FMC's legs."
+        },
+        {
+          "name": "satisfies",
+          "kind": "function",
+          "line": 170,
+          "doc": "Does an āyah satisfy a leg?"
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/types",
+      "path": "src/lib/types.ts",
+      "lines": 232,
+      "layer": "sarf",
+      "role": "The vocabulary. Every layer downstream speaks these shapes.",
+      "says": "الأنماط الأساسية — Core corpus + engine types Everything downstream (engine, API, UI) speaks these shapes.",
+      "teaches": [
+        "Person as a discourse axis, not a grammar label",
+        "the eight isnād offices",
+        "the Discovery record and its evidence map"
+      ],
+      "stands_on": [
+        "subject-vs-reference"
+      ],
+      "imports": [],
+      "exports": [
+        {
+          "name": "Person",
+          "kind": "type",
+          "line": 7,
+          "doc": "الإسناد axis. 1 = المتكلم, 2 = المخاطب, 3 = الغائب."
+        },
+        {
+          "name": "Num",
+          "kind": "type",
+          "line": 10,
+          "doc": "Number on the isnād carrier."
+        },
+        {
+          "name": "Gender",
+          "kind": "type",
+          "line": 11
+        },
+        {
+          "name": "Tense",
+          "kind": "type",
+          "line": 14,
+          "doc": "الزمن الصرفي"
+        },
+        {
+          "name": "IsnadRole",
+          "kind": "type",
+          "line": 21,
+          "doc": "The grammatical office a person-bearing segment holds. Only `subject` roles constitute إسناد proper (the musnad ilayh); the rest are references to a person without predicating to it."
+        },
+        {
+          "name": "SUBJECT_ROLES",
+          "kind": "const",
+          "line": 32,
+          "doc": "Roles that actually seat a referent in the isnād chair."
+        },
+        {
+          "name": "Segment",
+          "kind": "interface",
+          "line": 39
+        },
+        {
+          "name": "Word",
+          "kind": "interface",
+          "line": 69
+        },
+        {
+          "name": "Ayah",
+          "kind": "interface",
+          "line": 94
+        },
+        {
+          "name": "ClockVector",
+          "kind": "interface",
+          "line": 120,
+          "doc": "The tense-and-time profile of a span. `bridge` is high where a past narrative and a live imperfect stand in the same breath — the configuration that detaches a قصة from its own century and lands it on the reader's clock."
+        },
+        {
+          "name": "SurahMeta",
+          "kind": "interface",
+          "line": 132
+        },
+        {
+          "name": "Surah",
+          "kind": "interface",
+          "line": 152
+        },
+        {
+          "name": "DiscoveryKind",
+          "kind": "type",
+          "line": 159
+        },
+        {
+          "name": "Discovery",
+          "kind": "interface",
+          "line": 169
+        },
+        {
+          "name": "Motif",
+          "kind": "interface",
+          "line": 192,
+          "doc": "A repeated isnād contour occurring in ≥2 places (مثاني)."
+        },
+        {
+          "name": "TadabburNote",
+          "kind": "interface",
+          "line": 206
+        },
+        {
+          "name": "TarteelStation",
+          "kind": "interface",
+          "line": 219,
+          "doc": "One station in the حجرة اللاتزمّن walk."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/utils",
+      "path": "src/lib/utils.ts",
+      "lines": 15,
+      "layer": "lisan",
+      "role": "Class merging, and percentages rendered in Arabic digits.",
+      "says": null,
+      "teaches": [],
+      "stands_on": [
+        "no-translation"
+      ],
+      "imports": [
+        "./numerals"
+      ],
+      "exports": [
+        {
+          "name": "cn",
+          "kind": "function",
+          "line": 4
+        },
+        {
+          "name": "arabicNumber",
+          "kind": "re-export",
+          "line": 9
+        },
+        {
+          "name": "PERSON_NAME",
+          "kind": "re-export",
+          "line": 9
+        },
+        {
+          "name": "pct",
+          "kind": "function",
+          "line": 12,
+          "doc": "Percentages are read inside Arabic prose, so they carry Arabic digits."
+        }
+      ]
+    },
+    {
+      "address": "isnaad://module/view",
+      "path": "src/lib/view.ts",
+      "lines": 163,
+      "layer": "lisan",
+      "role": "Person colours, discovery styling, the three proximity stations.",
+      "says": "Client-side view model: the vocabulary the panes share. Colour is meaning here, so it is defined once and read everywhere.",
+      "teaches": [
+        "colour as attribution, consistently across every surface"
+      ],
+      "stands_on": [
+        "no-translation"
+      ],
+      "imports": [
+        "./types"
+      ],
+      "exports": [
+        {
+          "name": "PersonStyle",
+          "kind": "interface",
+          "line": 7
+        },
+        {
+          "name": "PERSON_STYLE",
+          "kind": "const",
+          "line": 20
+        },
+        {
+          "name": "KHALQ_HEX",
+          "kind": "const",
+          "line": 56
+        },
+        {
+          "name": "GOLD_HEX",
+          "kind": "const",
+          "line": 57
+        },
+        {
+          "name": "DISCOVERY_STYLE",
+          "kind": "const",
+          "line": 59
+        },
+        {
+          "name": "PROXIMITY_MODES",
+          "kind": "const",
+          "line": 122,
+          "doc": "The three stations on the proximity axis, near to far."
+        },
+        {
+          "name": "ROLE_TONE",
+          "kind": "const",
+          "line": 149
+        },
+        {
+          "name": "personHex",
+          "kind": "function",
+          "line": 160
+        }
+      ]
+    },
+    {
+      "address": "isnaad://script/build-fihris",
+      "path": "scripts/build-fihris.ts",
+      "lines": 363,
+      "layer": "asl",
+      "role": "Builds this فهرس from the tree, so the protocol cannot describe a codebase that no longer exists.",
+      "says": null,
+      "teaches": [
+        "derived indices over hand-maintained ones"
+      ],
+      "stands_on": [],
+      "imports": [],
+      "exports": []
+    },
+    {
+      "address": "isnaad://script/ingest-cosmos",
+      "path": "scripts/ingest-cosmos.ts",
+      "lines": 294,
+      "layer": "asl",
+      "role": "Places a thousand āyāt in isnād space with their سنابل edges and time vectors.",
+      "says": null,
+      "teaches": [
+        "a declared lemma that matches nothing fails the build"
+      ],
+      "stands_on": [
+        "declared-lemma-must-match"
+      ],
+      "imports": [
+        "../src/lib/corpus",
+        "../src/lib/time-module",
+        "../src/lib/types"
+      ],
+      "exports": []
+    },
+    {
+      "address": "isnaad://script/ingest-quran",
+      "path": "scripts/ingest-quran.ts",
+      "lines": 363,
+      "layer": "asl",
+      "role": "Fetches both open sources, builds every sūrah, mines the global indices, writes /data and the manifest.",
+      "says": null,
+      "teaches": [
+        "the one place every headline number is produced"
+      ],
+      "stands_on": [
+        "one-source-of-truth"
+      ],
+      "imports": [
+        "../src/lib/aalam",
+        "../src/lib/corpus",
+        "../src/lib/engine/aalam-miner",
+        "../src/lib/engine/detectors",
+        "../src/lib/engine/motifs",
+        "../src/lib/isnad",
+        "../src/lib/types"
+      ],
+      "exports": []
+    },
+    {
+      "address": "isnaad://script/ingest-sky",
+      "path": "scripts/ingest-sky.ts",
+      "lines": 232,
+      "layer": "asl",
+      "role": "Builds the naked-eye sky: 5,044 stars to magnitude 6 and 89 Arabic-named figures.",
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [],
+      "exports": []
+    },
+    {
+      "address": "isnaad://script/seed-composition",
+      "path": "scripts/seed-composition.ts",
+      "lines": 118,
+      "layer": "asl",
+      "role": "Assembles and publishes one worked composition, so the gallery is not empty on a fresh clone.",
+      "says": null,
+      "teaches": [],
+      "stands_on": [],
+      "imports": [
+        "../src/lib/composition",
+        "../src/lib/compositions.server",
+        "../src/lib/engine/assembler"
+      ],
+      "exports": []
+    },
+    {
+      "address": "isnaad://script/verify-exemplars",
+      "path": "scripts/verify-exemplars.ts",
+      "lines": 154,
+      "layer": "asl",
+      "role": "The acceptance gate: the three passages the engine was built from.",
+      "says": null,
+      "teaches": [
+        "what it means to pin an engine to the thing it was derived from"
+      ],
+      "stands_on": [
+        "three-exemplars"
+      ],
+      "imports": [
+        "../src/lib/corpus",
+        "../src/lib/types"
+      ],
+      "exports": []
+    }
+  ]
+}

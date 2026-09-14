@@ -153,7 +153,23 @@ lexicon and will miss entities not in it.
 
 ---
 
-## 6 · Not built yet
+## 6 · The فهرس — studying this codebase
+
+`docs/FIHRIS.md` exposes the whole address space — 66 modules, 272 exports, 13
+routes, 12 data files — as **FIHRIS/1**, a prompt-based request protocol for an
+AI agent studying the codebase: nine verbs (فهرس، شرح، نسب، تتبّع، حجّة، حدّ،
+مثال، تأثير، تمرين), twelve named invariants with the cost of breaking each, and
+eight ordered curricula.
+
+The index itself, `docs/fihris.json`, is generated from the tree by
+`npm run fihris` and never hand-written. The build fails if an invariant
+citation stops resolving, if a declared vocabulary id is no longer in its source,
+or if a library goes unclassified, and `npm run fihris:check` fails on any drift
+— so the فهرس cannot describe a codebase that no longer exists.
+
+---
+
+## 7 · Not built yet
 
 - **Typed word/phrase → custom tarteel.** Planned as a deterministic corpus
   version first (works with zero keys), with OpenRouter / Google AI Studio /
