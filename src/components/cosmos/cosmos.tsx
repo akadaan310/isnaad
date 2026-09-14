@@ -16,7 +16,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import {
   Loader2, Clock, Telescope, Layers, Radio, Eye, Sparkles, ChevronsUp,
-  ChevronsDown, Compass, GalleryVerticalEnd, Shuffle, Sun,
+  ChevronsDown, Compass, GalleryVerticalEnd, Shuffle, Sun, Spline,
 } from 'lucide-react';
 import type { CosmosNode, CosmosPayload, SkyPayload } from '@/lib/cosmos';
 import { MODALITIES } from '@/lib/time-module';
@@ -24,6 +24,8 @@ import { PERSON_STYLE } from '@/lib/view';
 import { arabicNumber, cn } from '@/lib/utils';
 import { CosmosScene, type Pov, type SceneHandle } from './scene';
 import { TimeBoard, routeFilter, type RouteState } from './fmc';
+import { useStrandField, DEFAULT_STRAND_OPTIONS, type StrandOptions } from './use-strands';
+import { StrandInspector, StrandLegend } from './strand-panel';
 
 const POVS: { id: Pov; label: string; hint: string; hue: string }[] = [
   { id: 'free', label: 'طَلِيق', hint: 'تطير كما تشاء — WASD وسحبٌ بالفأرة', hue: '#C8A45C' },
@@ -43,6 +45,8 @@ export function Cosmos() {
   const [boardOpen, setBoardOpen] = React.useState(false);
   const [route, setRoute] = React.useState<RouteState>({ legs: [], strict: false });
   const [trail, setTrail] = React.useState<number[]>([]);
+  const [strandOpt, setStrandOpt] = React.useState<StrandOptions>(DEFAULT_STRAND_OPTIONS);
+  const [legendOpen, setLegendOpen] = React.useState(true);
 
   const sceneRef = React.useRef<SceneHandle | null>(null);
   const flightRef = React.useRef<number | null>(null);
@@ -67,6 +71,11 @@ export function Cosmos() {
   const nodes = React.useMemo(() => payload?.nodes ?? [], [payload]);
   const visible = React.useMemo(() => (nodes.length ? routeFilter(nodes, route) : null), [nodes, route]);
   const node = focus !== null ? nodes[focus] : null;
+
+  // The relations the engine already found, joined to the placed āyāt. The
+  // hook decides which few hundred of ~10,300 a frame may show; the scene
+  // draws exactly what it is handed.
+  const field = useStrandField(nodes, focus, visible, strandOpt);
 
   const goTo = React.useCallback(
     (i: number) => {
@@ -151,6 +160,8 @@ export function Cosmos() {
         burn={burn}
         visible={visible}
         showFigures={figures}
+        strands={field.selected}
+        ribat={field.ribat}
         onPick={pick}
         sceneRef={sceneRef}
       />
@@ -162,6 +173,7 @@ export function Cosmos() {
           <p className="text-[0.62rem] text-muted-foreground">
             {arabicNumber(payload.count)} آية في فضاء الإسناد ·{' '}
             {visible ? `${arabicNumber(visible.size)} ضمن المسار` : 'الحقل كامل'}
+            {field.ready ? ` · ${arabicNumber(field.selected.length)} خيطًا مرسومًا` : ''}
           </p>
         </div>
         <nav className="pointer-events-auto flex flex-wrap items-center gap-1">
@@ -170,6 +182,9 @@ export function Cosmos() {
           </Chip>
           <Chip onClick={() => setFigures((v) => !v)} active={figures} icon={<Sparkles className="h-3 w-3" />}>
             الصُّوَر
+          </Chip>
+          <Chip onClick={() => setLegendOpen((v) => !v)} active={legendOpen} icon={<Spline className="h-3 w-3" />}>
+            الخيوط
           </Chip>
           <Chip onClick={() => pick(Math.floor(Math.random() * nodes.length))} icon={<Shuffle className="h-3 w-3" />}>
             انطلِق
@@ -207,6 +222,17 @@ export function Cosmos() {
           <p className="text-[0.55rem] leading-snug text-muted-foreground/70">
             اختر آيةً ليأخذ المقعدُ موضعَه.
           </p>
+        )}
+        {legendOpen && field.ready && (
+          <div className="pt-2">
+            <StrandLegend
+              opt={strandOpt}
+              setOpt={setStrandOpt}
+              counts={field.counts}
+              drawn={field.selected.length}
+              total={field.all.length}
+            />
+          </div>
         )}
       </div>
 
@@ -314,6 +340,25 @@ export function Cosmos() {
                 })}
               </div>
             </div>
+
+            {/* ما يربط هذه الآية بغيرها — بحسب ما استنبطه المحرّك، لا تأويلًا */}
+            {(field.atFocus.length > 0 || field.ribat.length > 0) && (
+              <div className="mt-3 border-t border-white/[0.07] pt-2.5">
+                <p className="mb-1.5 flex items-center gap-1.5 text-[0.58rem] text-gold/70">
+                  <Spline className="h-3 w-3" />
+                  الخيوط — لكلِّ خيطٍ عِلّةٌ محسوبة، واتّباعُه يُغيّر موضعك
+                </p>
+                <div className="max-h-56 space-y-1 overflow-y-auto thin-scroll pl-1">
+                  <StrandInspector
+                    strands={field.atFocus}
+                    ribat={field.ribat}
+                    focus={node.i}
+                    nodes={nodes}
+                    onPick={pick}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

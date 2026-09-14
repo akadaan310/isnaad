@@ -13,3 +13,4 @@ export * from './types';
 export * from './placement';
 export * from './locus';
 export * from './strands';
+export * from './wire';

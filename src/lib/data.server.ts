@@ -20,6 +20,7 @@ import { DEFAULT_OPTIONS, type DetectorOptions } from './engine/detectors';
 import type { AyahIndexRow, RootIndex } from './engine/graph';
 import type { AlamIndex } from './aalam';
 import type { Discovery, Motif, SurahMeta } from './types';
+import type { CosmosPayload } from './cosmos/types';
 
 const DATA = path.join(process.cwd(), 'data');
 
@@ -43,6 +44,7 @@ export const getAyahIndex = once(() => readJson<AyahIndexRow[]>('index', 'ayaat.
 export const getMotifs = once(() => readJson<Motif[]>('index', 'motifs.json'));
 export const getRootIndex = once(() => readJson<RootIndex>('index', 'roots.json'));
 export const getTopDiscoveries = once(() => readJson<Discovery[]>('index', 'discoveries.json'));
+export const getCosmos = once(() => readJson<CosmosPayload>('cosmos', 'nodes.json'));
 export const getManifest = once(() => readJson<Record<string, unknown>>('index', 'manifest.json'));
 export const getAlamIndex = once(() => readJson<AlamIndex>('index', 'aalam.json'));
 

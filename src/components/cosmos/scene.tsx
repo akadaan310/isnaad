@@ -22,6 +22,9 @@
 import * as React from 'react';
 import * as THREE from 'three';
 import type { CosmosNode, SkyPayload } from '@/lib/cosmos';
+import type { SelectedRibat, SelectedStrand, StrandKind } from '@/lib/cosmos/strands';
+import { ribatSegment } from '@/lib/cosmos/strands';
+import { RADIAL_BASE } from '@/lib/cosmos/placement';
 
 export type Pov = 'mutakallim' | 'mukhatab' | 'ghaib' | 'free';
 
@@ -31,6 +34,23 @@ const PERSON_COLOR: Record<number, THREE.Color> = {
   3: new THREE.Color('#0284C7'),
 };
 const NEUTRAL = new THREE.Color('#94A3B8');
+
+/**
+ * One hue per strand family, chosen away from the three person colours so a
+ * line never reads as an attribution. A viewer must be able to tell what kind
+ * of computation put a line on the screen before knowing anything else.
+ */
+const STRAND_COLOR: Record<StrandKind, THREE.Color> = {
+  sunbula: new THREE.Color('#C8A45C'),
+  motif: new THREE.Color('#A78BFA'),
+  root: new THREE.Color('#FB7185'),
+  discovery: new THREE.Color('#E2E8F0'),
+  resonance: new THREE.Color('#FDE68A'),
+};
+
+/** Ceilings, not targets. The field stays sparse; see selectStrands. */
+const MAX_STRANDS = 640;
+const MAX_RIBAT = 64;
 
 const RAD = Math.PI / 180;
 const SKY_R = 900;
@@ -119,6 +139,8 @@ export function CosmosScene({
   burn,
   visible,
   showFigures,
+  strands,
+  ribat,
   onPick,
   sceneRef,
 }: {
@@ -133,6 +155,9 @@ export function CosmosScene({
   /** Indices the current time route admits, or null for all. */
   visible: Set<number> | null;
   showFigures: boolean;
+  /** Already selected — the scene draws what it is handed and never filters. */
+  strands: SelectedStrand[];
+  ribat: SelectedRibat[];
   onPick: (index: number) => void;
   sceneRef?: React.MutableRefObject<SceneHandle | null>;
 }) {
@@ -140,8 +165,8 @@ export function CosmosScene({
   const labelHost = React.useRef<HTMLDivElement>(null);
 
   // Everything the animation loop needs, without re-creating the scene.
-  const live = React.useRef({ focus, pov, sullam, burn, visible, showFigures, onPick, nodes });
-  live.current = { focus, pov, sullam, burn, visible, showFigures, onPick, nodes };
+  const live = React.useRef({ focus, pov, sullam, burn, visible, showFigures, strands, ribat, onPick, nodes });
+  live.current = { focus, pov, sullam, burn, visible, showFigures, strands, ribat, onPick, nodes };
 
   React.useEffect(() => {
     const host = mount.current;
@@ -251,6 +276,55 @@ export function CosmosScene({
       new THREE.LineBasicMaterial({ color: 0xc8a45c, transparent: true, opacity: 0.55, depthWrite: false }),
     );
     scene.add(branchLines);
+
+    // ── الخيوط — one layer for every family of computed relation ────────────
+    //
+    //  A single LineSegments, rewritten each frame from the live node
+    //  positions so that السُّلَّم moves the strands with the field. Colour is
+    //  the family; brightness is prominence, premultiplied because additive
+    //  blending has no per-vertex alpha of its own.
+    const strandGeo = new THREE.BufferGeometry();
+    strandGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAX_STRANDS * 2 * 3), 3));
+    strandGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(MAX_STRANDS * 2 * 3), 3));
+    const strandLines = new THREE.LineSegments(
+      strandGeo,
+      new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      }),
+    );
+    scene.add(strandLines);
+
+    // ── رِباط — حركة المحور, drawn as the movement it measures ───────────────
+    //
+    //  Each segment runs between the two person shells along the āyah's own
+    //  ray (or between the two āyāt where both are placed), and is coloured
+    //  from the person the attribution left to the person it arrived at. The
+    //  gradient is the direction: nothing else is needed to read it.
+    const ribatGeo = new THREE.BufferGeometry();
+    ribatGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAX_RIBAT * 2 * 3), 3));
+    ribatGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(MAX_RIBAT * 2 * 3), 3));
+    const ribatLines = new THREE.LineSegments(
+      ribatGeo,
+      new THREE.LineBasicMaterial({
+        vertexColors: true,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      }),
+    );
+    scene.add(ribatLines);
+
+    /** The سُلَّم transform, so strand ends track the field they connect. */
+    const ladder = (x: number, y: number, z: number, k: number, out: Float32Array, at: number) => {
+      const r = Math.hypot(x, y, z) || 1;
+      const f = (RADIAL_BASE + (r - RADIAL_BASE) * k) / r;
+      out[at] = x * f;
+      out[at + 1] = y * f;
+      out[at + 2] = z * f;
+    };
 
     // ── label pool ──────────────────────────────────────────────────────────
     const MAX_LABELS = 26;
@@ -377,7 +451,7 @@ export function CosmosScene({
           const by = basePos[i * 3 + 1];
           const bz = basePos[i * 3 + 2];
           const r = Math.hypot(bx, by, bz) || 1;
-          const nr = 18 + (r - 18) * S.sullam;
+          const nr = RADIAL_BASE + (r - RADIAL_BASE) * S.sullam;
           const k = nr / r;
           nodePos[i * 3] = bx * k;
           nodePos[i * 3 + 1] = by * k;
@@ -471,6 +545,71 @@ export function CosmosScene({
       }
       branchGeo.attributes.position.needsUpdate = true;
 
+      // ── الخيوط ────────────────────────────────────────────────────────────
+      const sp = strandGeo.attributes.position.array as Float32Array;
+      const sc = strandGeo.attributes.color.array as Float32Array;
+      const drawn = Math.min(S.strands.length, MAX_STRANDS);
+      for (let k = 0; k < drawn; k++) {
+        const st = S.strands[k];
+        const o = k * 6;
+        sp[o] = nodePos[st.a * 3];
+        sp[o + 1] = nodePos[st.a * 3 + 1];
+        sp[o + 2] = nodePos[st.a * 3 + 2];
+        sp[o + 3] = nodePos[st.b * 3];
+        sp[o + 4] = nodePos[st.b * 3 + 1];
+        sp[o + 5] = nodePos[st.b * 3 + 2];
+        const c = STRAND_COLOR[st.kind] ?? NEUTRAL;
+        // Additive blending is unforgiving: the ambient field has to stay
+        // near-subliminal so that the neighbourhood of the focused āyah is
+        // what the eye actually resolves.
+        const near = S.focus !== null && (st.a === S.focus || st.b === S.focus);
+        const g = (0.02 + st.prominence * 0.16) * (0.4 + S.burn * 0.6) * (near ? 3.4 : 1);
+        for (let e = 0; e < 2; e++) {
+          sc[o + e * 3] = c.r * g;
+          sc[o + e * 3 + 1] = c.g * g;
+          sc[o + e * 3 + 2] = c.b * g;
+        }
+      }
+      strandGeo.setDrawRange(0, drawn * 2);
+      strandGeo.attributes.position.needsUpdate = true;
+      strandGeo.attributes.color.needsUpdate = true;
+
+      // ── رِباط ─────────────────────────────────────────────────────────────
+      const rp = ribatGeo.attributes.position.array as Float32Array;
+      const rc = ribatGeo.attributes.color.array as Float32Array;
+      const rDrawn = Math.min(S.ribat.length, MAX_RIBAT);
+      for (let k = 0; k < rDrawn; k++) {
+        const v = S.ribat[k];
+        const o = k * 6;
+        if (v.to !== null) {
+          // Both āyāt are placed: the movement is a real trajectory, so it is
+          // read straight off the live positions.
+          rp[o] = nodePos[v.node * 3];
+          rp[o + 1] = nodePos[v.node * 3 + 1];
+          rp[o + 2] = nodePos[v.node * 3 + 2];
+          rp[o + 3] = nodePos[v.to * 3];
+          rp[o + 4] = nodePos[v.to * 3 + 1];
+          rp[o + 5] = nodePos[v.to * 3 + 2];
+        } else {
+          const { head, tail } = ribatSegment(v, S.nodes);
+          ladder(head[0], head[1], head[2], S.sullam, rp, o);
+          ladder(tail[0], tail[1], tail[2], S.sullam, rp, o + 3);
+        }
+        const a = PERSON_COLOR[v.from] ?? NEUTRAL;
+        const b = PERSON_COLOR[v.toPerson] ?? NEUTRAL;
+        // Pulsed, because a displacement is an event rather than a place.
+        const g = (0.4 + v.prominence * 0.7) * (0.7 + Math.sin(t * 1.6 + k) * 0.3);
+        rc[o] = a.r * g * 0.6;
+        rc[o + 1] = a.g * g * 0.6;
+        rc[o + 2] = a.b * g * 0.6;
+        rc[o + 3] = b.r * g;
+        rc[o + 4] = b.g * g;
+        rc[o + 5] = b.b * g;
+      }
+      ribatGeo.setDrawRange(0, rDrawn * 2);
+      ribatGeo.attributes.position.needsUpdate = true;
+      ribatGeo.attributes.color.needsUpdate = true;
+
       // ── labels ────────────────────────────────────────────────────────────
       const rect = renderer.domElement.getBoundingClientRect();
       const cand: { i: number; sx: number; sy: number; d: number }[] = [];
@@ -528,6 +667,10 @@ export function CosmosScene({
       ng.dispose();
       nodeMat.dispose();
       branchGeo.dispose();
+      strandGeo.dispose();
+      strandLines.material.dispose();
+      ribatGeo.dispose();
+      ribatLines.material.dispose();
       host.removeChild(renderer.domElement);
       if (sceneRef) sceneRef.current = null;
     };

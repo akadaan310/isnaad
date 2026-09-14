@@ -25,6 +25,7 @@ import {
   ribatSegment,
   ribatVectors,
   rootStrands,
+  selectRibat,
   selectStrands,
   sunbulaStrands,
   DEFAULT_SELECT,
@@ -169,8 +170,21 @@ async function main() {
   const skeleton = selectStrands(adj, { ...DEFAULT_SELECT, budget: 320 });
   check('the unfocused field shows its skeleton, within budget', skeleton.length === 320, `${skeleton.length} of ${all.length}`);
   check(
-    'the skeleton is the strongest structure, not a sample',
+    'the skeleton is ordered strongest first',
     skeleton[0].prominence >= skeleton[skeleton.length - 1].prominence,
+  );
+
+  // Without balancing, detector scores near 1 crowd out contours near 0.3 and
+  // the skeleton becomes one family pretending to be a field.
+  const tally = (xs: { kind: string }[]) =>
+    xs.reduce<Record<string, number>>((m, s) => ({ ...m, [s.kind]: (m[s.kind] ?? 0) + 1 }), {});
+  const raw = selectStrands(adj, { ...DEFAULT_SELECT, budget: 320, balance: false });
+  const rawSpread = Object.keys(tally(raw)).length;
+  const balSpread = Object.keys(tally(skeleton)).length;
+  check(
+    'every family is represented in the skeleton',
+    balSpread >= rawSpread && balSpread >= 4,
+    `balanced ${JSON.stringify(tally(skeleton))} vs unbalanced ${JSON.stringify(tally(raw))}`,
   );
 
   const focus = nodes.find((n) => n.k === 'ribat')!.i;
@@ -259,6 +273,16 @@ async function main() {
       const on = (p: typeof head) => shells.some((s) => Math.abs(distanceAtRadius(lengthOf(p)) - s) < 1e-6);
       return on(head) && on(tail);
     }),
+  );
+
+  const shown = selectRibat(rb, { focus: null, admitted: null, budget: 48 });
+  check('the unfocused field draws only the strongest displacements', shown.length === 48, `${shown.length} of ${rb.length}`);
+  const anchored = rb.find((v) => v.to !== null)!;
+  const atFocus = selectRibat(rb, { focus: anchored.node, admitted: null, budget: 48 });
+  check(
+    'a focused field draws only displacements touching it',
+    atFocus.length > 0 && atFocus.every((v) => v.node === anchored.node || v.to === anchored.node),
+    `${atFocus.length} at node ${anchored.node}`,
   );
 
   console.log('\n  ' + (failed ? `${failed} CHECK(S) FAILED` : 'all checks passed') + '\n');

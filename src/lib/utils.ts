@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 import { arabicNumber } from './numerals';
-export { arabicNumber, PERSON_NAME } from './numerals';
+export { arabicNumber, arabicDecimal, PERSON_NAME } from './numerals';
 
 /** Percentages are read inside Arabic prose, so they carry Arabic digits. */
 export function pct(n: number): string {

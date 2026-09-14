@@ -358,6 +358,14 @@ export interface SelectOptions {
   depth: number;
   /** Which families may be drawn at all. */
   kinds: Partial<Record<StrandKind, boolean>>;
+  /**
+   * Give each family a share of the budget instead of letting the strongest
+   * take everything. Without this the skeleton is 257 discovery strands and
+   * three motifs: detector scores sit near 1 while a common contour sits near
+   * 0.3, so one family drowns the rest and the field stops showing that it
+   * computes more than one kind of thing.
+   */
+  balance: boolean;
 }
 
 export const DEFAULT_SELECT: SelectOptions = {
@@ -366,6 +374,7 @@ export const DEFAULT_SELECT: SelectOptions = {
   budget: 320,
   depth: 2,
   kinds: { motif: true, root: true, discovery: true, resonance: true, sunbula: true },
+  balance: true,
 };
 
 export interface SelectedStrand extends Strand {
@@ -433,6 +442,72 @@ export function selectStrands(adj: StrandAdjacency, opt: SelectOptions = DEFAULT
     out.push({ ...s, hop, prominence: s.weight * decay * admission });
   }
 
+  out.sort((x, y) => y.prominence - x.prominence);
+  return opt.balance ? balanceByFamily(out, opt.budget) : out.slice(0, opt.budget);
+}
+
+/**
+ * Round-robin across the families present, best first within each. Smaller
+ * families exhaust and drop out, so nothing is wasted, and the budget is never
+ * spent entirely on whichever detector happens to score highest.
+ */
+function balanceByFamily(pool: SelectedStrand[], budget: number): SelectedStrand[] {
+  const byKind = new Map<StrandKind, SelectedStrand[]>();
+  for (const s of pool) {
+    const list = byKind.get(s.kind);
+    if (list) list.push(s);
+    else byKind.set(s.kind, [s]);
+  }
+  const families = [...byKind.keys()];
+  const cursor = new Map<StrandKind, number>(families.map((k) => [k, 0]));
+  const out: SelectedStrand[] = [];
+  while (out.length < budget) {
+    let took = 0;
+    for (const k of families) {
+      if (out.length >= budget) break;
+      const c = cursor.get(k)!;
+      const list = byKind.get(k)!;
+      if (c >= list.length) continue;
+      out.push(list[c]);
+      cursor.set(k, c + 1);
+      took++;
+    }
+    if (!took) break;
+  }
+  out.sort((x, y) => y.prominence - x.prominence);
+  return out;
+}
+
+// ── which displacements a frame may show ────────────────────────────────────
+export interface RibatSelectOptions {
+  focus: number | null;
+  admitted: Set<number> | null;
+  budget: number;
+}
+
+export interface SelectedRibat extends RibatVector {
+  prominence: number;
+}
+
+/**
+ * رِباط displacements follow the same rule as strands: with a focus, only the
+ * ones departing or landing there; without one, the strongest in the field.
+ * Two hundred and eighty-two exist, which is already few enough to be a
+ * structure rather than a texture, but not few enough to draw at once.
+ */
+export function selectRibat(
+  vectors: readonly RibatVector[],
+  opt: RibatSelectOptions,
+): SelectedRibat[] {
+  const admits = (i: number) => !opt.admitted || opt.admitted.has(i);
+  const out: SelectedRibat[] = [];
+  for (const v of vectors) {
+    const incident = opt.focus !== null && (v.node === opt.focus || v.to === opt.focus);
+    if (opt.focus !== null && !incident) continue;
+    const admitted = admits(v.node) && (v.to === null || admits(v.to));
+    if (!admitted && !incident) continue;
+    out.push({ ...v, prominence: v.score * (admitted ? 1 : 0.32) * (incident ? 1 : 0.72) });
+  }
   out.sort((x, y) => y.prominence - x.prominence);
   return out.slice(0, opt.budget);
 }
