@@ -1,7 +1,7 @@
 // ============================================================================
 //  The cosmos payload — what the WebGL field and the flight board both read.
 // ============================================================================
-import type { ModalityId } from './time-module';
+import type { ModalityId } from '../time-module';
 
 export interface CosmosNode {
   /** Index into the node array; also its identity in the سنابل graph. */
