@@ -108,9 +108,11 @@ export function chooseLeg(
 }
 
 /** Why the journey went this way, in the engine's own words. */
+const AR_DIGIT = ['١', '٢', '٣', '٤', '٥', '٦', '٧'];
+
 export function legReason(course: Course): string {
   if (course.branch !== null) {
-    return `سُنبلة ${['١', '٢', '٣', '٤', '٥', '٦', '٧'][course.branch] ?? ''}`;
+    return `سُنبلة ${AR_DIGIT[course.branch] ?? ''}`;
   }
   const e = course.via?.evidence;
   if (!e) return 'سُنبلة';
@@ -124,7 +126,7 @@ export function legReason(course: Course): string {
     case 'resonance':
       return e.reason;
     case 'sunbula':
-      return `سُنبلة ${e.branch + 1}`;
+      return `سُنبلة ${AR_DIGIT[e.branch] ?? ''}`;
   }
 }
 

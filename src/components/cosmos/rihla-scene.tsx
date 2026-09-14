@@ -23,7 +23,7 @@ import { chooseLeg, indexStrands, legReason, type Course } from '@/lib/cosmos/vo
 import { Plate, ensureFonts } from '@/lib/cosmos/textures';
 import { drawHud, type HudState } from './rihla-hud';
 import { haptic, type Capability } from '@/lib/cosmos/device';
-import { BodyField, SLOT_PITCH } from './body-field';
+import { BodyField, CELL } from './body-field';
 import type { Immersion } from '@/lib/cosmos/immersion';
 
 const GOLD = new THREE.Color('#C8A45C');
@@ -149,12 +149,8 @@ export interface RihlaHandle {
   throttle: (v: number) => void;
   /** Take the leg now, without waiting for the reciter. */
   advance: () => void;
-  /** Aim at whatever āyah is nearest the reticle. */
+  /** Aim at whatever lies under the reticle — a body if one does, else an āyah. */
   lockAhead: () => void;
-  /** Open or close the field of immersion bodies. */
-  setChoosing: (on: boolean) => void;
-  /** Scroll the unbounded sequence of bodies. */
-  scrollBodies: (by: number) => void;
 }
 
 export function RihlaScene({
@@ -167,6 +163,7 @@ export function RihlaScene({
   onChooseImmersion,
   immersionAt,
   activeImmersion,
+  zoneHexes,
   handleRef,
   hud,
 }: {
@@ -179,19 +176,23 @@ export function RihlaScene({
   onArrive: (index: number, reason: string) => void;
   /** A body was tapped. */
   onChooseImmersion: (imm: Immersion) => void;
-  /** Card n, for any n — the sequence is unbounded and generated on demand. */
+  /** Body n, for any n — the sequence is unbounded and generated on demand. */
   immersionAt: ((index: number) => Immersion) | null;
   activeImmersion: number;
+  /** The zones' measured starlight, for colouring the distant thousands. */
+  zoneHexes: string[];
   handleRef?: React.MutableRefObject<RihlaHandle | null>;
   /** Everything the plate shows that the scene does not own. */
   hud: Omit<HudState, 'node' | 'distance' | 'sinceArrival' | 'throttle'>;
 }) {
   const mount = React.useRef<HTMLDivElement>(null);
   const live = React.useRef({
-    nodes, strands, cap, holding, onArrive, onChooseImmersion, immersionAt, activeImmersion, hud,
+    nodes, strands, cap, holding, onArrive, onChooseImmersion, immersionAt, activeImmersion,
+    zoneHexes, hud,
   });
   live.current = {
-    nodes, strands, cap, holding, onArrive, onChooseImmersion, immersionAt, activeImmersion, hud,
+    nodes, strands, cap, holding, onArrive, onChooseImmersion, immersionAt, activeImmersion,
+    zoneHexes, hud,
   };
 
   React.useEffect(() => {
@@ -249,6 +250,43 @@ export function RihlaScene({
             transparent: true,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
+          }),
+        ),
+      );
+    }
+
+    // ── the figures ─────────────────────────────────────────────────────────
+    //  The same 89 IAU constellations the الفرقان player draws, on the same far
+    //  shell. They were absent here, which left the traveller inside a field of
+    //  stars with no sky — and the برج an āyah is named for had nothing to
+    //  point at. They are a celestial reference and nothing more: the figure is
+    //  real astronomy, the āyah's membership in it is a label.
+    if (sky?.constellations?.length && cap.tier !== 'low') {
+      const seg: number[] = [];
+      const RAD2 = Math.PI / 180;
+      const onShell = (ra: number, dec: number) => {
+        const a = ra * RAD2;
+        const d = dec * RAD2;
+        const r = SKY_R - 10;
+        return [r * Math.cos(d) * Math.cos(a), r * Math.sin(d), r * Math.cos(d) * Math.sin(a)];
+      };
+      for (const con of sky.constellations) {
+        for (const line of con.lines) {
+          for (let i = 0; i + 1 < line.length; i++) {
+            seg.push(...onShell(line[i][0], line[i][1]), ...onShell(line[i + 1][0], line[i + 1][1]));
+          }
+        }
+      }
+      const fg = new THREE.BufferGeometry();
+      fg.setAttribute('position', new THREE.Float32BufferAttribute(seg, 3));
+      scene.add(
+        new THREE.LineSegments(
+          fg,
+          new THREE.LineBasicMaterial({
+            color: 0x7dd3fc,
+            transparent: true,
+            opacity: 0.14,
+            depthWrite: false,
           }),
         ),
       );
@@ -410,17 +448,24 @@ export function RihlaScene({
 
     // ── the immersion bodies ────────────────────────────────────────────────
     const bodies = new BodyField({
-      slots: cap.tier === 'low' ? 8 : 12,
-      radius: 88,
+      slots: cap.tier === 'low' ? 7 : 12,
+      radius: CELL,
       tier: cap.tier,
     });
     scene.add(bodies.group);
-    let choosing = false;
-    let ringSpin = 0;
-    let ringVel = 0;
+    let cellClock = 0;
+    // The immersion last adopted, so approaching the same body twice does not
+    // re-announce it.
+    let adopted = -1;
+    let farTinted = false;
+    // How deep inside a body the traveller is, 0 outside and 1 at its centre.
+    let inside = 0;
 
     // ── travel ──────────────────────────────────────────────────────────────
     const byNode = indexStrands(strands);
+    /** The neighbourhood's strands, rebuilt when the āyah underfoot changes. */
+    const nearStrands: Strand[] = [];
+    let strandsFor = -1;
     const pos = new THREE.Vector3(0, 10, 210);
     const vel = new THREE.Vector3();
     const heading = new THREE.Vector3(0, 0, -1);
@@ -457,12 +502,6 @@ export function RihlaScene({
     if (handleRef) {
       handleRef.current = {
         steer: (dx, dy) => {
-          // While the bodies are out, the hand turns the sequence rather than
-          // the vessel: the menu is a thing you look along, not a list.
-          if (choosing) {
-            ringVel += dx * 0.00075;
-            return;
-          }
           steerAcc.yaw -= dx * 0.0042;
           steerAcc.pitch -= dy * 0.0042;
         },
@@ -473,23 +512,15 @@ export function RihlaScene({
           if (!course) takeLeg();
           if (course) arrive(course.to);
         },
-        setChoosing: (on) => {
-          choosing = on;
-          if (on && live.current.immersionAt) bodies.populate(live.current.immersionAt);
-        },
-        scrollBodies: (by) => {
-          ringVel += by * 0.0022;
-        },
         lockAhead: () => {
-          // While the bodies are out, a tap picks a body rather than an āyah.
-          if (choosing) {
-            const ray = new THREE.Raycaster();
-            ray.setFromCamera(new THREE.Vector2(0, 0), camera);
-            const hit = bodies.pick(ray) ?? bodies.nearestToward(camera, heading);
-            if (hit) {
-              haptic([10, 30, 10]);
-              live.current.onChooseImmersion(hit);
-            }
+          // A tap takes a body when one is being looked at — they are out in
+          // the field now, so this is the same gesture as reaching an āyah.
+          const ray = new THREE.Raycaster();
+          ray.setFromCamera(new THREE.Vector2(0, 0), camera);
+          const hit = bodies.pick(ray);
+          if (hit) {
+            haptic([10, 30, 10]);
+            live.current.onChooseImmersion(hit);
             return;
           }
           // Whatever lies nearest the reticle becomes the destination.
@@ -527,7 +558,11 @@ export function RihlaScene({
     const resize = () => {
       const w = host.clientWidth || 1;
       const h = host.clientHeight || 1;
-      renderer.setSize(w, h, false);
+      // updateStyle must stay on. With it off the canvas gets a drawing buffer
+      // of w·dpr × h·dpr and no CSS size, so the element lays out at its buffer
+      // size — three times too large on a dpr-3 phone, which magnifies and
+      // offsets everything drawn over it.
+      renderer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       plate.resize(w, h, Math.min(cap.dpr, 2));
@@ -597,9 +632,27 @@ export function RihlaScene({
       nodeGeo.attributes.glow.needsUpdate = true;
       nodeMat.uniforms.uScale.value = 1;
 
-      // Strands: only those leaving the āyah you are on, plus the leg itself.
+      // Strands. Previously only those leaving the āyah underfoot, which meant
+      // the curves — the whole point of the observatory — were invisible while
+      // travelling. Now the neighbourhood: this āyah's relations first, then
+      // those of whatever it is flying toward, then its سنابل, to the budget.
       strandMat.uniforms.uTime.value = t;
-      const here = byNode.get(at) ?? [];
+      if (at !== strandsFor) {
+        strandsFor = at;
+        const seen = new Set<string>();
+        nearStrands.length = 0;
+        const take = (list: Strand[] | undefined) => {
+          for (const st of list ?? []) {
+            if (nearStrands.length >= MAXS || seen.has(st.id)) continue;
+            seen.add(st.id);
+            nearStrands.push(st);
+          }
+        };
+        take(byNode.get(at));
+        if (course) take(byNode.get(course.to));
+        for (const j of S.nodes[at].sb) take(byNode.get(j));
+      }
+      const here = nearStrands;
       const drawn = Math.min(here.length, MAXS);
       for (let k = 0; k < drawn; k++) {
         const st = here[k];
@@ -614,7 +667,8 @@ export function RihlaScene({
           nodePos[st.b * 3], nodePos[st.b * 3 + 1], nodePos[st.b * 3 + 2],
         );
         const onCourse = course && (st.a === course.to || st.b === course.to);
-        const g = (onCourse ? 0.5 : 0.14) * (0.5 + st.weight * 0.9);
+        const incident = st.a === at || st.b === at;
+        const g = (onCourse ? 0.55 : incident ? 0.22 : 0.075) * (0.5 + st.weight * 0.9);
         const seed = (k * 0.137) % 1;
         for (let e = 0; e < VERTS; e++) {
           const vo = (k * VERTS + e) * 3;
@@ -633,38 +687,51 @@ export function RihlaScene({
       strandGeo.attributes.seed.needsUpdate = true;
 
       // ── the bodies ────────────────────────────────────────────────────────
-      ringSpin += ringVel;
-      ringVel *= Math.pow(0.02, dt);
-      // A detent. Once the hand lets go, the nearest slot is drawn onto the
-      // axis so a body settles under the reticle instead of resting between
-      // two — a selector that never quite lands on anything is not a selector.
-      if (Math.abs(ringVel) < 0.0016) {
-        ringSpin += (Math.round(ringSpin / SLOT_PITCH) * SLOT_PITCH - ringSpin) * Math.min(1, dt * 5);
+      //  Fixed in the world. Cells are re-checked a few times a second, not
+      //  every frame: the traveller cannot cross a 340-unit cell faster than
+      //  that, and the check walks 75 of them.
+      cellClock -= dt;
+      if (cellClock <= 0 && S.immersionAt) {
+        cellClock = 0.3;
+        bodies.occupy(camera, S.immersionAt);
+        if (!farTinted && S.zoneHexes.length) {
+          bodies.tintFar(S.zoneHexes);
+          farTinted = true;
+        }
       }
-      // Turning far enough advances the window onto the sequence, so the ring
-      // is a view of something unbounded rather than a fixed carousel.
-      const step = SLOT_PITCH;
-      while (ringSpin > step) {
-        ringSpin -= step;
-        bodies.offset++;
+      bodies.update(dt, t, 1, camera, S.activeImmersion);
+
+      // Adoption by arrival. There is no menu and no confirming gesture: coming
+      // within reach of a body *is* choosing it, so the traveller changes what
+      // the realm is by going somewhere, which is the only verb there is.
+      // Inside is a place, not a boundary crossed. Depth drives the light, so
+      // entering a body is a continuous arrival rather than a switch.
+      const depth = bodies.depthWithin(pos);
+      inside += (depth - inside) * Math.min(1, dt * 2.2);
+      const body = bodies.within(pos, CELL * 0.9);
+      if (body) {
+        const c = new THREE.Color(body.palette.hexes[0]);
+        // The body's own light takes over the dust and the fog as you go in.
+        dustMat.uniforms.uTint.value.lerpColors(GOLD, c, inside * 0.9);
+        (scene.fog as THREE.FogExp2).density = 0.0022 + inside * 0.004;
+      } else {
+        dustMat.uniforms.uTint.value.lerp(GOLD, Math.min(1, dt * 2));
+        (scene.fog as THREE.FogExp2).density = 0.0022;
       }
-      while (ringSpin < -step) {
-        ringSpin += step;
-        bodies.offset = Math.max(0, bodies.offset - 1);
+
+      const inReach = bodies.within(pos, CELL * 0.42);
+      if (inReach && inReach.index !== adopted) {
+        adopted = inReach.index;
+        haptic([8, 24, 8]);
+        S.onChooseImmersion(inReach);
       }
-      if (choosing && S.immersionAt) bodies.populate(S.immersionAt);
-      // The field travels with the vessel: parented to the camera's frame, so
-      // the bodies are always in front of the traveller wherever they are.
-      bodies.group.position.copy(camera.position);
-      bodies.group.quaternion.copy(camera.quaternion);
-      bodies.update(dt, t, choosing ? 1 : 0, ringSpin, S.activeImmersion);
 
       // The plate is a full texture upload; four times a second is plenty for
       // content that is words, and sixty would cost more than the field does.
       hudDue -= dt;
       if (fontsReady && hudDue <= 0) {
         hudDue = 0.25;
-        const aimed = choosing ? bodies.nearestToward(camera, heading) : null;
+        const aimed = bodies.within(pos, CELL * 0.42) ?? bodies.nearestToward(camera, heading);
         drawHud(plate, {
           ...S.hud,
           node: nodes[at] ?? null,
@@ -672,8 +739,10 @@ export function RihlaScene({
           distance: dist,
           throttle,
           sinceArrival,
-          choosing,
+          choosing: false,
           aimed,
+          aimedDistance: bodies.distanceTo(aimed, pos),
+          inside,
         });
       }
 

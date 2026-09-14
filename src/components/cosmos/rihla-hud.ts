@@ -37,10 +37,14 @@ export interface HudState {
   /** Seconds since the last arrival, for the flash. */
   sinceArrival: number;
   orientation: boolean;
-  /** The bodies are out and the traveller is choosing. */
+  /** Retained so callers need not change; the realm has no modes. */
   choosing?: boolean;
   /** Whichever body lies under the reticle. */
   aimed?: Immersion | null;
+  /** How far that body is, in field units. */
+  aimedDistance?: number;
+  /** 0 outside every body, 1 at the centre of one. */
+  inside?: number;
 }
 
 export function drawHud(plate: Plate, s: HudState) {
@@ -85,51 +89,56 @@ export function drawHud(plate: Plate, s: HudState) {
     ctx.stroke();
   }
 
-  // ── choosing: the bodies carry the menu, the plate only names them ───────
-  if (s.choosing) {
+  // ── the body being looked at, named quietly beneath the āyah ────────────
+  if (s.aimed && (s.aimedDistance ?? Infinity) < 1600) {
     const a = s.aimed;
+    const near = (s.aimedDistance ?? 0) < 145;
+
+    // A body can now fill the sky, and unbacked text over its grid is
+    // unreadable. A soft band, only as tall as the block it carries.
+    const bandTop = H * 0.29 - (narrow ? 40 : 46);
+    const bandH = narrow ? 82 : 96;
+    const band = ctx.createLinearGradient(0, bandTop, 0, bandTop + bandH);
+    band.addColorStop(0, 'rgba(5,7,12,0)');
+    band.addColorStop(0.4, 'rgba(5,7,12,0.7)');
+    band.addColorStop(0.75, 'rgba(5,7,12,0.62)');
+    band.addColorStop(1, 'rgba(5,7,12,0)');
+    ctx.fillStyle = band;
+    ctx.fillRect(0, bandTop, W, bandH);
+
     setRtl(ctx);
-    const cy2 = H * 0.78;
-    if (a) {
-      ctx.font = `400 ${narrow ? 26 : 32}px ${QURAN_FONT}`;
-      ctx.fillStyle = a.palette.hexes[0];
-      ctx.textAlign = 'center';
-      ctx.fillText(a.zone.ar, cx, cy2);
-
-      ctx.font = `400 ${narrow ? 13 : 15}px ${UI_FONT}`;
-      ctx.fillStyle = 'rgba(226,232,240,0.82)';
-      ctx.fillText(a.zone.en, cx, cy2 + (narrow ? 22 : 26));
-
-      ctx.font = `400 ${narrow ? 11 : 12}px ${UI_FONT}`;
-      ctx.fillStyle = DIM;
-      ctx.fillText(
-        `${a.tempo.name} · ${a.tempo.latin} · ${a.reciter.name}`,
-        cx,
-        cy2 + (narrow ? 42 : 50),
-      );
-
-      // The physics the colour came from. LTR: a run opening with a numeral is
-      // reordered by the bidi algorithm inside an RTL page.
-      ctx.direction = 'ltr';
-      ctx.font = `400 ${narrow ? 10 : 11}px ${UI_FONT}`;
-      ctx.fillStyle = a.zone.basis === 'extrapolated' ? 'rgba(252,165,165,0.75)' : FAINT;
-      ctx.fillText(
-        `fold ${a.fold} · ${a.harmonyKind} · ${a.zone.basis} · #${a.index}`,
-        cx,
-        cy2 + (narrow ? 60 : 70),
-      );
-      ctx.direction = 'rtl';
-    }
-
     ctx.textAlign = 'center';
-    ctx.direction = 'rtl';
-    ctx.font = `400 ${narrow ? 11 : 12}px ${UI_FONT}`;
-    ctx.fillStyle = FAINT;
-    ctx.fillText('اسحبْ لتُدير المنازل · انقُرْ لتدخُل', cx, pad + 22);
+    ctx.font = `400 ${narrow ? 15 : 18}px ${UI_FONT}`;
+    ctx.fillStyle = near ? a.palette.hexes[0] : `${a.palette.hexes[0]}88`;
+    ctx.fillText(a.zone.ar, cx, H * 0.29);
+
     ctx.font = `400 ${narrow ? 10 : 11}px ${UI_FONT}`;
-    ctx.fillText('drag to turn · tap to enter', cx, pad + (narrow ? 38 : 42));
-    plate.commit();
-    return;
+    ctx.fillStyle = FAINT;
+    ctx.fillText(
+      near ? `${a.zone.en} · ${a.tempo.latin} · ${a.reciter.latin}` : a.zone.en,
+      cx,
+      H * 0.29 + (narrow ? 17 : 20),
+    );
+
+    // The measurement the colour came from, and whether the fitted law was
+    // being interpolated there or carried past its range.
+    ctx.direction = 'ltr';
+    ctx.font = `400 ${narrow ? 9 : 10}px ${UI_FONT}`;
+    ctx.fillStyle = a.zone.basis === 'extrapolated' ? 'rgba(252,165,165,0.6)' : 'rgba(100,116,139,0.75)';
+    // Truncate on a word, never mid-word: "Far outsi ·" is a typo, not a
+    // shortening. The plate's own width is the measure.
+    const tail = ` · ${a.zone.basis}`;
+    let gloss = a.zone.enGloss;
+    if (ctx.measureText(gloss + tail).width > W - pad * 2) {
+      let acc = '';
+      for (const word of gloss.split(' ')) {
+        if (ctx.measureText(`${acc} ${word}…${tail}`).width > W - pad * 2) break;
+        acc = acc ? `${acc} ${word}` : word;
+      }
+      gloss = `${acc}…`;
+    }
+    ctx.fillText(gloss + tail, cx, H * 0.29 + (narrow ? 33 : 38));
+    ctx.direction = 'rtl';
   }
 
   if (!s.node) {
