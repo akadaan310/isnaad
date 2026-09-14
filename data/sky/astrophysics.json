@@ -1,0 +1,1061 @@
+{
+ "source": "Gaia DR3 · gaiadr3.gaia_source · ESA TAP",
+ "fittedAt": "2026-09-14T10:04:32.196Z",
+ "samples": {
+  "colourMagnitude": 399993,
+  "teff": 200000,
+  "disc": 300000
+ },
+ "cuts": "parallax_over_error > 20 (10 for the disc), ruwe < 1.4, no extinction correction",
+ "mainSequence": {
+  "bin": 0.1,
+  "ridge": [
+   {
+    "colour": -0.4,
+    "absMag": 10.319,
+    "n": 95
+   },
+   {
+    "colour": -0.3,
+    "absMag": 10.782,
+    "n": 294
+   },
+   {
+    "colour": -0.2,
+    "absMag": 11.129,
+    "n": 624
+   },
+   {
+    "colour": -0.1,
+    "absMag": 11.49,
+    "n": 876
+   },
+   {
+    "colour": 0,
+    "absMag": 11.785,
+    "n": 1130
+   },
+   {
+    "colour": 0.1,
+    "absMag": 12.13,
+    "n": 1365
+   },
+   {
+    "colour": 0.2,
+    "absMag": 12.435,
+    "n": 1487
+   },
+   {
+    "colour": 0.3,
+    "absMag": 12.722,
+    "n": 1608
+   },
+   {
+    "colour": 0.4,
+    "absMag": 12.953,
+    "n": 1941
+   },
+   {
+    "colour": 0.5,
+    "absMag": 4.256,
+    "n": 2401
+   },
+   {
+    "colour": 0.6,
+    "absMag": 3.447,
+    "n": 4573
+   },
+   {
+    "colour": 0.7,
+    "absMag": 3.97,
+    "n": 7864
+   },
+   {
+    "colour": 0.8,
+    "absMag": 4.536,
+    "n": 10171
+   },
+   {
+    "colour": 0.9,
+    "absMag": 5.1,
+    "n": 9168
+   },
+   {
+    "colour": 1,
+    "absMag": 5.576,
+    "n": 7814
+   },
+   {
+    "colour": 1.1,
+    "absMag": 5.955,
+    "n": 7299
+   },
+   {
+    "colour": 1.2,
+    "absMag": 6.286,
+    "n": 6438
+   },
+   {
+    "colour": 1.3,
+    "absMag": 6.589,
+    "n": 5330
+   },
+   {
+    "colour": 1.4,
+    "absMag": 6.864,
+    "n": 4936
+   },
+   {
+    "colour": 1.5,
+    "absMag": 7.126,
+    "n": 4920
+   },
+   {
+    "colour": 1.6,
+    "absMag": 7.387,
+    "n": 5260
+   },
+   {
+    "colour": 1.7,
+    "absMag": 7.654,
+    "n": 5610
+   },
+   {
+    "colour": 1.8,
+    "absMag": 7.933,
+    "n": 6402
+   },
+   {
+    "colour": 1.9,
+    "absMag": 8.211,
+    "n": 7374
+   },
+   {
+    "colour": 2,
+    "absMag": 8.497,
+    "n": 8441
+   },
+   {
+    "colour": 2.1,
+    "absMag": 8.796,
+    "n": 9779
+   },
+   {
+    "colour": 2.2,
+    "absMag": 9.095,
+    "n": 11456
+   },
+   {
+    "colour": 2.3,
+    "absMag": 9.427,
+    "n": 14226
+   },
+   {
+    "colour": 2.4,
+    "absMag": 9.745,
+    "n": 17759
+   },
+   {
+    "colour": 2.5,
+    "absMag": 10.051,
+    "n": 21926
+   },
+   {
+    "colour": 2.6,
+    "absMag": 10.367,
+    "n": 25475
+   },
+   {
+    "colour": 2.7,
+    "absMag": 10.686,
+    "n": 26932
+   },
+   {
+    "colour": 2.8,
+    "absMag": 11.008,
+    "n": 26837
+   },
+   {
+    "colour": 2.9,
+    "absMag": 11.34,
+    "n": 26208
+   },
+   {
+    "colour": 3,
+    "absMag": 11.672,
+    "n": 24629
+   },
+   {
+    "colour": 3.1,
+    "absMag": 12.001,
+    "n": 22205
+   },
+   {
+    "colour": 3.2,
+    "absMag": 12.279,
+    "n": 18301
+   },
+   {
+    "colour": 3.3,
+    "absMag": 12.518,
+    "n": 13886
+   },
+   {
+    "colour": 3.4,
+    "absMag": 12.736,
+    "n": 9559
+   },
+   {
+    "colour": 3.5,
+    "absMag": 12.948,
+    "n": 6400
+   },
+   {
+    "colour": 3.6,
+    "absMag": 13.158,
+    "n": 4037
+   },
+   {
+    "colour": 3.7,
+    "absMag": 13.324,
+    "n": 2517
+   },
+   {
+    "colour": 3.8,
+    "absMag": 13.52,
+    "n": 1594
+   },
+   {
+    "colour": 3.9,
+    "absMag": 13.696,
+    "n": 996
+   },
+   {
+    "colour": 4,
+    "absMag": 13.842,
+    "n": 642
+   },
+   {
+    "colour": 4.1,
+    "absMag": 13.984,
+    "n": 401
+   },
+   {
+    "colour": 4.2,
+    "absMag": 14.232,
+    "n": 269
+   },
+   {
+    "colour": 4.3,
+    "absMag": 14.321,
+    "n": 164
+   },
+   {
+    "colour": 4.4,
+    "absMag": 14.445,
+    "n": 110
+   },
+   {
+    "colour": 4.5,
+    "absMag": 14.555,
+    "n": 82
+   },
+   {
+    "colour": 4.6,
+    "absMag": 14.827,
+    "n": 60
+   }
+  ],
+  "polyG": [
+   10.08283,
+   -6.33043,
+   3.240724,
+   -0.2455842,
+   -0.02589397
+  ]
+ },
+ "luminosityFunction": [
+  {
+   "absMag": -2,
+   "n": 13
+  },
+  {
+   "absMag": -1,
+   "n": 112
+  },
+  {
+   "absMag": 0,
+   "n": 524
+  },
+  {
+   "absMag": 1,
+   "n": 1077
+  },
+  {
+   "absMag": 2,
+   "n": 2260
+  },
+  {
+   "absMag": 3,
+   "n": 6001
+  },
+  {
+   "absMag": 4,
+   "n": 11590
+  },
+  {
+   "absMag": 5,
+   "n": 14870
+  },
+  {
+   "absMag": 6,
+   "n": 16914
+  },
+  {
+   "absMag": 7,
+   "n": 18163
+  },
+  {
+   "absMag": 8,
+   "n": 23723
+  },
+  {
+   "absMag": 9,
+   "n": 37917
+  },
+  {
+   "absMag": 10,
+   "n": 65420
+  },
+  {
+   "absMag": 11,
+   "n": 79681
+  },
+  {
+   "absMag": 12,
+   "n": 68211
+  },
+  {
+   "absMag": 13,
+   "n": 36815
+  },
+  {
+   "absMag": 14,
+   "n": 12154
+  },
+  {
+   "absMag": 15,
+   "n": 3670
+  },
+  {
+   "absMag": 16,
+   "n": 671
+  },
+  {
+   "absMag": 17,
+   "n": 163
+  },
+  {
+   "absMag": 18,
+   "n": 27
+  },
+  {
+   "absMag": 19,
+   "n": 14
+  },
+  {
+   "absMag": 20,
+   "n": 3
+  }
+ ],
+ "colourDistribution": [
+  {
+   "colour": -0.6,
+   "n": 8
+  },
+  {
+   "colour": -0.4,
+   "n": 228
+  },
+  {
+   "colour": -0.2,
+   "n": 1206
+  },
+  {
+   "colour": 0,
+   "n": 2259
+  },
+  {
+   "colour": 0.2,
+   "n": 3025
+  },
+  {
+   "colour": 0.4,
+   "n": 3796
+  },
+  {
+   "colour": 0.6,
+   "n": 9484
+  },
+  {
+   "colour": 0.8,
+   "n": 19360
+  },
+  {
+   "colour": 1,
+   "n": 15671
+  },
+  {
+   "colour": 1.2,
+   "n": 12868
+  },
+  {
+   "colour": 1.4,
+   "n": 10002
+  },
+  {
+   "colour": 1.6,
+   "n": 10478
+  },
+  {
+   "colour": 1.8,
+   "n": 12867
+  },
+  {
+   "colour": 2,
+   "n": 16874
+  },
+  {
+   "colour": 2.2,
+   "n": 23334
+  },
+  {
+   "colour": 2.4,
+   "n": 35616
+  },
+  {
+   "colour": 2.6,
+   "n": 50381
+  },
+  {
+   "colour": 2.8,
+   "n": 53708
+  },
+  {
+   "colour": 3,
+   "n": 48898
+  },
+  {
+   "colour": 3.2,
+   "n": 36688
+  },
+  {
+   "colour": 3.4,
+   "n": 19480
+  },
+  {
+   "colour": 3.6,
+   "n": 8229
+  },
+  {
+   "colour": 3.8,
+   "n": 3267
+  },
+  {
+   "colour": 4,
+   "n": 1324
+  },
+  {
+   "colour": 4.2,
+   "n": 528
+  },
+  {
+   "colour": 4.4,
+   "n": 223
+  },
+  {
+   "colour": 4.6,
+   "n": 116
+  },
+  {
+   "colour": 4.8,
+   "n": 50
+  },
+  {
+   "colour": 5,
+   "n": 20
+  },
+  {
+   "colour": 5.2,
+   "n": 5
+  }
+ ],
+ "colourToTeff": {
+  "form": "binned median of teff_gspphot, linearly interpolated",
+  "table": [
+   {
+    "colour": -0.1,
+    "teff": 11796,
+    "n": 34
+   },
+   {
+    "colour": 0,
+    "teff": 10146,
+    "n": 107
+   },
+   {
+    "colour": 0.1,
+    "teff": 9680,
+    "n": 154
+   },
+   {
+    "colour": 0.2,
+    "teff": 9595,
+    "n": 229
+   },
+   {
+    "colour": 0.3,
+    "teff": 7676,
+    "n": 250
+   },
+   {
+    "colour": 0.4,
+    "teff": 7232,
+    "n": 432
+   },
+   {
+    "colour": 0.5,
+    "teff": 6785,
+    "n": 814
+   },
+   {
+    "colour": 0.6,
+    "teff": 6409,
+    "n": 2308
+   },
+   {
+    "colour": 0.7,
+    "teff": 6047,
+    "n": 4504
+   },
+   {
+    "colour": 0.8,
+    "teff": 5756,
+    "n": 6057
+   },
+   {
+    "colour": 0.9,
+    "teff": 5574,
+    "n": 5460
+   },
+   {
+    "colour": 1,
+    "teff": 5273,
+    "n": 4635
+   },
+   {
+    "colour": 1.1,
+    "teff": 5010,
+    "n": 4259
+   },
+   {
+    "colour": 1.2,
+    "teff": 4804,
+    "n": 3656
+   },
+   {
+    "colour": 1.3,
+    "teff": 4632,
+    "n": 2892
+   },
+   {
+    "colour": 1.4,
+    "teff": 4546,
+    "n": 2628
+   },
+   {
+    "colour": 1.5,
+    "teff": 4497,
+    "n": 2437
+   },
+   {
+    "colour": 1.6,
+    "teff": 4394,
+    "n": 2288
+   },
+   {
+    "colour": 1.7,
+    "teff": 4291,
+    "n": 2241
+   },
+   {
+    "colour": 1.8,
+    "teff": 4168,
+    "n": 2792
+   },
+   {
+    "colour": 1.9,
+    "teff": 4053,
+    "n": 3447
+   },
+   {
+    "colour": 2,
+    "teff": 3908,
+    "n": 3733
+   },
+   {
+    "colour": 2.1,
+    "teff": 3806,
+    "n": 4824
+   },
+   {
+    "colour": 2.2,
+    "teff": 3714,
+    "n": 5868
+   },
+   {
+    "colour": 2.3,
+    "teff": 3615,
+    "n": 7361
+   },
+   {
+    "colour": 2.4,
+    "teff": 3562,
+    "n": 10257
+   },
+   {
+    "colour": 2.5,
+    "teff": 3507,
+    "n": 13084
+   },
+   {
+    "colour": 2.6,
+    "teff": 3455,
+    "n": 14934
+   },
+   {
+    "colour": 2.7,
+    "teff": 3404,
+    "n": 15532
+   },
+   {
+    "colour": 2.8,
+    "teff": 3356,
+    "n": 14887
+   },
+   {
+    "colour": 2.9,
+    "teff": 3307,
+    "n": 12982
+   },
+   {
+    "colour": 3,
+    "teff": 3261,
+    "n": 11822
+   },
+   {
+    "colour": 3.1,
+    "teff": 3215,
+    "n": 10608
+   },
+   {
+    "colour": 3.2,
+    "teff": 3171,
+    "n": 8509
+   },
+   {
+    "colour": 3.3,
+    "teff": 3129,
+    "n": 5907
+   },
+   {
+    "colour": 3.4,
+    "teff": 3092,
+    "n": 3691
+   },
+   {
+    "colour": 3.5,
+    "teff": 3040,
+    "n": 2212
+   },
+   {
+    "colour": 3.6,
+    "teff": 3002,
+    "n": 1146
+   },
+   {
+    "colour": 3.7,
+    "teff": 2964,
+    "n": 563
+   },
+   {
+    "colour": 3.8,
+    "teff": 2919,
+    "n": 255
+   },
+   {
+    "colour": 3.9,
+    "teff": 2899,
+    "n": 95
+   },
+   {
+    "colour": 4,
+    "teff": 2868,
+    "n": 62
+   },
+   {
+    "colour": 4.1,
+    "teff": 2792,
+    "n": 29
+   }
+  ],
+  "medianRelativeError": 0.0098,
+  "caveat": "teff_gspphot is unreliable above ~9000 K, where GSP-Phot assumes low extinction; the hot end of this table carries that bias."
+ },
+ "colourByHeight": {
+  "note": "Magnitude-limited by construction: at height only the intrinsically bright are visible. That selection is what an observer actually receives, so it is measured rather than corrected away.",
+  "bands": [
+   {
+    "id": "plane",
+    "maxZPc": 100,
+    "n": 188857,
+    "meanColour": 1.77,
+    "bins": [
+     {
+      "colour": -0.4,
+      "n": 7
+     },
+     {
+      "colour": -0.2,
+      "n": 72
+     },
+     {
+      "colour": 0,
+      "n": 189
+     },
+     {
+      "colour": 0.2,
+      "n": 395
+     },
+     {
+      "colour": 0.4,
+      "n": 812
+     },
+     {
+      "colour": 0.6,
+      "n": 1842
+     },
+     {
+      "colour": 0.8,
+      "n": 5909
+     },
+     {
+      "colour": 1,
+      "n": 15014
+     },
+     {
+      "colour": 1.2,
+      "n": 24887
+     },
+     {
+      "colour": 1.4,
+      "n": 29796
+     },
+     {
+      "colour": 1.6,
+      "n": 24855
+     },
+     {
+      "colour": 1.8,
+      "n": 16069
+     },
+     {
+      "colour": 2,
+      "n": 12623
+     },
+     {
+      "colour": 2.2,
+      "n": 11195
+     },
+     {
+      "colour": 2.4,
+      "n": 11490
+     },
+     {
+      "colour": 2.6,
+      "n": 12122
+     },
+     {
+      "colour": 2.8,
+      "n": 10675
+     },
+     {
+      "colour": 3,
+      "n": 6786
+     },
+     {
+      "colour": 3.2,
+      "n": 2762
+     },
+     {
+      "colour": 3.4,
+      "n": 889
+     },
+     {
+      "colour": 3.6,
+      "n": 284
+     },
+     {
+      "colour": 3.8,
+      "n": 104
+     },
+     {
+      "colour": 4,
+      "n": 46
+     },
+     {
+      "colour": 4.2,
+      "n": 19
+     },
+     {
+      "colour": 4.4,
+      "n": 5
+     },
+     {
+      "colour": 4.6,
+      "n": 4
+     },
+     {
+      "colour": 4.8,
+      "n": 5
+     },
+     {
+      "colour": 5,
+      "n": 1
+     }
+    ]
+   },
+   {
+    "id": "disc",
+    "maxZPc": 400,
+    "n": 283272,
+    "meanColour": 1.323,
+    "bins": [
+     {
+      "colour": -0.4,
+      "n": 6
+     },
+     {
+      "colour": -0.2,
+      "n": 8
+     },
+     {
+      "colour": 0,
+      "n": 43
+     },
+     {
+      "colour": 0.2,
+      "n": 216
+     },
+     {
+      "colour": 0.4,
+      "n": 839
+     },
+     {
+      "colour": 0.6,
+      "n": 2996
+     },
+     {
+      "colour": 0.8,
+      "n": 16725
+     },
+     {
+      "colour": 1,
+      "n": 55968
+     },
+     {
+      "colour": 1.2,
+      "n": 79504
+     },
+     {
+      "colour": 1.4,
+      "n": 58955
+     },
+     {
+      "colour": 1.6,
+      "n": 31038
+     },
+     {
+      "colour": 1.8,
+      "n": 16045
+     },
+     {
+      "colour": 2,
+      "n": 8867
+     },
+     {
+      "colour": 2.2,
+      "n": 5387
+     },
+     {
+      "colour": 2.4,
+      "n": 3376
+     },
+     {
+      "colour": 2.6,
+      "n": 1990
+     },
+     {
+      "colour": 2.8,
+      "n": 861
+     },
+     {
+      "colour": 3,
+      "n": 278
+     },
+     {
+      "colour": 3.2,
+      "n": 71
+     },
+     {
+      "colour": 3.4,
+      "n": 41
+     },
+     {
+      "colour": 3.6,
+      "n": 18
+     },
+     {
+      "colour": 3.8,
+      "n": 15
+     },
+     {
+      "colour": 4,
+      "n": 8
+     },
+     {
+      "colour": 4.2,
+      "n": 6
+     },
+     {
+      "colour": 4.4,
+      "n": 5
+     },
+     {
+      "colour": 4.6,
+      "n": 1
+     },
+     {
+      "colour": 4.8,
+      "n": 2
+     },
+     {
+      "colour": 5,
+      "n": 3
+     }
+    ]
+   },
+   {
+    "id": "upper",
+    "maxZPc": null,
+    "n": 27867,
+    "meanColour": 1.004,
+    "bins": [
+     {
+      "colour": -0.4,
+      "n": 1
+     },
+     {
+      "colour": -0.2,
+      "n": 1
+     },
+     {
+      "colour": 0,
+      "n": 5
+     },
+     {
+      "colour": 0.2,
+      "n": 36
+     },
+     {
+      "colour": 0.4,
+      "n": 138
+     },
+     {
+      "colour": 0.6,
+      "n": 762
+     },
+     {
+      "colour": 0.8,
+      "n": 8601
+     },
+     {
+      "colour": 1,
+      "n": 11423
+     },
+     {
+      "colour": 1.2,
+      "n": 3989
+     },
+     {
+      "colour": 1.4,
+      "n": 2063
+     },
+     {
+      "colour": 1.6,
+      "n": 573
+     },
+     {
+      "colour": 1.8,
+      "n": 143
+     },
+     {
+      "colour": 2,
+      "n": 69
+     },
+     {
+      "colour": 2.2,
+      "n": 23
+     },
+     {
+      "colour": 2.4,
+      "n": 18
+     },
+     {
+      "colour": 2.6,
+      "n": 6
+     },
+     {
+      "colour": 2.8,
+      "n": 3
+     },
+     {
+      "colour": 3,
+      "n": 6
+     },
+     {
+      "colour": 3.2,
+      "n": 3
+     },
+     {
+      "colour": 3.6,
+      "n": 3
+     },
+     {
+      "colour": 3.8,
+      "n": 1
+     }
+    ]
+   }
+  ]
+ },
+ "disc": {
+  "form": "n(z) ∝ exp(−|z| / h_z)",
+  "scaleHeightPc": 121.3,
+  "r2": 0.977,
+  "fittedRangePc": [
+   50,
+   600
+  ]
+ }
+}

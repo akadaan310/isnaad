@@ -17,6 +17,7 @@
     "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
     "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts",
     "ingest:sky": "tsx scripts/ingest-sky.ts",
+    "ingest:gaia": "tsx scripts/ingest-gaia.ts",
     "ingest:cosmos": "tsx scripts/ingest-cosmos.ts"
   },
   "dependencies": {
