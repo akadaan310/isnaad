@@ -34,8 +34,25 @@ export type StrandKind = 'sunbula' | 'motif' | 'root' | 'discovery' | 'resonance
 
 export type StrandEvidence =
   | { kind: 'sunbula'; branch: number }
-  | { kind: 'motif'; motif: string; pattern: string; gloss: string; length: number; occurrences: number }
-  | { kind: 'root'; root: string; loci: number }
+  | {
+      kind: 'motif';
+      motif: string;
+      pattern: string;
+      gloss: string;
+      length: number;
+      /** Occurrences anywhere in the muṣḥaf. */
+      occurrences: number;
+      /** How many of those fall on a placed āyah. Always ≤ occurrences. */
+      placed: number;
+    }
+  | {
+      kind: 'root';
+      root: string;
+      /** Loci anywhere in the muṣḥaf. */
+      loci: number;
+      /** How many of those fall on a placed āyah. Always ≤ loci. */
+      placed: number;
+    }
   | {
       kind: 'discovery';
       discovery: string;
@@ -104,6 +121,9 @@ export function motifStrands(motifs: readonly Motif[], join: LocusJoin): Strand[
     if (chain.length < 2) continue;
     const rarity = 1 / Math.log2(2 + m.occurrences.length);
     const weight = clamp01(0.2 + Math.min(m.length, 12) * 0.045 + rarity * 0.4);
+    // The chain length is the placed count. It was already computed to build
+    // the links and was then thrown away, which is what made the field able to
+    // show a contour's 27 drawn segments without ever saying it recurs 60 times.
     links(chain).forEach(([a, b], k) => {
       out.push({
         id: `mo:${m.id}:${k}`,
@@ -118,6 +138,7 @@ export function motifStrands(motifs: readonly Motif[], join: LocusJoin): Strand[
           gloss: m.gloss,
           length: m.length,
           occurrences: m.occurrences.length,
+          placed: chain.length,
         },
       });
     });
@@ -158,7 +179,7 @@ export function rootStrands(
         b,
         kind: 'root',
         weight,
-        evidence: { kind: 'root', root, loci: places.length },
+        evidence: { kind: 'root', root, loci: places.length, placed: chain.length },
       });
     });
   }

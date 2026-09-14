@@ -7,11 +7,22 @@
 //
 //  السنابل are deliberately *not* on the wire. Every node already carries its
 //  seven branches, so the client rebuilds those 7,000 strands locally for free.
+//
+//  The coverage block ships with them. A drawn strand stands for part of a
+//  relation, never the whole of it, and the client cannot work out how much
+//  without the corpus totals — which live in the manifest, on this side.
 // ============================================================================
 import { NextResponse } from 'next/server';
-import { getCosmos, getMotifs, getRootIndex, getTopDiscoveries } from '@/lib/data.server';
+import {
+  getCosmos,
+  getManifest,
+  getMotifs,
+  getRootIndex,
+  getTopDiscoveries,
+} from '@/lib/data.server';
 import { buildLocusJoin } from '@/lib/cosmos/locus';
 import { discoveryStrands, motifStrands, ribatVectors, rootStrands } from '@/lib/cosmos/strands';
+import { measureCoverage } from '@/lib/cosmos/coverage';
 import { packStrands } from '@/lib/cosmos/wire';
 
 export const dynamic = 'force-dynamic';
@@ -22,14 +33,20 @@ export async function GET() {
   if (!cached) {
     let built;
     try {
-      built = await Promise.all([getCosmos(), getMotifs(), getRootIndex(), getTopDiscoveries()]);
+      built = await Promise.all([
+        getCosmos(),
+        getMotifs(),
+        getRootIndex(),
+        getTopDiscoveries(),
+        getManifest(),
+      ]);
     } catch {
       return NextResponse.json(
         { error: 'لم يُبنَ الكون بعد — شغّل npm run ingest:cosmos' },
         { status: 503 },
       );
     }
-    const [cosmos, motifs, roots, discoveries] = built;
+    const [cosmos, motifs, roots, discoveries, manifest] = built;
     const join = buildLocusJoin(cosmos.nodes);
     cached = JSON.stringify({
       ...packStrands([
@@ -38,6 +55,7 @@ export async function GET() {
         ...discoveryStrands(discoveries, join),
       ]),
       ribat: ribatVectors(discoveries, join),
+      coverage: measureCoverage(join, motifs, roots, discoveries, manifest as never),
     });
   }
   return new NextResponse(cached, {

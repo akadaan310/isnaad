@@ -15,17 +15,24 @@
 import * as React from 'react';
 import Link from 'next/link';
 import {
-  Loader2, Clock, Telescope, Layers, Radio, Eye, Sparkles, ChevronsUp,
-  ChevronsDown, Compass, GalleryVerticalEnd, Shuffle, Sun, Spline,
+  Loader2, Clock, Telescope, Layers, Eye, Sparkles, ChevronsUp,
+  ChevronsDown, GalleryVerticalEnd, Shuffle, Sun, Spline, Rocket,
 } from 'lucide-react';
 import type { CosmosNode, CosmosPayload, SkyPayload } from '@/lib/cosmos';
-import { MODALITIES } from '@/lib/time-module';
 import { PERSON_STYLE } from '@/lib/view';
 import { arabicNumber, cn } from '@/lib/utils';
 import { CosmosScene, type Pov, type SceneHandle } from './scene';
 import { TimeBoard, routeFilter, type RouteState } from './fmc';
-import { useStrandField, DEFAULT_STRAND_OPTIONS, type StrandOptions } from './use-strands';
-import { StrandInspector, StrandLegend } from './strand-panel';
+import {
+  useStrandField,
+  DEFAULT_CUT,
+  DEFAULT_STRAND_OPTIONS,
+  type CutState,
+  type StrandOptions,
+} from './use-strands';
+import { StrandLegend } from './strand-panel';
+import { GrainCard } from './grain-card';
+import { DetectorCut } from './detector-cut';
 import { BasisControl } from './basis-control';
 import {
   constellationBasis,
@@ -55,6 +62,7 @@ export function Cosmos() {
   const [route, setRoute] = React.useState<RouteState>({ legs: [], strict: false });
   const [trail, setTrail] = React.useState<number[]>([]);
   const [strandOpt, setStrandOpt] = React.useState<StrandOptions>(DEFAULT_STRAND_OPTIONS);
+  const [cut, setCut] = React.useState<CutState>(DEFAULT_CUT);
   const [legendOpen, setLegendOpen] = React.useState(true);
   // البروج is the default and nothing moves until the reader moves it: the
   // point of the control is the comparison, not a silent re-placement.
@@ -90,7 +98,7 @@ export function Cosmos() {
   // The relations the engine already found, joined to the placed āyāt. The
   // hook decides which few hundred of ~10,300 a frame may show; the scene
   // draws exactly what it is handed.
-  const field = useStrandField(nodes, focus, visible, strandOpt);
+  const field = useStrandField(nodes, focus, visible, strandOpt, cut);
 
   // The spectral basis needs the leading eigenvectors of a 1,000 × 1,000
   // adjacency, so it comes from the server; the other two are O(n) and are
@@ -244,6 +252,7 @@ export function Cosmos() {
           <Chip onClick={() => pick(Math.floor(Math.random() * nodes.length))} icon={<Shuffle className="h-3 w-3" />}>
             انطلِق
           </Chip>
+          <Link href="/rihla"><Chip icon={<Rocket className="h-3 w-3" />}>الرِّحلة</Chip></Link>
           <Link href="/explore"><Chip icon={<Telescope className="h-3 w-3" />}>السور</Chip></Link>
           <Link href="/gallery"><Chip icon={<GalleryVerticalEnd className="h-3 w-3" />}>المعرض</Chip></Link>
           <Link href="/studio"><Chip icon={<Layers className="h-3 w-3" />}>المرصد</Chip></Link>
@@ -294,6 +303,14 @@ export function Cosmos() {
               counts={field.counts}
               drawn={field.selected.length}
               total={field.all.length}
+              coverage={field.coverage}
+            />
+            <DetectorCut
+              cut={cut}
+              setCut={setCut}
+              coverage={field.coverage}
+              cutAway={field.cutAway}
+              derivation={field.derivation}
             />
           </div>
         )}
@@ -340,90 +357,21 @@ export function Cosmos() {
         />
       </div>
 
-      {/* ── the grain you are on, and its seven ── */}
+      {/* ── the grain you are on ── */}
+      {/*
+          The field is the main view. The card opens at a glance and each count
+          is a door; nothing is listed until it is asked for.
+      */}
       {node && (
-        <div className="pointer-events-auto absolute inset-x-0 bottom-0 z-20 mx-auto max-w-3xl p-4">
-          <div className="rounded-2xl border border-white/[0.08] bg-[#0a1018]/88 p-4 backdrop-blur-xl">
-            <div className="mb-1.5 flex flex-wrap items-center gap-2 text-[0.62rem]">
-              <span className="quran text-[1rem] text-gold">
-                {node.name} · {arabicNumber(node.a)}
-              </span>
-              <span className="flex items-center gap-1 text-muted-foreground">
-                <Compass className="h-2.5 w-2.5" />
-                <span className="quran text-[0.85rem]">{node.conAr}</span>
-              </span>
-              <span className="font-mono tracking-widest text-muted-foreground">{node.sig || '—'}</span>
-              {MODALITIES.map((m, k) =>
-                node.tm[k] > 0 ? (
-                  <span
-                    key={m.id}
-                    title={m.gloss}
-                    className="rounded border px-1 font-mono text-[0.52rem]"
-                    style={{ borderColor: `${m.hue}55`, color: m.hue }}
-                  >
-                    {m.code}
-                  </span>
-                ) : null,
-              )}
-            </div>
-
-            <p className="quran text-right text-[1.6rem] leading-[2.05] text-foreground/92">{node.text}</p>
-
-            {node.note && (
-              <p className="mt-2 text-[0.68rem] leading-relaxed text-muted-foreground">{node.note}</p>
-            )}
-
-            {/* السنابل */}
-            <div className="mt-3 border-t border-white/[0.07] pt-2.5">
-              <p className="mb-1.5 flex items-center gap-1.5 text-[0.58rem] text-gold/70">
-                <Radio className="h-3 w-3" />
-                السَّنَابِل — سبعُ شُعَبٍ من هذه الحبّة
-              </p>
-              <div className="flex flex-wrap gap-1">
-                {node.sb.map((j, k) => {
-                  const b = nodes[j];
-                  if (!b) return null;
-                  const dimmed = visible && !visible.has(j);
-                  return (
-                    <button
-                      key={j}
-                      onClick={() => pick(j)}
-                      title={b.text}
-                      className={cn(
-                        'group flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2 py-1 transition-all hover:border-gold/40 hover:bg-gold/10',
-                        dimmed && 'opacity-35',
-                      )}
-                    >
-                      <span className="font-mono text-[0.5rem] text-gold/60">{k + 1}</span>
-                      <span className="quran text-[0.9rem] text-foreground/80 group-hover:text-gold">
-                        {b.name} {arabicNumber(b.a)}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* ما يربط هذه الآية بغيرها — بحسب ما استنبطه المحرّك، لا تأويلًا */}
-            {(field.atFocus.length > 0 || field.ribat.length > 0) && (
-              <div className="mt-3 border-t border-white/[0.07] pt-2.5">
-                <p className="mb-1.5 flex items-center gap-1.5 text-[0.58rem] text-gold/70">
-                  <Spline className="h-3 w-3" />
-                  الخيوط — لكلِّ خيطٍ عِلّةٌ محسوبة، واتّباعُه يُغيّر موضعك
-                </p>
-                <div className="max-h-56 space-y-1 overflow-y-auto thin-scroll pl-1">
-                  <StrandInspector
-                    strands={field.atFocus}
-                    ribat={field.ribat}
-                    focus={node.i}
-                    nodes={nodes}
-                    onPick={pick}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <GrainCard
+          node={node}
+          nodes={nodes}
+          strands={field.atFocus}
+          ribat={field.ribat}
+          derivation={field.derivation}
+          visible={visible}
+          onPick={pick}
+        />
       )}
 
       {/* ── trail ── */}

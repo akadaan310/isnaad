@@ -10,7 +10,23 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
   try {
     const url = new URL(req.url);
-    const analyzed = await loadSurah(id, optionsFromQuery(url.searchParams));
+    const options = optionsFromQuery(url.searchParams);
+    const analyzed = await loadSurah(id, options);
+
+    // `only=discoveries` serialises the findings and nothing else. The analysis
+    // is identical either way — this drops the words and their segments, which
+    // are most of the payload and which the cosmos field does not read. Without
+    // it, moving a threshold would pull a few megabytes per tick.
+    if (url.searchParams.get('only') === 'discoveries') {
+      return NextResponse.json({
+        surah: id,
+        name: analyzed.surah.name,
+        ayaat: analyzed.surah.ayaat.length,
+        options,
+        discoveries: analyzed.discoveries,
+      });
+    }
+
     return NextResponse.json(toWire(analyzed));
   } catch (e) {
     return NextResponse.json(

@@ -52,6 +52,130 @@ const STRAND_COLOR: Record<StrandKind, THREE.Color> = {
 const MAX_STRANDS = 640;
 const MAX_RIBAT = 64;
 
+/**
+ * Samples along each strand's curve. A relation is drawn as a quadratic Bézier
+ * rather than a chord, and the control point is not a styling choice: it sits
+ * on the shell of the two endpoints' *mean discourse distance*.
+ *
+ * That comes out exactly, with no extra data. السُّلَّم rescales radius
+ * affinely — `ladder(r) = 18 + (r−18)k` — so the mean of two laddered radii is
+ * the laddered mean, and the mean of two radii is `radiusOf((dA+dB)/2)`. The
+ * height of every arc is therefore the proximity axis itself, and a strand
+ * between two near āyāt rides close in while one spanning the axis bows out.
+ */
+const CURVE_SAMPLES = 16;
+const CURVE_VERTS = (CURVE_SAMPLES - 1) * 2;
+
+const STRAND_VERT = /* glsl */ `
+  attribute float u;      // 0…1 along the curve
+  attribute float born;   // when this strand entered the selection
+  attribute float seed;
+  attribute vec3 tint;
+  varying float vAlpha;
+  varying vec3 vTint;
+  uniform float uTime;
+
+  void main() {
+    // Self-forming: the curve draws itself from one āyah to the other on a
+    // damped spring — it overshoots and settles, which is a real second-order
+    // response, not an eased fade. The spring is on the *growth front* only.
+    // It is deliberately not on the arc height: that height is a measured
+    // quantity, and a bow that wobbled would be asserting a distance the text
+    // does not have, for as long as the wobble lasted.
+    float age = max(0.0, uTime - born);
+    float g = clamp(1.0 - exp(-6.0 * age) * cos(9.0 * age), 0.0, 1.0);
+    float head = smoothstep(g, g - 0.11, u);
+
+    // A travelling pulse, seeded per strand so the field does not throb in
+    // unison. It marks direction of travel and nothing else.
+    float pulse = exp(-pow((fract(uTime * 0.19 + seed) - u) * 7.0, 2.0));
+
+    vAlpha = head * (0.5 + pulse * 1.5);
+    vTint = tint;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const STRAND_FRAG = /* glsl */ `
+  precision mediump float;
+  varying float vAlpha;
+  varying vec3 vTint;
+  void main() {
+    // Additive, so colour is premultiplied by alpha rather than blended.
+    gl_FragColor = vec4(vTint * vAlpha, 1.0);
+  }
+`;
+
+/**
+ * Sample a quadratic Bézier into a LineSegments pair list.
+ * `out` receives (CURVE_SAMPLES − 1) × 2 vertices starting at `at`.
+ */
+function curveInto(
+  out: Float32Array,
+  at: number,
+  ax: number, ay: number, az: number,
+  bx: number, by: number, bz: number,
+) {
+  // Control point: the chord's midpoint pushed out to the mean of the two
+  // radii — the shell of their mean discourse distance.
+  const mx = (ax + bx) * 0.5;
+  const my = (ay + by) * 0.5;
+  const mz = (az + bz) * 0.5;
+  const ml = Math.hypot(mx, my, mz);
+  const want = (Math.hypot(ax, ay, az) + Math.hypot(bx, by, bz)) * 0.5;
+  // Two āyāt on opposite rays have a midpoint at the origin and no direction to
+  // push along; the chord is then already the honest line between them.
+  const k = ml > 1e-4 ? want / ml : 1;
+  const cx = mx * k;
+  const cy = my * k;
+  const cz = mz * k;
+
+  let px = ax;
+  let py = ay;
+  let pz = az;
+  for (let i = 1; i < CURVE_SAMPLES; i++) {
+    const t = i / (CURVE_SAMPLES - 1);
+    const n = 1 - t;
+    const w0 = n * n;
+    const w1 = 2 * n * t;
+    const w2 = t * t;
+    const qx = w0 * ax + w1 * cx + w2 * bx;
+    const qy = w0 * ay + w1 * cy + w2 * by;
+    const qz = w0 * az + w1 * cz + w2 * bz;
+    const o = at + (i - 1) * 6;
+    out[o] = px;
+    out[o + 1] = py;
+    out[o + 2] = pz;
+    out[o + 3] = qx;
+    out[o + 4] = qy;
+    out[o + 5] = qz;
+    px = qx;
+    py = qy;
+    pz = qz;
+  }
+}
+
+/** `u` runs 0→1 along a strand and never changes; written once per slot. */
+function fillCurveU(u: Float32Array, slots: number) {
+  for (let s = 0; s < slots; s++) {
+    for (let i = 1; i < CURVE_SAMPLES; i++) {
+      const o = s * CURVE_VERTS + (i - 1) * 2;
+      u[o] = (i - 1) / (CURVE_SAMPLES - 1);
+      u[o + 1] = i / (CURVE_SAMPLES - 1);
+    }
+  }
+}
+
+/** Deterministic per-strand phase, so the pulses do not march in step. */
+function hashSeed(id: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return ((h >>> 0) % 1000) / 1000;
+}
+
 const RAD = Math.PI / 180;
 const SKY_R = 900;
 
@@ -298,18 +422,32 @@ export function CosmosScene({
     //  the family; brightness is prominence, premultiplied because additive
     //  blending has no per-vertex alpha of its own.
     const strandGeo = new THREE.BufferGeometry();
-    strandGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAX_STRANDS * 2 * 3), 3));
-    strandGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(MAX_STRANDS * 2 * 3), 3));
-    const strandLines = new THREE.LineSegments(
-      strandGeo,
-      new THREE.LineBasicMaterial({
-        vertexColors: true,
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      }),
-    );
+    const strandPos = new Float32Array(MAX_STRANDS * CURVE_VERTS * 3);
+    const strandTint = new Float32Array(MAX_STRANDS * CURVE_VERTS * 3);
+    const strandU = new Float32Array(MAX_STRANDS * CURVE_VERTS);
+    const strandBorn = new Float32Array(MAX_STRANDS * CURVE_VERTS);
+    const strandSeed = new Float32Array(MAX_STRANDS * CURVE_VERTS);
+    fillCurveU(strandU, MAX_STRANDS);
+    strandGeo.setAttribute('position', new THREE.BufferAttribute(strandPos, 3));
+    strandGeo.setAttribute('tint', new THREE.BufferAttribute(strandTint, 3));
+    strandGeo.setAttribute('u', new THREE.BufferAttribute(strandU, 1));
+    strandGeo.setAttribute('born', new THREE.BufferAttribute(strandBorn, 1));
+    strandGeo.setAttribute('seed', new THREE.BufferAttribute(strandSeed, 1));
+    const strandMat = new THREE.ShaderMaterial({
+      vertexShader: STRAND_VERT,
+      fragmentShader: STRAND_FRAG,
+      uniforms: { uTime: { value: 0 } },
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const strandLines = new THREE.LineSegments(strandGeo, strandMat);
     scene.add(strandLines);
+
+    // When a strand entered the selection. A relation that survives a change of
+    // focus keeps its birth time and so keeps its drawn form: only genuinely
+    // new relations grow, which is what makes the growth mean something.
+    const bornAt = new Map<string, number>();
 
     // ── رِباط — حركة المحور, drawn as the movement it measures ───────────────
     //
@@ -318,18 +456,30 @@ export function CosmosScene({
     //  from the person the attribution left to the person it arrived at. The
     //  gradient is the direction: nothing else is needed to read it.
     const ribatGeo = new THREE.BufferGeometry();
-    ribatGeo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(MAX_RIBAT * 2 * 3), 3));
-    ribatGeo.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(MAX_RIBAT * 2 * 3), 3));
-    const ribatLines = new THREE.LineSegments(
-      ribatGeo,
-      new THREE.LineBasicMaterial({
-        vertexColors: true,
-        transparent: true,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      }),
-    );
+    const ribatPos = new Float32Array(MAX_RIBAT * CURVE_VERTS * 3);
+    const ribatTint = new Float32Array(MAX_RIBAT * CURVE_VERTS * 3);
+    const ribatU = new Float32Array(MAX_RIBAT * CURVE_VERTS);
+    const ribatBorn = new Float32Array(MAX_RIBAT * CURVE_VERTS);
+    const ribatSeed = new Float32Array(MAX_RIBAT * CURVE_VERTS);
+    fillCurveU(ribatU, MAX_RIBAT);
+    ribatGeo.setAttribute('position', new THREE.BufferAttribute(ribatPos, 3));
+    ribatGeo.setAttribute('tint', new THREE.BufferAttribute(ribatTint, 3));
+    ribatGeo.setAttribute('u', new THREE.BufferAttribute(ribatU, 1));
+    ribatGeo.setAttribute('born', new THREE.BufferAttribute(ribatBorn, 1));
+    ribatGeo.setAttribute('seed', new THREE.BufferAttribute(ribatSeed, 1));
+    const ribatMat = new THREE.ShaderMaterial({
+      vertexShader: STRAND_VERT,
+      fragmentShader: STRAND_FRAG,
+      uniforms: { uTime: { value: 0 } },
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    });
+    const ribatLines = new THREE.LineSegments(ribatGeo, ribatMat);
     scene.add(ribatLines);
+
+    /** Six floats of working space for a رِباط segment's two ends. */
+    const scratch = new Float32Array(6);
 
     /** The سُلَّم transform, so strand ends track the field they connect. */
     const ladder = (x: number, y: number, z: number, k: number, out: Float32Array, at: number) => {
@@ -597,69 +747,112 @@ export function CosmosScene({
       branchGeo.attributes.position.needsUpdate = true;
 
       // ── الخيوط ────────────────────────────────────────────────────────────
-      const sp = strandGeo.attributes.position.array as Float32Array;
-      const sc = strandGeo.attributes.color.array as Float32Array;
+      strandMat.uniforms.uTime.value = t;
+      ribatMat.uniforms.uTime.value = t;
+      const alive = new Set<string>();
       const drawn = Math.min(S.strands.length, MAX_STRANDS);
       for (let k = 0; k < drawn; k++) {
         const st = S.strands[k];
-        const o = k * 6;
-        sp[o] = nodePos[st.a * 3];
-        sp[o + 1] = nodePos[st.a * 3 + 1];
-        sp[o + 2] = nodePos[st.a * 3 + 2];
-        sp[o + 3] = nodePos[st.b * 3];
-        sp[o + 4] = nodePos[st.b * 3 + 1];
-        sp[o + 5] = nodePos[st.b * 3 + 2];
+        alive.add(st.id);
+        let birth = bornAt.get(st.id);
+        if (birth === undefined) {
+          birth = t;
+          bornAt.set(st.id, birth);
+        }
+        curveInto(
+          strandPos,
+          k * CURVE_VERTS * 3,
+          nodePos[st.a * 3], nodePos[st.a * 3 + 1], nodePos[st.a * 3 + 2],
+          nodePos[st.b * 3], nodePos[st.b * 3 + 1], nodePos[st.b * 3 + 2],
+        );
         const c = STRAND_COLOR[st.kind] ?? NEUTRAL;
         // Additive blending is unforgiving: the ambient field has to stay
         // near-subliminal so that the neighbourhood of the focused āyah is
         // what the eye actually resolves.
         const near = S.focus !== null && (st.a === S.focus || st.b === S.focus);
         const g = (0.02 + st.prominence * 0.16) * (0.4 + S.burn * 0.6) * (near ? 3.4 : 1);
-        for (let e = 0; e < 2; e++) {
-          sc[o + e * 3] = c.r * g;
-          sc[o + e * 3 + 1] = c.g * g;
-          sc[o + e * 3 + 2] = c.b * g;
+        const seed = hashSeed(st.id);
+        for (let e = 0; e < CURVE_VERTS; e++) {
+          const vo = (k * CURVE_VERTS + e) * 3;
+          strandTint[vo] = c.r * g;
+          strandTint[vo + 1] = c.g * g;
+          strandTint[vo + 2] = c.b * g;
+          strandBorn[k * CURVE_VERTS + e] = birth;
+          strandSeed[k * CURVE_VERTS + e] = seed;
         }
       }
-      strandGeo.setDrawRange(0, drawn * 2);
+      // A strand that left the selection forgets when it was born, so coming
+      // back is a new arrival and draws itself again.
+      if (bornAt.size > MAX_STRANDS * 2) {
+        for (const id of bornAt.keys()) if (!alive.has(id)) bornAt.delete(id);
+      }
+      strandGeo.setDrawRange(0, drawn * CURVE_VERTS);
       strandGeo.attributes.position.needsUpdate = true;
-      strandGeo.attributes.color.needsUpdate = true;
+      strandGeo.attributes.tint.needsUpdate = true;
+      strandGeo.attributes.born.needsUpdate = true;
+      strandGeo.attributes.seed.needsUpdate = true;
 
       // ── رِباط ─────────────────────────────────────────────────────────────
-      const rp = ribatGeo.attributes.position.array as Float32Array;
-      const rc = ribatGeo.attributes.color.array as Float32Array;
       const rDrawn = Math.min(S.ribat.length, MAX_RIBAT);
       for (let k = 0; k < rDrawn; k++) {
         const v = S.ribat[k];
-        const o = k * 6;
+        const base = k * CURVE_VERTS * 3;
+        let hx: number, hy: number, hz: number, tx: number, ty: number, tz: number;
         if (v.to !== null) {
           // Both āyāt are placed: the movement is a real trajectory, so it is
           // read straight off the live positions.
-          rp[o] = nodePos[v.node * 3];
-          rp[o + 1] = nodePos[v.node * 3 + 1];
-          rp[o + 2] = nodePos[v.node * 3 + 2];
-          rp[o + 3] = nodePos[v.to * 3];
-          rp[o + 4] = nodePos[v.to * 3 + 1];
-          rp[o + 5] = nodePos[v.to * 3 + 2];
+          hx = nodePos[v.node * 3];
+          hy = nodePos[v.node * 3 + 1];
+          hz = nodePos[v.node * 3 + 2];
+          tx = nodePos[v.to * 3];
+          ty = nodePos[v.to * 3 + 1];
+          tz = nodePos[v.to * 3 + 2];
         } else {
+          // Both ends lie on the āyah's own ray, so the control point falls on
+          // that ray too and the curve stays exactly radial — the extent is
+          // still |حركة المحور| to the last decimal.
           const { head, tail } = ribatSegment(v, S.nodes);
-          ladder(head[0], head[1], head[2], S.sullam, rp, o);
-          ladder(tail[0], tail[1], tail[2], S.sullam, rp, o + 3);
+          ladder(head[0], head[1], head[2], S.sullam, scratch, 0);
+          ladder(tail[0], tail[1], tail[2], S.sullam, scratch, 3);
+          hx = scratch[0];
+          hy = scratch[1];
+          hz = scratch[2];
+          tx = scratch[3];
+          ty = scratch[4];
+          tz = scratch[5];
         }
-        const a = PERSON_COLOR[v.from] ?? NEUTRAL;
-        const b = PERSON_COLOR[v.toPerson] ?? NEUTRAL;
-        // Pulsed, because a displacement is an event rather than a place.
-        const g = (0.4 + v.prominence * 0.7) * (0.7 + Math.sin(t * 1.6 + k) * 0.3);
-        rc[o] = a.r * g * 0.6;
-        rc[o + 1] = a.g * g * 0.6;
-        rc[o + 2] = a.b * g * 0.6;
-        rc[o + 3] = b.r * g;
-        rc[o + 4] = b.g * g;
-        rc[o + 5] = b.b * g;
+        curveInto(ribatPos, base, hx, hy, hz, tx, ty, tz);
+
+        const from = PERSON_COLOR[v.from] ?? NEUTRAL;
+        const to = PERSON_COLOR[v.toPerson] ?? NEUTRAL;
+        // Damped like the strands, and under the same السِّراج control. A
+        // displacement is worth noticing, but forty-eight of them at full
+        // brightness drown out the field they are meant to be movements in.
+        const nearR = S.focus !== null && (v.node === S.focus || v.to === S.focus);
+        const g = (0.06 + v.prominence * 0.2) * (0.4 + S.burn * 0.6) * (nearR ? 3.6 : 1);
+        let birth = bornAt.get(v.id);
+        if (birth === undefined) {
+          birth = t;
+          bornAt.set(v.id, birth);
+        }
+        const seed = hashSeed(v.id);
+        // The gradient runs departing person → arriving person along the
+        // curve's own parameter, so the colour change *is* the displacement.
+        for (let e = 0; e < CURVE_VERTS; e++) {
+          const f = ribatU[k * CURVE_VERTS + e];
+          const vo = base + e * 3;
+          ribatTint[vo] = (from.r + (to.r - from.r) * f) * g;
+          ribatTint[vo + 1] = (from.g + (to.g - from.g) * f) * g;
+          ribatTint[vo + 2] = (from.b + (to.b - from.b) * f) * g;
+          ribatBorn[k * CURVE_VERTS + e] = birth;
+          ribatSeed[k * CURVE_VERTS + e] = seed;
+        }
       }
-      ribatGeo.setDrawRange(0, rDrawn * 2);
+      ribatGeo.setDrawRange(0, rDrawn * CURVE_VERTS);
       ribatGeo.attributes.position.needsUpdate = true;
-      ribatGeo.attributes.color.needsUpdate = true;
+      ribatGeo.attributes.tint.needsUpdate = true;
+      ribatGeo.attributes.born.needsUpdate = true;
+      ribatGeo.attributes.seed.needsUpdate = true;
 
       // ── labels ────────────────────────────────────────────────────────────
       const rect = renderer.domElement.getBoundingClientRect();
@@ -719,9 +912,9 @@ export function CosmosScene({
       nodeMat.dispose();
       branchGeo.dispose();
       strandGeo.dispose();
-      strandLines.material.dispose();
+      strandMat.dispose();
       ribatGeo.dispose();
-      ribatLines.material.dispose();
+      ribatMat.dispose();
       host.removeChild(renderer.domElement);
       if (sceneRef) sceneRef.current = null;
     };

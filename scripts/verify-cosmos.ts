@@ -32,6 +32,8 @@ import {
   type Strand,
 } from '../src/lib/cosmos/strands';
 import { distanceAtRadius, lengthOf } from '../src/lib/cosmos/placement';
+import { measureCoverage } from '../src/lib/cosmos/coverage';
+import { DEFAULT_OPTIONS } from '../src/lib/engine/detectors';
 import type { CosmosPayload } from '../src/lib/cosmos/types';
 import type { Discovery, Motif } from '../src/lib/types';
 import type { RootIndex } from '../src/lib/engine/graph';
@@ -163,6 +165,77 @@ async function main() {
     worst.n < worst.m.occurrences.length,
     `${worst.m.id} has ${worst.m.occurrences.length} occurrences → ${worst.n} strands`,
   );
+
+  console.log('\n  التغطية — what a drawn relation stands for\n');
+
+  const manifest = await read<Record<string, number | Record<string, number>>>('index', 'manifest.json');
+  const reach = measureCoverage(join, motifs, roots, discoveries, manifest as never);
+
+  // The absence must be reported, and it can only be reported truthfully if
+  // every placed count is a subset of its corpus count.
+  check(
+    'no motif claims more placed occurrences than it has',
+    mo.every((s) => {
+      const e = s.evidence as { occurrences: number; placed: number };
+      return e.placed >= 2 && e.placed <= e.occurrences;
+    }),
+  );
+  check(
+    'no root claims more placed loci than it has',
+    rt.every((s) => {
+      const e = s.evidence as { loci: number; placed: number };
+      return e.placed >= 2 && e.placed <= e.loci;
+    }),
+  );
+  check(
+    'a chain of n placed āyāt emits exactly n−1 strands',
+    (() => {
+      const byMotif = new Map<string, number>();
+      for (const s of mo) {
+        const id = (s.evidence as { motif: string }).motif;
+        byMotif.set(id, (byMotif.get(id) ?? 0) + 1);
+      }
+      return [...byMotif].every(([id, n]) => {
+        const one = mo.find((s) => (s.evidence as { motif: string }).motif === id)!;
+        return (one.evidence as { placed: number }).placed - 1 === n;
+      });
+    })(),
+  );
+  check(
+    'field coverage is a strict subset of the muṣḥaf',
+    reach.ayaat.placed < reach.ayaat.corpus &&
+      reach.motif.placed < reach.motif.corpus &&
+      reach.root.placed < reach.root.corpus,
+    `${reach.ayaat.placed}/${reach.ayaat.corpus} āyāt · ${reach.motif.placed}/${reach.motif.corpus} motif occurrences`,
+  );
+
+  // The discovery index was truncated to the strongest 2,500 of 7,057, so its
+  // real floor is far above the detector's declared minScore. A field-level
+  // threshold below that floor recovers nothing, and the UI has to say so —
+  // which it can only do if the floor is measured rather than assumed.
+  check(
+    'the discovery floor is measured, and is above the mined threshold',
+    reach.discoveryFloor > DEFAULT_OPTIONS.minScore,
+    `index floor ${reach.discoveryFloor.toFixed(3)} vs engine minScore ${DEFAULT_OPTIONS.minScore}`,
+  );
+  check(
+    'the index is truncated, and the figures to say so are present',
+    reach.discovery.indexed < reach.discovery.corpus &&
+      reach.discovery.corpus > 0 &&
+      !!reach.root.gate,
+    `${reach.discovery.indexed} of ${reach.discovery.corpus} retained; root gate ` +
+      `${reach.root.gate?.min}–${reach.root.gate?.max}, ${reach.root.gate?.passed} passed`,
+  );
+
+  // القَطْع at the field level is a filter over mined scores, so it must be
+  // exactly equivalent to re-selecting the findings at or above the threshold.
+  for (const t of [0.7, 0.85, 0.95]) {
+    const kept = dc.filter((s) => (s.evidence as { score: number }).score >= t);
+    const expected = discoveries.filter(
+      (d) => d.score >= t && d.ayahFrom !== d.ayahTo && join.has(d.surah, d.ayahFrom) && join.has(d.surah, d.ayahTo),
+    ).length;
+    check(`the cut at ${t} is exact`, kept.length === expected, `${kept.length} strands survive`);
+  }
 
   console.log('\n  الاختيار — what a frame is allowed to show\n');
 

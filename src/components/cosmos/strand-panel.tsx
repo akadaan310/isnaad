@@ -13,9 +13,10 @@ import * as React from 'react';
 import { GitBranch, Repeat, Sprout, Radio, Waves, ArrowLeftRight } from 'lucide-react';
 import type { SelectedRibat, SelectedStrand, StrandKind } from '@/lib/cosmos/strands';
 import type { CosmosNode } from '@/lib/cosmos';
+import type { FieldCoverage } from '@/lib/cosmos/coverage';
 import { PERSON_STYLE } from '@/lib/view';
 import { arabicDecimal, arabicNumber, cn } from '@/lib/utils';
-import type { StrandOptions } from './use-strands';
+import type { FamilyCount, StrandOptions } from './use-strands';
 
 export const FAMILY: Record<
   StrandKind,
@@ -53,23 +54,70 @@ export const FAMILY: Record<
   },
 };
 
-/** The engine's own account of why a strand exists. Never a paraphrase. */
+/**
+ * The engine's own account of why a strand exists. Never a paraphrase — and,
+ * where the relation reaches past the placed 1,000, never silent about it: a
+ * contour drawn as a few segments may recur far more often than the field can
+ * show, and quoting only what is drawn would equate the field with the muṣḥaf.
+ */
 export function strandReason(s: SelectedStrand): string {
   const e = s.evidence;
   switch (e.kind) {
     case 'sunbula':
       return `الشعبة ${arabicNumber(e.branch + 1)}`;
     case 'motif':
-      return `${e.pattern} · ${arabicNumber(e.length)} مواضع إسناد، تكرّر ${arabicNumber(e.occurrences)} مرّة`;
+      return (
+        `${e.pattern} · ${arabicNumber(e.length)} مواضع إسناد · ` +
+        `تكرّر ${arabicNumber(e.occurrences)} مرّة في المصحف، ` +
+        `${arabicNumber(e.placed)} منها في الحقل`
+      );
     case 'root':
-      return `«${e.root}» — لا يقع في المصحف إلا في ${arabicNumber(e.loci)} موضعًا`;
+      return (
+        `«${e.root}» — لا يقع في المصحف إلا في ${arabicNumber(e.loci)} موضعًا، ` +
+        `${arabicNumber(e.placed)} منها في الحقل`
+      );
     case 'discovery':
-      return e.sharedRoots.length
-        ? `${e.title} · الجذور الرابطة: ${e.sharedRoots.slice(0, 4).join('، ')}`
-        : e.title;
+      return (
+        `${e.title} · درجة ${arabicDecimal(e.score, 2)}` +
+        (e.sharedRoots.length ? ` · الجذور الرابطة: ${e.sharedRoots.slice(0, 4).join('، ')}` : '')
+      );
     case 'resonance':
       return `${e.reason} · ${e.sig}`;
   }
+}
+
+/** The coverage line for one family: drawn, present in the field, in the muṣḥaf. */
+function familyReach(k: StrandKind, coverage: FieldCoverage | null): string | null {
+  if (!coverage) return null;
+  if (k === 'motif') {
+    const g = coverage.motif.groups!;
+    return (
+      `${arabicNumber(coverage.motif.placed)} من ${arabicNumber(coverage.motif.corpus)} موضعًا في الحقل · ` +
+      `${arabicNumber(g.placed)} من ${arabicNumber(g.corpus)} كنتورًا`
+    );
+  }
+  if (k === 'root') {
+    const g = coverage.root.groups!;
+    const gate = coverage.root.gate;
+    return (
+      `${arabicNumber(coverage.root.placed)} من ${arabicNumber(coverage.root.indexed)} موضعًا ضمن الحدّ · ` +
+      `${arabicNumber(g.placed)} من ${arabicNumber(g.corpus)} جذرًا` +
+      (gate
+        ? ` · يُرسم الجذر إن وقع في ${arabicNumber(gate.min)}–${arabicNumber(gate.max)} موضعًا، ` +
+          `وقد اجتاز ${arabicNumber(gate.passed)}`
+        : '')
+    );
+  }
+  if (k === 'discovery') {
+    return (
+      `${arabicNumber(coverage.discovery.placed)} ضفّةً موضوعة · ` +
+      `من ${arabicNumber(coverage.discovery.indexed)} مفهرسًا من ` +
+      `${arabicNumber(coverage.discovery.corpus)} استنباطًا في المصحف`
+    );
+  }
+  if (k === 'sunbula') return 'كلُّها في الحقل — سبعٌ لكل حبّة';
+  if (k === 'resonance') return `يُحسب عند كل آية على ${arabicNumber(coverage.ayaat.corpus)} آية`;
+  return null;
 }
 
 export function StrandLegend({
@@ -78,43 +126,59 @@ export function StrandLegend({
   counts,
   drawn,
   total,
+  coverage,
 }: {
   opt: StrandOptions;
   setOpt: (o: StrandOptions) => void;
-  counts: Record<StrandKind, number>;
+  counts: Record<StrandKind, FamilyCount>;
   drawn: number;
   total: number;
+  coverage: FieldCoverage | null;
 }) {
   const toggle = (k: StrandKind) => setOpt({ ...opt, kinds: { ...opt.kinds, [k]: !opt.kinds[k] } });
   return (
     <div className="w-48 rounded-xl border border-white/[0.07] bg-black/40 p-2 backdrop-blur-sm">
-      <p className="mb-1.5 flex items-center justify-between text-[0.58rem] tracking-wider text-gold/70">
+      <p className="mb-1 flex items-center justify-between text-[0.58rem] tracking-wider text-gold/70">
         <span>الخيوط</span>
         <span className="font-mono text-muted-foreground/70">
           {arabicNumber(drawn)}/{arabicNumber(total)}
         </span>
       </p>
+      {coverage && (
+        <p className="mb-1.5 text-[0.48rem] leading-snug text-muted-foreground/60">
+          الحقلُ {arabicNumber(coverage.ayaat.placed)} آيةً من {arabicNumber(coverage.ayaat.corpus)} —
+          فما تراه بعضُ العلاقة لا كلُّها.
+        </p>
+      )}
       <div className="space-y-0.5">
         {(Object.keys(FAMILY) as StrandKind[]).map((k) => {
           const f = FAMILY[k];
           const on = opt.kinds[k];
+          const reach = familyReach(k, coverage);
           return (
             <button
               key={k}
               onClick={() => toggle(k)}
-              title={f.gloss}
+              title={reach ? `${f.gloss}\n\n${reach}` : f.gloss}
               className={cn(
-                'flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-right transition-colors',
+                'w-full rounded px-1.5 py-1 text-right transition-colors',
                 on ? 'bg-white/[0.05]' : 'opacity-40 hover:opacity-70',
               )}
             >
-              <span style={{ color: f.hue }}>{f.icon}</span>
-              <span className="quran flex-1 text-[0.85rem]" style={{ color: on ? f.hue : undefined }}>
-                {f.label}
+              <span className="flex items-center gap-1.5">
+                <span style={{ color: f.hue }}>{f.icon}</span>
+                <span className="quran flex-1 text-[0.85rem]" style={{ color: on ? f.hue : undefined }}>
+                  {f.label}
+                </span>
+                <span className="font-mono text-[0.5rem] text-muted-foreground/60">
+                  {arabicNumber(counts[k].drawn)}/{arabicNumber(counts[k].available)}
+                </span>
               </span>
-              <span className="font-mono text-[0.5rem] text-muted-foreground/60">
-                {arabicNumber(counts[k])}
-              </span>
+              {on && reach && (
+                <span className="mt-0.5 block text-[0.46rem] leading-snug text-muted-foreground/55">
+                  {reach}
+                </span>
+              )}
             </button>
           );
         })}
