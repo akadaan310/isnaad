@@ -12,5 +12,13 @@ await p.screenshot({ path: out + '/field.png' });
 await p.keyboard.press('r');
 await p.waitForTimeout(3500);
 await p.screenshot({ path: out + '/focus.png' });
+// swap the basis to the isnād mix and let the field settle
+await p.keyboard.press('Escape');
+await p.getByTitle(/الطول من مزيج المتكلم/).click();
+await p.waitForTimeout(2500);
+await p.screenshot({ path: out + '/basis-isnad.png' });
+await p.getByTitle(/شبكة الخيوط نفسها/).click();
+await p.waitForTimeout(5000);
+await p.screenshot({ path: out + '/basis-spectral.png' });
 console.log('console errors:', errs.length ? errs.slice(0, 8) : 'none');
 await b.close();

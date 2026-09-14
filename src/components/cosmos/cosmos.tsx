@@ -26,6 +26,15 @@ import { CosmosScene, type Pov, type SceneHandle } from './scene';
 import { TimeBoard, routeFilter, type RouteState } from './fmc';
 import { useStrandField, DEFAULT_STRAND_OPTIONS, type StrandOptions } from './use-strands';
 import { StrandInspector, StrandLegend } from './strand-panel';
+import { BasisControl } from './basis-control';
+import {
+  constellationBasis,
+  contourBasis,
+  isnadBasis,
+  measureBasis,
+  type BasisId,
+} from '@/lib/cosmos/basis';
+import type { Vec3 } from '@/lib/cosmos/placement';
 
 const POVS: { id: Pov; label: string; hint: string; hue: string }[] = [
   { id: 'free', label: 'طَلِيق', hint: 'تطير كما تشاء — WASD وسحبٌ بالفأرة', hue: '#C8A45C' },
@@ -47,6 +56,12 @@ export function Cosmos() {
   const [trail, setTrail] = React.useState<number[]>([]);
   const [strandOpt, setStrandOpt] = React.useState<StrandOptions>(DEFAULT_STRAND_OPTIONS);
   const [legendOpen, setLegendOpen] = React.useState(true);
+  // البروج is the default and nothing moves until the reader moves it: the
+  // point of the control is the comparison, not a silent re-placement.
+  const [basisId, setBasisId] = React.useState<BasisId>('constellation');
+  const [basisBlend, setBasisBlend] = React.useState(1);
+  const [spectral, setSpectral] = React.useState<{ directions: Vec3[]; locality: number } | null>(null);
+  const [spectralLoading, setSpectralLoading] = React.useState(false);
 
   const sceneRef = React.useRef<SceneHandle | null>(null);
   const flightRef = React.useRef<number | null>(null);
@@ -76,6 +91,44 @@ export function Cosmos() {
   // hook decides which few hundred of ~10,300 a frame may show; the scene
   // draws exactly what it is handed.
   const field = useStrandField(nodes, focus, visible, strandOpt);
+
+  // The spectral basis needs the leading eigenvectors of a 1,000 × 1,000
+  // adjacency, so it comes from the server; the other two are O(n) and are
+  // built here the moment they are asked for.
+  React.useEffect(() => {
+    if (basisId !== 'spectral' || spectral || spectralLoading) return;
+    setSpectralLoading(true);
+    void fetch('/api/cosmos/basis')
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.error) setSpectral({ directions: d.directions, locality: d.locality });
+      })
+      .catch(() => undefined)
+      .finally(() => setSpectralLoading(false));
+  }, [basisId, spectral, spectralLoading]);
+
+  const basisDirections = React.useMemo<Vec3[] | null>(() => {
+    if (!nodes.length || basisId === 'constellation') return null;
+    if (basisId === 'isnad') return isnadBasis(nodes).directions;
+    if (basisId === 'contour') return contourBasis(nodes).directions;
+    return spectral?.directions ?? null;
+  }, [nodes, basisId, spectral]);
+
+  // Measured against the relations that owe nothing to placement, which is the
+  // only honest test: السنابل were themselves built from isnād and time.
+  const locality = React.useMemo(() => {
+    if (!nodes.length || !field.ready) return null;
+    if (basisId === 'spectral') return spectral?.locality ?? null;
+    const independent = field.all.filter((s) => s.kind !== 'sunbula');
+    if (!independent.length) return null;
+    const b =
+      basisId === 'isnad'
+        ? isnadBasis(nodes)
+        : basisId === 'contour'
+          ? contourBasis(nodes)
+          : constellationBasis(nodes);
+    return measureBasis(nodes, independent, b).locality;
+  }, [nodes, basisId, field.ready, field.all, spectral]);
 
   const goTo = React.useCallback(
     (i: number) => {
@@ -162,6 +215,8 @@ export function Cosmos() {
         showFigures={figures}
         strands={field.selected}
         ribat={field.ribat}
+        basis={basisDirections}
+        basisBlend={basisBlend}
         onPick={pick}
         sceneRef={sceneRef}
       />
@@ -196,7 +251,7 @@ export function Cosmos() {
       </header>
 
       {/* ── POV: the isnād is the camera ── */}
-      <div className="pointer-events-auto absolute right-4 top-24 z-20 w-40 space-y-1">
+      <div className="pointer-events-auto absolute right-4 top-24 z-20 max-h-[calc(100dvh-8rem)] w-48 space-y-1 overflow-y-auto thin-scroll pl-1">
         <p className="mb-1 flex items-center gap-1 text-[0.58rem] tracking-wider text-gold/70">
           <Eye className="h-3 w-3" />
           مقعدُ النظر
@@ -224,7 +279,15 @@ export function Cosmos() {
           </p>
         )}
         {legendOpen && field.ready && (
-          <div className="pt-2">
+          <div className="space-y-2 pt-2">
+            <BasisControl
+              basis={basisId}
+              setBasis={setBasisId}
+              blend={basisBlend}
+              setBlend={setBasisBlend}
+              locality={locality}
+              loading={spectralLoading}
+            />
             <StrandLegend
               opt={strandOpt}
               setOpt={setStrandOpt}

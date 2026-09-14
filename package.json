@@ -12,6 +12,7 @@
     "ingest:refresh": "tsx scripts/ingest-quran.ts --refresh",
     "verify": "tsx scripts/verify-exemplars.ts",
     "verify:cosmos": "tsx scripts/verify-cosmos.ts",
+    "basis": "tsx scripts/compare-basis.ts",
     "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",
     "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed-composition.ts",
     "ingest:sky": "tsx scripts/ingest-sky.ts",

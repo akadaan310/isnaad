@@ -24,7 +24,7 @@ import * as THREE from 'three';
 import type { CosmosNode, SkyPayload } from '@/lib/cosmos';
 import type { SelectedRibat, SelectedStrand, StrandKind } from '@/lib/cosmos/strands';
 import { ribatSegment } from '@/lib/cosmos/strands';
-import { RADIAL_BASE } from '@/lib/cosmos/placement';
+import { RADIAL_BASE, radiusOf, type Vec3 } from '@/lib/cosmos/placement';
 
 export type Pov = 'mutakallim' | 'mukhatab' | 'ghaib' | 'free';
 
@@ -141,6 +141,8 @@ export function CosmosScene({
   showFigures,
   strands,
   ribat,
+  basis,
+  basisBlend,
   onPick,
   sceneRef,
 }: {
@@ -158,6 +160,14 @@ export function CosmosScene({
   /** Already selected — the scene draws what it is handed and never filters. */
   strands: SelectedStrand[];
   ribat: SelectedRibat[];
+  /**
+   * Candidate directions from a derived basis, or null to stand on the برج
+   * placement the field was ingested with. Radius is never touched: it is
+   * discourse distance under every basis.
+   */
+  basis: Vec3[] | null;
+  /** 0 keeps the placement in use, 1 stands fully on the derived basis. */
+  basisBlend: number;
   onPick: (index: number) => void;
   sceneRef?: React.MutableRefObject<SceneHandle | null>;
 }) {
@@ -165,8 +175,12 @@ export function CosmosScene({
   const labelHost = React.useRef<HTMLDivElement>(null);
 
   // Everything the animation loop needs, without re-creating the scene.
-  const live = React.useRef({ focus, pov, sullam, burn, visible, showFigures, strands, ribat, onPick, nodes });
-  live.current = { focus, pov, sullam, burn, visible, showFigures, strands, ribat, onPick, nodes };
+  const live = React.useRef({
+    focus, pov, sullam, burn, visible, showFigures, strands, ribat, basis, basisBlend, onPick, nodes,
+  });
+  live.current = {
+    focus, pov, sullam, burn, visible, showFigures, strands, ribat, basis, basisBlend, onPick, nodes,
+  };
 
   React.useEffect(() => {
     const host = mount.current;
@@ -435,6 +449,8 @@ export function CosmosScene({
     let raf = 0;
     let t = 0;
     let lastSullam = -1;
+    let lastBlend = 0;
+    let lastBasis: Vec3[] | null = null;
     const clock = new THREE.Clock();
 
     const animate = () => {
@@ -444,6 +460,41 @@ export function CosmosScene({
 
       // السُّلَّم rescales the radius axis: climbing pushes الغيبة outward and
       // draws المناجاة in, so the ladder is a lens on the same space.
+      //
+      // The basis decides direction only. Blending it in eases the field from
+      // the برج placement toward one derived from what the engine computed,
+      // so the two can be held against each other rather than swapped.
+      const blend = S.basis ? S.basisBlend : 0;
+      if (blend !== lastBlend || S.basis !== lastBasis) {
+        lastBlend = blend;
+        lastBasis = S.basis;
+        lastSullam = -1;
+        for (let i = 0; i < N; i++) {
+          const n = S.nodes[i];
+          if (!S.basis || blend <= 0) {
+            basePos[i * 3] = n.p[0];
+            basePos[i * 3 + 1] = n.p[1];
+            basePos[i * 3 + 2] = n.p[2];
+            continue;
+          }
+          const r0 = Math.hypot(n.p[0], n.p[1], n.p[2]) || 1;
+          const b = S.basis[i];
+          // Blend the two directions, then restore the radius: discourse
+          // distance must survive the morph untouched.
+          let dx = (n.p[0] / r0) * (1 - blend) + b[0] * blend;
+          let dy = (n.p[1] / r0) * (1 - blend) + b[1] * blend;
+          let dz = (n.p[2] / r0) * (1 - blend) + b[2] * blend;
+          const m = Math.hypot(dx, dy, dz) || 1;
+          dx /= m;
+          dy /= m;
+          dz /= m;
+          const r = radiusOf(n.d);
+          basePos[i * 3] = dx * r;
+          basePos[i * 3 + 1] = dy * r;
+          basePos[i * 3 + 2] = dz * r;
+        }
+      }
+
       if (S.sullam !== lastSullam) {
         lastSullam = S.sullam;
         for (let i = 0; i < N; i++) {
