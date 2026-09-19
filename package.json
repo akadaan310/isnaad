@@ -12,6 +12,7 @@
     "ingest:refresh": "tsx scripts/ingest-quran.ts --refresh",
     "verify": "tsx scripts/verify-exemplars.ts",
     "verify:cosmos": "tsx scripts/verify-cosmos.ts",
+    "verify:convergence": "tsx scripts/verify-convergence.ts",
     "basis": "tsx scripts/compare-basis.ts",
     "structures": "tsx scripts/find-structures.ts",
     "seed:sql": "tsx scripts/ingest-quran.ts --emit-sql",

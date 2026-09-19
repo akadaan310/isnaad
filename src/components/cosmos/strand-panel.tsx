@@ -11,7 +11,7 @@
 // ============================================================================
 import * as React from 'react';
 import { GitBranch, Repeat, Sprout, Radio, Waves, ArrowLeftRight } from 'lucide-react';
-import type { SelectedRibat, SelectedStrand, StrandKind } from '@/lib/cosmos/strands';
+import type { SelectedRibat, SelectedStrand, StrandEvidence, StrandKind } from '@/lib/cosmos/strands';
 import type { CosmosNode } from '@/lib/cosmos';
 import type { FieldCoverage } from '@/lib/cosmos/coverage';
 import { PERSON_STYLE } from '@/lib/view';
@@ -61,7 +61,16 @@ export const FAMILY: Record<
  * show, and quoting only what is drawn would equate the field with the muṣḥaf.
  */
 export function strandReason(s: SelectedStrand): string {
-  const e = s.evidence;
+  return evidenceReason(s.evidence);
+}
+
+/**
+ * The same account, from the evidence record alone. الالتقاء reports relations
+ * that were never selected for drawing, so it holds evidence without holding a
+ * strand; the wording must be the one the canvas uses, or the two surfaces
+ * would describe the same computation in two different voices.
+ */
+export function evidenceReason(e: StrandEvidence): string {
   switch (e.kind) {
     case 'sunbula':
       return `الشعبة ${arabicNumber(e.branch + 1)}`;

@@ -18,6 +18,7 @@ database, and no configuration.
 |---|---|
 | `/` | **الكون** — a thousand āyāt placed in isnād space, in WebGL. Flown freely. |
 | `/explore` | **القرآن الغامر** — pick any of the 114 and play it. Entered through الاستعاذة, once. |
+| `/iltiqa` | **الالتقاء** — navigation *is* the relation. No index, no search, no filter: you are somewhere, several independent readings of the text agree about where you can go, and each one's evidence is printed on arrival. The first position is computed, not chosen. |
 | `/studio` | **مرصد الإسناد** — the three-pane studio. Opens on هود ٢٩. |
 | `/compose` | **التأليف** — build a recitation out of أعلام. |
 | `/gallery` | **المعرض** — published recitations, public. |
@@ -257,6 +258,8 @@ npm run dev              # the studio
 npm run ingest           # rebuild /data from cache, downloading if absent
 npm run ingest:refresh   # re-download the sources first
 npm run verify           # the three passages, as acceptance tests
+npm run verify:cosmos    # the locus join and the strand layer
+npm run verify:convergence  # الالتقاء — and a six-step walk, printed
 npm run seed             # assemble and publish one worked composition
 npm run ingest:sky       # build the naked-eye sky (stars + 89 figures)
 npm run ingest:cosmos    # place the thousand āyāt in isnād space

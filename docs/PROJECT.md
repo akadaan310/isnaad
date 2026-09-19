@@ -77,6 +77,7 @@ the question.
 |---|---|
 | `/` | **الكون** — 1,000 āyāt placed in isnād space, WebGL, flown freely |
 | `/explore` | **القرآن الغامر** — pick any of the 114, entered through الاستعاذة once |
+| `/iltiqa` | **الالتقاء** — navigation *is* the relation: no index, no map, no search |
 | `/studio` | **مرصد الإسناد** — three-pane studio: reader, waveform, تدبر matrix |
 | `/compose` · `/gallery` · `/watch/…` | author recitations, publish them, play them in الفرقان |
 
@@ -111,6 +112,51 @@ base-three fraction reaches 1.033 — no better than random, an honest negative.
 reader moves it. Radius is untouched by every basis: it was the one component
 that already meant something.
 
+**الالتقاء.** §6 below records that the groupings the field agrees on are not
+*places* — median extent 154 where the widest spans 233 — which reads against a
+surface to stand on and *for* a trajectory to follow. This is that trajectory at
+the one scale where the same evidence is local: one āyah. Three states, and they
+are the whole interface. **أنت هنا** states the position in the quantities
+already computed for it — proximity axis, isnād mix, contour, realm, the
+detector that fired. **ما يلتقي هنا** lists only the āyāt that more than one
+*independent reading* points to, ranked by how many agree. Following one is the
+same computation with the destination as the anchor, and on arrival each
+reading's own evidence is printed verbatim. There is no list of sūrahs, no
+search and no filter, because each would be a way of getting somewhere that is
+not a relation. The first position is computed too: the āyah on which the most
+readings agree about the most destinations (النساء ١٠٢, seven destinations
+before الرنين is added).
+
+Three decisions carry it, and two were corrections:
+
+- **The unit is the group, not the drawn line.** `strands.ts` chains a contour's
+  twelve occurrences into eleven muṣḥaf-ordered segments and says why — "the
+  clique would be sixty-six lines saying the same thing". That is what a canvas
+  can carry, not a finding that the first and twelfth occurrence are unrelated.
+  Navigating the chain inherits a rendering economy as evidence, and measurably
+  so: **68** of the 1,000 placed āyāt have any convergence that way, against
+  **117** when two āyāt count as related if one computation holds them both.
+- **Four families are not four witnesses.** المثاني mines repeated substrings of
+  the isnād contour; الرنين compares whole contours, and its identical, inverted
+  and mirrored kinds are that same string read three ways. Counting both would
+  be the سنابل error by another door. Support counts three *independence
+  classes* — الكنتور (مثاني + رنين), اللفظ (الجذور), الاستنباط — not four
+  families. This is the repository's own commitment from `structures.ts`, not a
+  proof: four of the eight detectors report the lexical material holding a seam
+  together, so الاستنباط and اللفظ do touch, and the code says so.
+- **A two-leg route is not a relation.** A→M→B on two different classes says
+  nothing about A and B. It is offered, in its own tier, labelled as a way
+  *through* the field — and it is what keeps the surface navigable where
+  convergence runs out.
+
+The honest size of it: over the placed field, **1,015 relation groups** (368
+contours, 390 roots, 257 detector findings), **86 convergent pairs**, touching
+**117** of the **883** placed āyāt that carry any relation at all. The dominant
+term is squaring — the field holds 1,000 of 6,236 āyāt and a relation needs
+*both* ends placed — and the surface prints these counts under every position
+rather than letting twelve ranked cards imply a dense field. `npm run
+verify:convergence` pins all of it and walks six steps.
+
 **لوح الزمن** is shaped as an aircraft CDU, because a flight computer does not
 *show* a route — you enter legs and it flies them. Enter `ماضٍ → لَوْ → لَنْ`; LEGS
 orders them on before↔after, EXEC flies it leg by leg, and the field dims to
@@ -128,7 +174,7 @@ scrubber, الفَلَك the circuit, السِّراج the isnād burn, القم
 | | |
 |---|---|
 | āyāt / words / segments | 6,236 · 77,429 · 130,031 |
-| computed relations | 10,326 strands · 282 رِباط displacements |
+| computed relations | 10,326 strands · 1,015 relation groups · 86 convergent pairs · 282 رِباط displacements |
 | discoveries mined | 7,057 · 400 repeated contours · 1,651 roots |
 | cosmos | 1,000 nodes · 7,000 سنابل edges · 12 modalities |
 | sky | 5,044 stars to magnitude 6 · 89 figures, all Arabic-named · 103 Arabic star names |
@@ -199,7 +245,9 @@ same groupings are 30 filaments and 74 sheets under البروج, 82 and 15 unde
 isnād — so any affordance keyed to shape is keyed to a choice of basis. And none
 of them is local: median extent 154 where the widest spans 233. These are
 threads and sections through the *whole* field, not places in it, which reads
-for a trajectory to follow and against a surface to stand on.
+for a trajectory to follow and against a surface to stand on. `/iltiqa` is that
+trajectory, built on the one part of this that survives a change of basis:
+support.
 
 ---
 

@@ -13,7 +13,7 @@
 //  is never the smaller half.
 // ============================================================================
 import * as React from 'react';
-import { Compass, Loader2, Radio, Scissors, Spline, Users } from 'lucide-react';
+import { Compass, Loader2, Radio, Scissors, Spline, Users, Waypoints } from 'lucide-react';
 import type { CosmosNode } from '@/lib/cosmos';
 import type { SelectedRibat, SelectedStrand } from '@/lib/cosmos/strands';
 import { MODALITIES } from '@/lib/time-module';
@@ -132,6 +132,22 @@ export function GrainCard({
           >
             الإسناد
           </Door>
+          {/*
+            The one door that leaves the canvas. الالتقاء takes this āyah as its
+            anchor and offers only what several independent readings agree on —
+            the field's own relations as the whole of the navigation, with no
+            camera and nothing to fly. It is a link and not a pane because it is
+            a different surface, and carrying the locus is what keeps either
+            surface from needing an index.
+          */}
+          <a
+            href={`/iltiqa?surah=${node.s}&ayah=${node.a}`}
+            title="السيرُ على ما تتفق عليه قراءاتٌ مستقلّة — لا على قائمة"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-2 py-1 text-[0.68rem] text-foreground/75 transition-all hover:border-gold/40 hover:bg-gold/10 hover:text-gold"
+          >
+            <Waypoints className="h-3 w-3" style={{ color: '#E879F9' }} />
+            <span className="quran text-[0.9rem]">الالتقاء</span>
+          </a>
         </div>
 
         {/* ── whichever door was opened ── */}
