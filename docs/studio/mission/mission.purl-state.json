@@ -4,12 +4,12 @@
   "repository": "https://github.com/akadaan310/isnaad",
   "branch": "claude/new-session-g1qcwm",
   "baseline": "4c059a1691920a13ea973146e42518e83f31573c",
-  "built_from": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
+  "built_from": "072323d0427fb512e08d49c08a9b3c4ce67a3111",
   "working_tree_changes_at_build": 0,
-  "built_at": "2026-10-18T20:52:09.595Z",
+  "built_at": "2026-10-18T20:55:44.500Z",
   "previous_mission_reference": {
     "url": "https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
-    "relation": "read-only orientation; not modified, not claimed"
+    "relation": "a different, earlier mission (PURLs × CGIT Hub launch). Read once, GET only, to learn the PURL contract; this mission does not continue, modify or claim it, and nothing here depends on reaching it"
   },
   "objectives": [
     {
@@ -117,6 +117,16 @@
       "commit": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
       "at": "2026-10-18T20:52:03+00:00",
       "subject": "الخصوصية والتسليم والفرضيات — private by default, a truthful handoff, six tested claims"
+    },
+    {
+      "commit": "bd0f9a019b0ec10547cd55ecc179d67080212d5c",
+      "at": "2026-10-18T20:52:18+00:00",
+      "subject": "mission package: offline, content-hashed, built from e0589bd"
+    },
+    {
+      "commit": "072323d0427fb512e08d49c08a9b3c4ce67a3111",
+      "at": "2026-10-18T20:55:41+00:00",
+      "subject": "closing demonstration: a fresh participant reconstructed the mission offline; fix what it could not"
     }
   ],
   "tests": {
@@ -181,8 +191,8 @@
     "surahs": 114
   },
   "artifacts": {
-    "count": 110,
-    "sha256_of_list": "fbce5694e7e9c85b3ef994d86865039b2ae21539df798b48cc9921878943631d",
+    "count": 113,
+    "sha256_of_list": "02a7b68bc5474ebe4e950dfc7f8fefda4e39e32d069c51f9d0ffab3957392ce6",
     "full_list": "docs/studio/mission/mission.json"
   },
   "sources": [
@@ -226,10 +236,19 @@
   "checkpoint": {
     "summary": "Full-universe studio built and tested on simulated devices; legacy preserved and reconstructible; one glitch root-caused; six hypotheses tested (1 supported, 5 refused); live PURL blocked on identity.",
     "next": [
-      "Read docs/studio/HANDOFF.md, then run: npm ci && npm test && npm run build",
-      "Next permitted operation: resolve B2 (real-device recording) — it needs no credentials",
-      "Then B4 (human confirmation), then B1 (PURL publication with the owner’s token)"
+      "B2: record a real flight on the Android phone (/universe → المسجّل → صدّر JSON), save it in docs/studio/evidence/devices/, run npx tsx scripts/analyze-recording.ts on it — no credentials needed",
+      "B4: a reader of the muṣḥaf confirms the U+065E → U+08F1 display mapping; then apply it to the reader, player and composer",
+      "O3: one first-time human session (docs/studio/USABILITY.md, \"For the first human session\")",
+      "B1: with the owner’s token, PURL_TOKEN=… npm run purl -- --execute (private resource, verified by read-back)",
+      "B3: private hosting per docs/studio/PRIVACY.md"
     ]
+  },
+  "package_location": "committed in the commit that follows built_from on this branch: git log -1 --format=%H -- docs/studio/mission/mission.json",
+  "hash_rule": "package_sha256 = sha256 of JSON.stringify(package without package_sha256, keys sorted recursively), compact separators, raw UTF-8 (not the file’s own sha256)",
+  "reproduce": {
+    "unit": "npm ci && npm test && npm run verify",
+    "browser": "npm run build && STUDIO_ACCESS_TOKEN=t npm start & then CHROMIUM_PATH=<chromium or headless_shell> STUDIO_TOKEN=t node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1",
+    "ingest": "npm run ingest:universe (only manifest.builtAt changes on a rerun)"
   },
   "continuation": {
     "next_permitted_operation": "B2: capture a real-device flight recording — no credentials required",
@@ -241,5 +260,5 @@
     ],
     "purl_publication": "PURL_TOKEN=<owner token> npm run purl -- --execute  (creates a PRIVATE resource and verifies by read-back)"
   },
-  "package_sha256": "5d35e04b425c31c76860d483826849c10f60d68175d6203999b33afe64b754d7"
+  "package_sha256": "93e1812fec7d4c705e8db875905ac96378e16124666bdd7a89e86b4f25632189"
 }

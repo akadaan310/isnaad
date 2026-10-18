@@ -4,12 +4,12 @@
   "repository": "https://github.com/akadaan310/isnaad",
   "branch": "claude/new-session-g1qcwm",
   "baseline": "4c059a1691920a13ea973146e42518e83f31573c",
-  "built_from": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
+  "built_from": "072323d0427fb512e08d49c08a9b3c4ce67a3111",
   "working_tree_changes_at_build": 0,
-  "built_at": "2026-10-18T20:52:09.595Z",
+  "built_at": "2026-10-18T20:55:44.500Z",
   "previous_mission_reference": {
     "url": "https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
-    "relation": "read-only orientation; not modified, not claimed"
+    "relation": "a different, earlier mission (PURLs × CGIT Hub launch). Read once, GET only, to learn the PURL contract; this mission does not continue, modify or claim it, and nothing here depends on reaching it"
   },
   "objectives": [
     {
@@ -117,6 +117,16 @@
       "commit": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
       "at": "2026-10-18T20:52:03+00:00",
       "subject": "الخصوصية والتسليم والفرضيات — private by default, a truthful handoff, six tested claims"
+    },
+    {
+      "commit": "bd0f9a019b0ec10547cd55ecc179d67080212d5c",
+      "at": "2026-10-18T20:52:18+00:00",
+      "subject": "mission package: offline, content-hashed, built from e0589bd"
+    },
+    {
+      "commit": "072323d0427fb512e08d49c08a9b3c4ce67a3111",
+      "at": "2026-10-18T20:55:41+00:00",
+      "subject": "closing demonstration: a fresh participant reconstructed the mission offline; fix what it could not"
     }
   ],
   "tests": {
@@ -213,8 +223,8 @@
     },
     {
       "path": "docs/studio/HANDOFF.md",
-      "bytes": 3581,
-      "sha256": "083c39d7924be1250b26eb7524ffeb17c14afc9975a1ba212d64a2b8b24f4dfa"
+      "bytes": 3644,
+      "sha256": "6f2bddc5cbd57776677af2abd03a630705046677aa8bacfcc6ce2a4a2247e41c"
     },
     {
       "path": "docs/studio/HYPOTHESES.md",
@@ -228,8 +238,8 @@
     },
     {
       "path": "docs/studio/PERFORMANCE.md",
-      "bytes": 2342,
-      "sha256": "dcb5d09a73a16f5114d128b496e50a8c863822b21b961d0a127ceb1c13299737"
+      "bytes": 2352,
+      "sha256": "5cc9240597e38e7d05ce11ad9fdccec704b1044c3b03e7c9d7db3ba20723edc0"
     },
     {
       "path": "docs/studio/PRIVACY.md",
@@ -245,6 +255,16 @@
       "path": "docs/studio/USABILITY.md",
       "bytes": 3453,
       "sha256": "e04402bac5a1790f76db6598c866ec6f409ffedd8c62892529b6cc5933b61d8f"
+    },
+    {
+      "path": "docs/studio/evidence/closing-demonstration.md",
+      "bytes": 2431,
+      "sha256": "d4209ed11be6af2c057a3400b1f7dd894679a833763d6669004d0240cba4766b"
+    },
+    {
+      "path": "docs/studio/evidence/devices/README.md",
+      "bytes": 566,
+      "sha256": "1ede78fcbb0a9701a889b3d50a05808e7712fb5aecf002207ab6369bbd1f09f6"
     },
     {
       "path": "docs/studio/evidence/glitch/after-dpr1.png",
@@ -377,6 +397,11 @@
       "sha256": "d2d4f68bcd5bc11c554da27dc736e988d058ab58386dc90fd1da41bfdaa5b310"
     },
     {
+      "path": "docs/studio/evidence/purl/adapter-runs.log",
+      "bytes": 278,
+      "sha256": "a2456756dd7f917b7b1cb7ba5295171ce4cda2dd94ae2aa51e1257846a38b2ea"
+    },
+    {
       "path": "docs/studio/evidence/purl/catalog.json",
       "bytes": 121635,
       "sha256": "9b897445439118be5595d1c1744f7619567fdc8ea54058ede7beca94d09d23a4"
@@ -487,11 +512,6 @@
       "sha256": "158fdca40171d07153c6ef91b4dbd0c07fac89f6887aa01a5d9eb13646017d38"
     },
     {
-      "path": "docs/studio/evidence/studio/desktop-recording.json",
-      "bytes": 195044,
-      "sha256": "fc627ecd37f9e1bb0dd0ba3366cb5fd4dbae21e9a13a4645f35840af6efd35a3"
-    },
-    {
       "path": "docs/studio/evidence/studio/phone-01-tour-step1.png",
       "bytes": 1233991,
       "sha256": "52403b3685e6a9caeb70ec34e0b986a7c774456eb9279a7c6c4df106aa63e771"
@@ -547,19 +567,24 @@
       "sha256": "97a62a5657d2224839d565530764968b32391fad4c29ae486b846732151a29e9"
     },
     {
-      "path": "docs/studio/evidence/studio/phone-recording.json",
-      "bytes": 251871,
-      "sha256": "037eb3fd84ba6db3af9e351d09886eb86e10f638e99be5e2b9603edba8b7c2ee"
-    },
-    {
       "path": "docs/studio/evidence/studio/recordings-summary.txt",
-      "bytes": 1984,
-      "sha256": "ee303af3eacbb5293a9620dc21bfd2d667f8cc366414ac1aa2dade0acbe0424b"
+      "bytes": 2004,
+      "sha256": "0451d2d7c27cbd051390f509a808100a5ec1f7bec53baa9fb72060cfe7a840c5"
     },
     {
       "path": "docs/studio/evidence/studio/report.json",
       "bytes": 4645,
       "sha256": "5d9a042d63f15f2abe2b8989857e352b74d85a6589c1e9e7ed39365fa4ddf48f"
+    },
+    {
+      "path": "docs/studio/evidence/studio/simulated-desktop-recording.json",
+      "bytes": 195044,
+      "sha256": "fc627ecd37f9e1bb0dd0ba3366cb5fd4dbae21e9a13a4645f35840af6efd35a3"
+    },
+    {
+      "path": "docs/studio/evidence/studio/simulated-phone-recording.json",
+      "bytes": 251871,
+      "sha256": "037eb3fd84ba6db3af9e351d09886eb86e10f638e99be5e2b9603edba8b7c2ee"
     },
     {
       "path": "scripts/hypotheses.ts",
@@ -573,8 +598,8 @@
     },
     {
       "path": "scripts/mission-package.ts",
-      "bytes": 11525,
-      "sha256": "994097e09a5dc8d3ccb22c7fc0442da204b95112aabad142199b321b2df8f73f"
+      "bytes": 13514,
+      "sha256": "efb9e0cc0f34d98aed722c54cb6599b005733d49ac951b9a81e951b3787bec68"
     },
     {
       "path": "scripts/purl-adapter.ts",
@@ -713,8 +738,8 @@
     },
     {
       "path": "tests/browser/studio.mjs",
-      "bytes": 9769,
-      "sha256": "35282e45ba9074143c9655a20356c8beabea77a01e7091c3fb8361862657913d"
+      "bytes": 9779,
+      "sha256": "ee914b03c41f4cc14c4f59e7a4b03c5f4428ca9bd030c424fa80c52d006eb4f2"
     },
     {
       "path": "tests/purl.test.ts",
@@ -773,10 +798,19 @@
   "checkpoint": {
     "summary": "Full-universe studio built and tested on simulated devices; legacy preserved and reconstructible; one glitch root-caused; six hypotheses tested (1 supported, 5 refused); live PURL blocked on identity.",
     "next": [
-      "Read docs/studio/HANDOFF.md, then run: npm ci && npm test && npm run build",
-      "Next permitted operation: resolve B2 (real-device recording) — it needs no credentials",
-      "Then B4 (human confirmation), then B1 (PURL publication with the owner’s token)"
+      "B2: record a real flight on the Android phone (/universe → المسجّل → صدّر JSON), save it in docs/studio/evidence/devices/, run npx tsx scripts/analyze-recording.ts on it — no credentials needed",
+      "B4: a reader of the muṣḥaf confirms the U+065E → U+08F1 display mapping; then apply it to the reader, player and composer",
+      "O3: one first-time human session (docs/studio/USABILITY.md, \"For the first human session\")",
+      "B1: with the owner’s token, PURL_TOKEN=… npm run purl -- --execute (private resource, verified by read-back)",
+      "B3: private hosting per docs/studio/PRIVACY.md"
     ]
+  },
+  "package_location": "committed in the commit that follows built_from on this branch: git log -1 --format=%H -- docs/studio/mission/mission.json",
+  "hash_rule": "package_sha256 = sha256 of JSON.stringify(package without package_sha256, keys sorted recursively), compact separators, raw UTF-8 (not the file’s own sha256)",
+  "reproduce": {
+    "unit": "npm ci && npm test && npm run verify",
+    "browser": "npm run build && STUDIO_ACCESS_TOKEN=t npm start & then CHROMIUM_PATH=<chromium or headless_shell> STUDIO_TOKEN=t node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1",
+    "ingest": "npm run ingest:universe (only manifest.builtAt changes on a rerun)"
   },
   "continuation": {
     "next_permitted_operation": "B2: capture a real-device flight recording — no credentials required",
@@ -788,5 +822,5 @@
     ],
     "purl_publication": "PURL_TOKEN=<owner token> npm run purl -- --execute  (creates a PRIVATE resource and verifies by read-back)"
   },
-  "package_sha256": "5d35e04b425c31c76860d483826849c10f60d68175d6203999b33afe64b754d7"
+  "package_sha256": "93e1812fec7d4c705e8db875905ac96378e16124666bdd7a89e86b4f25632189"
 }

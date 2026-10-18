@@ -1,9 +1,11 @@
 # ISNAAD mission — offline package
 
-> Fallback for a mission PURL that could not be created (blocker B1). Machine-readable: `mission.json` (sha256 `5d35e04b425c31c76860d483826849c10f60d68175d6203999b33afe64b754d7`).
+> Fallback for a mission PURL that could not be created (blocker B1). Machine-readable: `mission.json`.
+> Canonical package hash `93e1812fec7d4c705e8db875905ac96378e16124666bdd7a89e86b4f25632189`: sha256 over JSON.stringify of the package minus `package_sha256`, keys sorted recursively, compact, raw UTF-8. It is not the sha256 of the file.
+> This package is committed in the commit after `built_from`: `git log -1 -- docs/studio/mission/mission.json`. Human entry point: `docs/studio/HANDOFF.md`.
 
 - Repository: https://github.com/akadaan310/isnaad · branch `claude/new-session-g1qcwm`
-- Baseline: `4c059a1691920a13ea973146e42518e83f31573c` · built from: `e0589bde71bc387e84aadef53a3cf12ed3afa62f`
+- Baseline: `4c059a1691920a13ea973146e42518e83f31573c` · built from: `072323d0427fb512e08d49c08a9b3c4ce67a3111`
 - Tests: unit 38 pass / 0 fail · exemplars ok · browser 32/32 (simulated)
 
 ## Objectives
@@ -36,9 +38,20 @@
 - **B3** No private hosting configured. No deployment credentials were provided and public deployment is out of scope. → Follow docs/studio/PRIVACY.md (set STUDIO_ACCESS_TOKEN before the first deploy)
 - **B4** Open-dammatan mapping unconfirmed. U+065E→U+08F1 is an inference about the source convention. → A reader of the muṣḥaf confirms docs/studio/USABILITY.md §U5 before applying it to the legacy views
 
-## Next
-1. Read docs/studio/HANDOFF.md, then run: npm ci && npm test && npm run build
-2. Next permitted operation: resolve B2 (real-device recording) — it needs no credentials
-3. Then B4 (human confirmation), then B1 (PURL publication with the owner’s token)
+## Reproduce
+- npm ci && npm test && npm run verify
+- Browser (needs a build, a token and a Chromium path): `npm run build && STUDIO_ACCESS_TOKEN=t npm start & then CHROMIUM_PATH=<chromium or headless_shell> STUDIO_TOKEN=t node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1`
+- npm run ingest:universe (only manifest.builtAt changes on a rerun)
+
+## Next (same order as HANDOFF.md)
+1. B2: record a real flight on the Android phone (/universe → المسجّل → صدّر JSON), save it in docs/studio/evidence/devices/, run npx tsx scripts/analyze-recording.ts on it — no credentials needed
+2. B4: a reader of the muṣḥaf confirms the U+065E → U+08F1 display mapping; then apply it to the reader, player and composer
+3. O3: one first-time human session (docs/studio/USABILITY.md, "For the first human session")
+4. B1: with the owner’s token, PURL_TOKEN=… npm run purl -- --execute (private resource, verified by read-back)
+5. B3: private hosting per docs/studio/PRIVACY.md
+
+Previous mission PURL (https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316): a different, earlier mission (PURLs × CGIT Hub launch). Read once, GET only, to learn the PURL contract; this mission does not continue, modify or claim it, and nothing here depends on reaching it.
+
+Evidence named `simulated-*` came from headless Chromium on SwiftShader, not from a device.
 
 **Next permitted operation:** B2: capture a real-device flight recording — no credentials required
