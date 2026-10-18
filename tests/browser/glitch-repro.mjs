@@ -12,7 +12,8 @@ mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const results = [];
 for (const dpr of [1, 2, 2.625, 3]) {
-  const ctx = await browser.newContext({ viewport: { width: 412, height: 860 }, deviceScaleFactor: dpr, isMobile: dpr > 1, hasTouch: dpr > 1 });
+  const auth = process.env.STUDIO_TOKEN ? { httpCredentials: { username: 'abed', password: process.env.STUDIO_TOKEN } } : {};
+  const ctx = await browser.newContext({ viewport: { width: 412, height: 860 }, deviceScaleFactor: dpr, isMobile: dpr > 1, hasTouch: dpr > 1, ...auth });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));

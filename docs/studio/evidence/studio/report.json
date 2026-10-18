@@ -1,11 +1,11 @@
 {
-  "base": "http://localhost:3100",
+  "base": "http://127.0.0.1:3200",
   "simulated": true,
   "steps": [
     {
       "name": "phone: field loads",
       "ok": true,
-      "ms": 1757
+      "ms": 1203
     },
     {
       "name": "phone: canvas fills viewport at dpr 2.75",
@@ -52,6 +52,11 @@
       "caption": "الإسراء ١٠١ · استنباط: رِباط الملتقى — ثبات اللفظ وحركة الإسناد١/١٢"
     },
     {
+      "name": "phone: flight recording exported",
+      "ok": true,
+      "file": "docs/studio/evidence/studio/phone-recording.json"
+    },
+    {
       "name": "phone: celestial lens states it is a separate space",
       "ok": true
     },
@@ -62,7 +67,7 @@
     {
       "name": "phone: W moves the camera",
       "ok": true,
-      "moved": 4.74,
+      "moved": 5.91,
       "before": 0
     },
     {
@@ -91,7 +96,7 @@
     {
       "name": "desktop: field loads",
       "ok": true,
-      "ms": 1261
+      "ms": 976
     },
     {
       "name": "desktop: canvas fills viewport at dpr 1",
@@ -138,6 +143,11 @@
       "caption": "الإسراء ١٠١ · استنباط: رِباط الملتقى — ثبات اللفظ وحركة الإسناد١/١٢"
     },
     {
+      "name": "desktop: flight recording exported",
+      "ok": true,
+      "file": "docs/studio/evidence/studio/desktop-recording.json"
+    },
+    {
       "name": "desktop: celestial lens states it is a separate space",
       "ok": true
     },
@@ -148,7 +158,7 @@
     {
       "name": "desktop: W moves the camera",
       "ok": true,
-      "moved": 4.67,
+      "moved": 5.05,
       "before": 0
     },
     {

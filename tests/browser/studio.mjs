@@ -18,11 +18,13 @@ const step = (name, ok, detail = {}) => {
   console.log(`${ok ? 'ok  ' : 'FAIL'} ${name}${Object.keys(detail).length ? ' ' + JSON.stringify(detail) : ''}`);
 };
 
+// With STUDIO_TOKEN set, every context authenticates as a token holder would.
+const auth = process.env.STUDIO_TOKEN ? { httpCredentials: { username: 'abed', password: process.env.STUDIO_TOKEN } } : {};
 for (const device of [
   { name: 'phone', viewport: { width: 393, height: 852 }, deviceScaleFactor: 2.75, isMobile: true, hasTouch: true },
   { name: 'desktop', viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
 ]) {
-  const ctx = await browser.newContext(device);
+  const ctx = await browser.newContext({ ...device, ...auth });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -91,6 +93,14 @@ for (const device of [
   await page.keyboard.press(' ');
   await page.waitForTimeout(400);
 
+  // Performance + provenance: export the flight recording the voyage produced.
+  await page.getByRole('button', { name: 'المسجّل' }).click();
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'صدّر JSON' }).click()]);
+  const recPath = path.join(out, `${device.name}-recording.json`);
+  await dl.saveAs(recPath);
+  step(`${device.name}: flight recording exported`, true, { file: recPath });
+  await page.getByRole('button', { name: 'المسجّل' }).click();
+
   // Lens switch: celestial.
   await page.getByRole('tab', { name: 'السماء' }).click();
   await page.waitForTimeout(1500);
@@ -138,7 +148,7 @@ for (const device of [
   await page.click('[data-testid=handoff-make]');
   const link = await page.inputValue('[data-testid=handoff-link]');
   await shot('10-handoff');
-  const ctx2 = await browser.newContext(device);
+  const ctx2 = await browser.newContext({ ...device, ...auth });
   const p2 = await ctx2.newPage();
   await p2.goto(link, { waitUntil: 'networkidle' });
   await p2.waitForSelector('[data-testid=incoming]', { timeout: 60000 });

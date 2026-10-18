@@ -1,0 +1,152 @@
+{
+  "alpha": 0.01,
+  "seeded": true,
+  "results": [
+    {
+      "id": "H1",
+      "claim": "Under the muṣḥaf-spiral placement, āyāt sharing a rare root lie closer in direction than random pairs — including across sūrahs — while the legacy برج placement shows no such locality.",
+      "null": "one endpoint replaced by a uniformly random āyah (200 seeded draws); legacy: random legacy node",
+      "metric": {
+        "links": 8195,
+        "crossSurah": 7593,
+        "meanAngleDeg": 85.71,
+        "nullMeanAngleDeg": 90.04,
+        "crossMeanAngleDeg": 89.84,
+        "legacyLinks": 476,
+        "legacyMeanAngleDeg": 93.7,
+        "pAll": 0.004975124378109453,
+        "pCross": 0.3283582089552239,
+        "pLegacy": 0.9800995024875622
+      },
+      "p": 0.004975124378109453,
+      "verdict": "refused",
+      "note": "Locality under muṣḥaf order is partly by construction: rare roots recur inside one story. The cross-sūrah figure is the part that is not."
+    },
+    {
+      "id": "H2",
+      "claim": "Lexical continuity across an isnād seam (the stitch half of رِباط = √(continuity × delta)) exceeds the continuity across an arbitrary non-seam point in the same sūrah.",
+      "null": "paired control: a uniformly drawn non-seam word index (±2 excluded) in the same sūrah, same ±8-word windows",
+      "metric": {
+        "seams": 16034,
+        "meanStitchAtSeam": 0.1675,
+        "meanStitchAtControl": 0.1674,
+        "difference": 0.0001,
+        "sharedRootRateAtSeam": 0.395,
+        "sharedRootRateAtControl": 0.402,
+        "seamWins": 4949,
+        "ties": 6084,
+        "z": -0.52,
+        "ribatSpanWords": 17
+      },
+      "p": 0.699,
+      "verdict": "refused",
+      "note": "If refused, the continuity half of the master metric is a property of the text's vocabulary at that scale, not of seams; the metric then ranks seams by delta with a lexical gate, and should be read that way."
+    },
+    {
+      "id": "H3",
+      "claim": "The last three āyāt of a sūrah sit nearer to direct address (lower discourse distance) than the sūrah's own average.",
+      "null": "three āyāt drawn at random within the same sūrah (2,000 seeded draws); sūrahs with ≥12 āyāt",
+      "metric": {
+        "surahs": 90,
+        "meanShift": -0.0032
+      },
+      "p": 0.41879060469765117,
+      "verdict": "refused",
+      "note": "A shift is a shift in the engine's person tagging, not a claim about the closing of sūrahs as such."
+    },
+    {
+      "id": "H4",
+      "claim": "A seeded voyage (evidence-weighted, with memory) visits more distinct sūrahs and revisits fewer āyāt in 40 legs than a uniform random walk over the same relations.",
+      "null": "uniform random neighbour walk from the same start (no weights, no memory); also a muṣḥaf-order-only walk",
+      "metric": {
+        "seeds": 100,
+        "legs": 40,
+        "voyage": {
+          "surahs": 17.45,
+          "revisits": 0.72,
+          "chord": 69.27
+        },
+        "uniform": {
+          "surahs": 13.84,
+          "revisits": 9.16,
+          "chord": 62.51
+        },
+        "tartib": {
+          "surahs": 1.47,
+          "revisits": 7.08,
+          "chord": 22.05
+        },
+        "voyageBeatsUniformOnSurahs": "73/100"
+      },
+      "verdict": "refused",
+      "note": "An interaction claim: the voyage is worth its parameters only if it shows more of the text per minute than chance."
+    },
+    {
+      "id": "H5",
+      "claim": "At this field's scale, the floating origin is needed to keep vertex quantisation below visibility.",
+      "null": "absolute float32 coordinates with no rebasing",
+      "metric": {
+        "worstAbsErr": "3.78e-6",
+        "worstAbsErrPx": "7.28e-4",
+        "worstRelErr": "7.57e-6",
+        "skyShellErr": "1.81e-5",
+        "magnitudeWhereHalfPixel": 21794
+      },
+      "verdict": "refused",
+      "note": "Absolute float32 error at the field's scale is 7.3e-4 px at the closest viewing distance. Whatever the verdict, the floating origin is insurance for free flight far outside the field, which nothing prevents."
+    },
+    {
+      "id": "H6",
+      "claim": "Āyāt with no person mass are not spread evenly over the muṣḥaf; they concentrate in particular sūrahs beyond what sūrah length explains.",
+      "null": "each sūrah receives unattributed āyāt in proportion to its āyah count (χ², df = 113)",
+      "metric": {
+        "unattributed": 352,
+        "chi2": 850.1,
+        "critical001": 164,
+        "firstAyahs": 47,
+        "muqattaatOpenings": 25,
+        "short": 128,
+        "top": [
+          {
+            "s": 103,
+            "name": "العصر",
+            "n": 2,
+            "share": 0.67
+          },
+          {
+            "s": 114,
+            "name": "الناس",
+            "n": 4,
+            "share": 0.67
+          },
+          {
+            "s": 1,
+            "name": "الفاتحة",
+            "n": 4,
+            "share": 0.57
+          },
+          {
+            "s": 77,
+            "name": "المرسلات",
+            "n": 20,
+            "share": 0.4
+          },
+          {
+            "s": 56,
+            "name": "الواقعة",
+            "n": 37,
+            "share": 0.39
+          },
+          {
+            "s": 95,
+            "name": "التين",
+            "n": 3,
+            "share": 0.38
+          }
+        ]
+      },
+      "verdict": "supported",
+      "note": "Descriptive of the tagging, not of the text: an āyah has no person mass when no segment the engine reads as attribution carries a person."
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "base": "http://127.0.0.1:3200",
+  "route": "/universe?notour",
+  "label": "universe-prod",
+  "simulated": true,
+  "browser": "chromium headless, SwiftShader",
+  "results": [
+    {
+      "dpr": 1,
+      "viewport": [
+        412,
+        860
+      ],
+      "deviceDpr": 1,
+      "host": [
+        412,
+        860
+      ],
+      "css": [
+        412,
+        860
+      ],
+      "buffer": [
+        412,
+        860
+      ],
+      "styleWidth": "412px",
+      "visibleFraction": 1,
+      "errors": [],
+      "screenshot": "docs/studio/evidence/glitch/universe-prod-dpr1.png"
+    },
+    {
+      "dpr": 2,
+      "viewport": [
+        412,
+        860
+      ],
+      "deviceDpr": 2,
+      "host": [
+        412,
+        860
+      ],
+      "css": [
+        412,
+        860
+      ],
+      "buffer": [
+        824,
+        1720
+      ],
+      "styleWidth": "412px",
+      "visibleFraction": 1,
+      "errors": [],
+      "screenshot": "docs/studio/evidence/glitch/universe-prod-dpr2.png"
+    },
+    {
+      "dpr": 2.625,
+      "viewport": [
+        412,
+        860
+      ],
+      "deviceDpr": 2.625,
+      "host": [
+        412,
+        860
+      ],
+      "css": [
+        412,
+        860
+      ],
+      "buffer": [
+        824,
+        1720
+      ],
+      "styleWidth": "412px",
+      "visibleFraction": 1,
+      "errors": [],
+      "screenshot": "docs/studio/evidence/glitch/universe-prod-dpr2.625.png"
+    },
+    {
+      "dpr": 3,
+      "viewport": [
+        412,
+        860
+      ],
+      "deviceDpr": 3,
+      "host": [
+        412,
+        860
+      ],
+      "css": [
+        412,
+        860
+      ],
+      "buffer": [
+        824,
+        1720
+      ],
+      "styleWidth": "412px",
+      "visibleFraction": 1,
+      "errors": [],
+      "screenshot": "docs/studio/evidence/glitch/universe-prod-dpr3.png"
+    }
+  ]
+}

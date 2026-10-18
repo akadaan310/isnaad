@@ -14,9 +14,15 @@ npm run dev      # http://localhost:3000
 `/data` is committed, so that works on a fresh clone with no network, no
 database, and no configuration.
 
+The studio is **private by default**: a production server refuses every
+request until `STUDIO_ACCESS_TOKEN` is set (`docs/studio/PRIVACY.md`). `npm run
+dev` stays open on your own machine. `npm test` runs the unit and property
+tests.
+
 | | |
 |---|---|
-| `/` | **الكون** — a thousand āyāt placed in isnād space, in WebGL. Flown freely. |
+| `/universe` | **الاستوديو الخاص** — all 6,236 āyāt, no exceptions: seeded voyages, flight recorder, two separate lenses, private handoff. Start at `docs/studio/HANDOFF.md`. |
+| `/` | **الكون** — a thousand āyāt placed in isnād space, in WebGL. Flown freely. Kept as the original composite field. |
 | `/explore` | **القرآن الغامر** — pick any of the 114 and play it. Entered through الاستعاذة, once. |
 | `/studio` | **مرصد الإسناد** — the three-pane studio. Opens on هود ٢٩. |
 | `/compose` | **التأليف** — build a recitation out of أعلام. |

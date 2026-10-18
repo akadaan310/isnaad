@@ -20,7 +20,11 @@
     "ingest:gaia": "tsx scripts/ingest-gaia.ts",
     "ingest:cosmos": "tsx scripts/ingest-cosmos.ts",
     "ingest:universe": "tsx scripts/ingest-universe.ts",
-    "test": "node --import tsx --test 'tests/**/*.test.ts'"
+    "test": "node --import tsx --test 'tests/**/*.test.ts'",
+    "hypotheses": "tsx scripts/hypotheses.ts",
+    "purl": "tsx scripts/purl-adapter.ts",
+    "mission": "tsx scripts/mission-package.ts",
+    "test:browser": "node tests/browser/studio.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.45.4",

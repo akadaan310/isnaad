@@ -143,7 +143,11 @@ export function UniverseStudio() {
     const v = params.get('voyage');
     if (v) {
       const cfg = decodeVoyageConfig(v);
-      if (cfg) setVoyageCfg(cfg);
+      if (cfg) {
+        // A shared route opens ready to fly; it never starts on its own.
+        setVoyageCfg(cfg);
+        setPanel('voyage');
+      }
     }
     const h = window.location.hash.match(/[#&]h=([A-Za-z0-9_-]+)/);
     if (h) {
@@ -151,7 +155,7 @@ export function UniverseStudio() {
       if (res.ok) setIncoming(res.handoff);
       else setToast(`تعذّر قراءة التسليم: ${res.reason}`);
     }
-    if (!store.get('isnaad.tour') && !params.has('notour') && !h) setTourStep(0);
+    if (!store.get('isnaad.tour') && !params.has('notour') && !h && !v) setTourStep(0);
   }, [universe]);
 
   React.useEffect(() => {

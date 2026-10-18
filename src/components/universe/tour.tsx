@@ -61,8 +61,11 @@ export function Tour({
   onClose: (finished: boolean) => void;
 }) {
   const [left, setLeft] = React.useState(STEP_SECONDS);
+  // Timed content must be pausable (WCAG 2.2.1); a held station never advances.
+  const [held, setHeld] = React.useState(false);
   React.useEffect(() => setLeft(STEP_SECONDS), [step]);
   React.useEffect(() => {
+    if (held) return;
     const id = window.setInterval(() => {
       setLeft((x) => {
         if (x > 1) return x - 1;
@@ -72,7 +75,7 @@ export function Tour({
       });
     }, 1000);
     return () => window.clearInterval(id);
-  }, [step, onStep, onClose]);
+  }, [step, onStep, onClose, held]);
 
   const s = TOUR[step];
   return (
@@ -86,7 +89,9 @@ export function Tour({
         <span>
           {arabicNumber(step + 1)} / {arabicNumber(TOUR.length)}
         </span>
-        <span aria-live="polite">{arabicNumber(left)}ث</span>
+        <button className="rounded px-1 hover:text-foreground" aria-pressed={held} onClick={() => setHeld((h) => !h)}>
+          {held ? 'تابِع' : `أمهِل · ${arabicNumber(left)}ث`}
+        </button>
       </div>
       <h2 className="mb-2 text-lg text-gold">{s.title}</h2>
       <p className="text-sm leading-7 text-foreground/90">{s.body}</p>

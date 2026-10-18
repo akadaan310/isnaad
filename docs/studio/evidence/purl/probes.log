@@ -1,0 +1,10 @@
+2026-10-18T20:34:34Z 200 text/html; charset=utf-8 https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316
+2026-10-18T20:34:35Z 200 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/api/resources/resource_95a5662789076892fe698316/manifest
+2026-10-18T20:34:35Z 200 text/html; charset=utf-8 https://cgit-hub-production.up.railway.app
+2026-10-18T20:34:35Z 200 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/.well-known/purl
+2026-10-18T20:34:36Z 404 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/api
+2026-10-18T20:34:50Z GET 200 https://purls-production.up.railway.app/api/identity/config
+2026-10-18T20:34:50Z GET 200 https://purls-production.up.railway.app/api/resources
+2026-10-18T20:34:51Z GET 200 https://purls-production.up.railway.app/api/catalog
+2026-10-18T20:34:51Z POST(empty, unauthenticated) 400 /api/resources
+  note: the POST above carried a malformed body (two curl data flags concatenated by mistake); rejected 400 invalid_json; no resource was created. No further writes were attempted.

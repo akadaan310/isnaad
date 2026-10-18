@@ -66,7 +66,7 @@ function rootsIn(words: Word[], from: number, to: number): Map<string, number[]>
  * Shared roots are what make an الالتفات feel deliberate rather than merely
  * adjacent: the subject matter does not move while the attribution does.
  */
-function stitchBetween(
+export function stitchBetween(
   words: Word[],
   aFrom: number,
   aTo: number,
