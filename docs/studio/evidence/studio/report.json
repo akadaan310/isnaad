@@ -1,0 +1,179 @@
+{
+  "base": "http://localhost:3100",
+  "simulated": true,
+  "steps": [
+    {
+      "name": "phone: field loads",
+      "ok": true,
+      "ms": 1757
+    },
+    {
+      "name": "phone: canvas fills viewport at dpr 2.75",
+      "ok": true,
+      "css": [
+        393,
+        852
+      ],
+      "vp": [
+        393,
+        852
+      ],
+      "buf": [
+        786,
+        1704
+      ]
+    },
+    {
+      "name": "phone: first launch opens the tour",
+      "ok": true
+    },
+    {
+      "name": "phone: tour completes and closes",
+      "ok": true
+    },
+    {
+      "name": "phone: search \"ق ٢\" opens 50:2 with its Uthmani text",
+      "ok": true,
+      "text": "بَلۡ عَجِبُوٓاْ أَن جَآءَهُم مُّنذِرࣱ م"
+    },
+    {
+      "name": "phone: scientific overlay shows transform, precision, buffers",
+      "ok": true
+    },
+    {
+      "name": "phone: voyage digest equals the Node-computed digest for the same seed",
+      "ok": true,
+      "digest": "a35fb9a1",
+      "expected": "a35fb9a1"
+    },
+    {
+      "name": "phone: voyage caption states the leg and its reason",
+      "ok": true,
+      "caption": "الإسراء ١٠١ · استنباط: رِباط الملتقى — ثبات اللفظ وحركة الإسناد١/١٢"
+    },
+    {
+      "name": "phone: celestial lens states it is a separate space",
+      "ok": true
+    },
+    {
+      "name": "phone: coverage shows four separate counts",
+      "ok": true
+    },
+    {
+      "name": "phone: W moves the camera",
+      "ok": true,
+      "moved": 4.74,
+      "before": 0
+    },
+    {
+      "name": "phone: recorder diagnosis finds no compositing fault",
+      "ok": true,
+      "excerpt": "✓ compositing: canvas css size matched host in all 1 geometry records"
+    },
+    {
+      "name": "phone: handoff link opens elsewhere with locus, note and access statement",
+      "ok": true
+    },
+    {
+      "name": "phone: recipient lands on the handed-off āyah",
+      "ok": true,
+      "sent": [
+        "الإسراء",
+        "١٠١"
+      ],
+      "landed": "الإسراء ١٠١"
+    },
+    {
+      "name": "phone: no page errors",
+      "ok": true,
+      "errors": []
+    },
+    {
+      "name": "desktop: field loads",
+      "ok": true,
+      "ms": 1261
+    },
+    {
+      "name": "desktop: canvas fills viewport at dpr 1",
+      "ok": true,
+      "css": [
+        1440,
+        900
+      ],
+      "vp": [
+        1440,
+        900
+      ],
+      "buf": [
+        1440,
+        900
+      ]
+    },
+    {
+      "name": "desktop: first launch opens the tour",
+      "ok": true
+    },
+    {
+      "name": "desktop: tour completes and closes",
+      "ok": true
+    },
+    {
+      "name": "desktop: search \"ق ٢\" opens 50:2 with its Uthmani text",
+      "ok": true,
+      "text": "بَلۡ عَجِبُوٓاْ أَن جَآءَهُم مُّنذِرࣱ م"
+    },
+    {
+      "name": "desktop: scientific overlay shows transform, precision, buffers",
+      "ok": true
+    },
+    {
+      "name": "desktop: voyage digest equals the Node-computed digest for the same seed",
+      "ok": true,
+      "digest": "a35fb9a1",
+      "expected": "a35fb9a1"
+    },
+    {
+      "name": "desktop: voyage caption states the leg and its reason",
+      "ok": true,
+      "caption": "الإسراء ١٠١ · استنباط: رِباط الملتقى — ثبات اللفظ وحركة الإسناد١/١٢"
+    },
+    {
+      "name": "desktop: celestial lens states it is a separate space",
+      "ok": true
+    },
+    {
+      "name": "desktop: coverage shows four separate counts",
+      "ok": true
+    },
+    {
+      "name": "desktop: W moves the camera",
+      "ok": true,
+      "moved": 4.67,
+      "before": 0
+    },
+    {
+      "name": "desktop: recorder diagnosis finds no compositing fault",
+      "ok": true,
+      "excerpt": "✓ compositing: canvas css size matched host in all 1 geometry records"
+    },
+    {
+      "name": "desktop: handoff link opens elsewhere with locus, note and access statement",
+      "ok": true
+    },
+    {
+      "name": "desktop: recipient lands on the handed-off āyah",
+      "ok": true,
+      "sent": [
+        "الإسراء",
+        "١٠١"
+      ],
+      "landed": "الإسراء ١٠١"
+    },
+    {
+      "name": "desktop: no page errors",
+      "ok": true,
+      "errors": []
+    }
+  ],
+  "failures": []
+}

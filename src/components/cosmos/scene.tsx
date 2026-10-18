@@ -584,10 +584,16 @@ export function CosmosScene({
     };
     if (sceneRef) sceneRef.current = { flyTo };
 
+    // The same defect الرحلة fixed in 4c059a1, still live here: with
+    // updateStyle off the canvas has a w·dpr × h·dpr buffer and no CSS size, so
+    // at dpr ≥ 2 it lays out at twice the host and only its top-left quarter
+    // is on screen (docs/studio/GLITCH.md). `?legacy-canvas` restores the old
+    // call so the reproduction stays one URL away.
+    const legacyCanvas = new URLSearchParams(window.location.search).has('legacy-canvas');
     const resize = () => {
       const w = host.clientWidth;
       const h = host.clientHeight;
-      renderer.setSize(w, h, false);
+      renderer.setSize(w, h, !legacyCanvas);
       camera.aspect = w / Math.max(1, h);
       camera.updateProjectionMatrix();
     };

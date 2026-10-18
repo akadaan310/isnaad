@@ -157,3 +157,20 @@ test('relations: endpoints valid, a < b, muṣḥaf chain complete, evidence pre
   const adj = indexRelations(R, U.count);
   assert.ok(adj.every((l) => l.length >= 1), 'no āyah is unreachable');
 });
+
+test('display mapping removes every U+065E and changes nothing else', async () => {
+  const { displayUthmani } = await import('../src/lib/universe/display-text');
+  let before = 0;
+  for (const s of Object.values(meta)) {
+    for (const a of s.uthmani) {
+      before += [...a].filter((c) => c === 'ٞ').length;
+      const d = displayUthmani(a);
+      assert.ok(!d.includes('ٞ'));
+      assert.equal(d.length, a.length);
+      assert.equal(d.replaceAll('ࣱ', 'ٞ'), a);
+    }
+  }
+  assert.equal(before, 1807);
+  // The source itself is untouched.
+  assert.ok(meta['50'].uthmani[1].includes('ٞ'));
+});

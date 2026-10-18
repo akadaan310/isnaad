@@ -26,15 +26,15 @@ interface WireSurah extends Surah {
   discoveries: Discovery[];
 }
 
-export function Studio({ metas }: { metas: SurahMeta[] }) {
+export function Studio({ metas, initial }: { metas: SurahMeta[]; initial?: { surah: number; ayah: number } }) {
   // Opens on Hud 29, the passage the engine's istihdar detector was designed
   // from, so the studio demonstrates itself on first paint.
-  const [surahId, setSurahId] = React.useState(11);
+  const [surahId, setSurahId] = React.useState(initial?.surah ?? 11);
   const [data, setData] = React.useState<WireSurah | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
 
-  const [activeAyah, setActiveAyah] = React.useState(29);
+  const [activeAyah, setActiveAyah] = React.useState(initial?.ayah ?? 29);
   const [selectedWord, setSelectedWord] = React.useState<number | null>(null);
   const [overlay, setOverlay] = React.useState<Overlay>('isnad');
   const [mushafText, setMushafText] = React.useState(false);
@@ -56,7 +56,7 @@ export function Studio({ metas }: { metas: SurahMeta[] }) {
 
   const readerRef = React.useRef<HTMLDivElement>(null);
   /** Which āyah to reveal once the next sūrah payload lands. */
-  const pendingAyah = React.useRef(29);
+  const pendingAyah = React.useRef(initial?.ayah ?? 29);
 
   // ── load the active sūrah ────────────────────────────────────────────────
   React.useEffect(() => {
