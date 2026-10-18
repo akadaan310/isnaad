@@ -14,6 +14,6 @@ export async function GET() {
     return NextResponse.json({ error: 'لم تُبنَ الروابط بعد — شغّل npm run ingest:universe' }, { status: 503 });
   }
   return new NextResponse(cached, {
-    headers: { 'content-type': 'application/json', 'cache-control': 'private, no-store' },
+    headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' },
   });
 }

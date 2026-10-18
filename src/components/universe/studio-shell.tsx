@@ -1,6 +1,6 @@
 'use client';
 // ============================================================================
-//  الاستوديو الخاص — the full universe, for two readers.
+//  الاستوديو — the full universe, open to anyone.
 //
 //  One field (6,236 āyāt), two lenses (isnād space, the catalogue sky), and the
 //  original composite field kept at `/` as a historical artifact. Everything a
@@ -370,7 +370,7 @@ export function UniverseStudio() {
       {/* ── top bar ─────────────────────────────────────────────────────── */}
       <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-wrap items-start justify-between gap-2 p-3">
         <div className="pointer-events-auto">
-          <h1 className="text-lg text-gold sm:text-xl">مرصد الإسناد · الاستوديو الخاص</h1>
+          <h1 className="text-lg text-gold sm:text-xl">مرصد الإسناد · الكون الكامل</h1>
           <p className="text-[11px] text-muted-foreground">
             {arabicNumber(universe.count)} آية · {arabicNumber(universe.surahs.length)} سورة · لا استثناء
           </p>

@@ -44,8 +44,6 @@ function walk(dir: string): string[] {
 const artifactPaths = [
   ...walk('src/lib/universe'),
   'src/lib/cosmos/legacy-preset.ts',
-  'src/lib/access.ts',
-  'src/middleware.ts',
   ...walk('src/components/universe'),
   ...walk('src/app/universe'),
   ...walk('src/app/api/universe'),
@@ -112,7 +110,7 @@ const objectives = [
     depends_on: ['O1'],
   },
   {
-    id: 'O5', title: 'Portable private replay and a truthful 7u handoff',
+    id: 'O5', title: 'Portable replay and a truthful 7u handoff',
     status: 'met locally; mission PURL ready to publish (B1)',
     results: ['recordings export/verify/replay', 'fragment handoff round-trips in a fresh browser context', 'mission PURL: adapter ready (realize principal → create → compile → build → run → checkpoint → publish → anonymous read-back); not yet executed'],
     evidence: ['src/lib/universe/handoff.ts', 'src/lib/universe/recorder.ts', 'docs/studio/PURL.md'],
@@ -123,7 +121,6 @@ const objectives = [
 const blockers = [
   { id: 'B1', what: 'Mission PURL not yet published', why: 'No credential is involved (authority is realized via POST /api/identity/guest {kind:agent}); the publishing run was stopped by this session’s tool-permission policy, which classed the outbound write as possible data exfiltration', unblock: 'Run npm run purl -- --execute from a session or machine permitted to write to purls-production.up.railway.app' },
   { id: 'B2', what: 'No real-device measurements', why: 'This session has headless Chromium (SwiftShader) only', unblock: 'Open /universe on the Android phone, fly 60 s, export the recording (المسجّل → صدّر JSON), add it to docs/studio/evidence/devices/' },
-  { id: 'B3', what: 'No private hosting configured', why: 'No deployment credentials were provided and public deployment is out of scope', unblock: 'Follow docs/studio/PRIVACY.md (set STUDIO_ACCESS_TOKEN before the first deploy)' },
   { id: 'B4', what: 'Open-dammatan mapping unconfirmed', why: 'U+065E→U+08F1 is an inference about the source convention', unblock: 'A reader of the muṣḥaf confirms docs/studio/USABILITY.md §U5 before applying it to the legacy views' },
 ];
 
@@ -133,12 +130,11 @@ const next = [
   'B4: a reader of the muṣḥaf confirms the U+065E → U+08F1 display mapping; then apply it to the reader, player and composer',
   'O3: one first-time human session (docs/studio/USABILITY.md, "For the first human session")',
   'B1: npm run purl -- --execute (realizes an agent principal, publishes, verifies by anonymous read-back; no token)',
-  'B3: private hosting per docs/studio/PRIVACY.md',
 ];
 
 const pkg = {
   format: 'isnaad-mission/1',
-  mission: 'ISNAAD — Private Immersive Research Studio (Abed & 7u)',
+  mission: 'ISNAAD — Immersive Research Studio (Abed & 7u), open',
   repository: 'https://github.com/akadaan310/isnaad',
   branch: BRANCH,
   baseline: BASELINE,
@@ -169,7 +165,7 @@ const pkg = {
   hash_rule: 'package_sha256 = sha256 of JSON.stringify(package without package_sha256, keys sorted recursively), compact separators, raw UTF-8 (not the file’s own sha256)',
   reproduce: {
     unit: 'npm ci && npm test && npm run verify',
-    browser: 'npm run build && STUDIO_ACCESS_TOKEN=t npm start & then CHROMIUM_PATH=<chromium or headless_shell> STUDIO_TOKEN=t node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1',
+    browser: 'npm run build && npm start & then CHROMIUM_PATH=<chromium or headless_shell> node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1',
     ingest: 'npm run ingest:universe (only manifest.builtAt changes on a rerun)',
   },
   continuation: {
@@ -214,7 +210,7 @@ const md = [
   '',
   '## Reproduce',
   `- ${pkg.reproduce.unit}`,
-  `- Browser (needs a build, a token and a Chromium path): \`${pkg.reproduce.browser}\``,
+  `- Browser (needs a build and a Chromium path): \`${pkg.reproduce.browser}\``,
   `- ${pkg.reproduce.ingest}`,
   '',
   '## Next (same order as HANDOFF.md)',

@@ -13,18 +13,15 @@ Everything else is new and additive: `src/lib/universe/`,
 | `src/app/studio/page.tsx` | reads `?s=&a=` | same |
 | `src/lib/engine/detectors.ts` | `stitchBetween` exported | the H2 test measures what the detector measures; behaviour unchanged (`npm run verify` passes) |
 | `package.json` | scripts added: test, ingest:universe, hypotheses, mission, purl, test:browser | no dependency added |
-| *(new)* `src/middleware.ts` | access gate | **behaviour change:** a production server with no token now refuses requests (PRIVACY.md) |
 
 Untouched: all of `data/corpus`, `data/index`, `data/sky`, `data/cosmos`,
 `data/compositions`, every ingest script, the Supabase schema, both side
-branches, and all history. Nothing was force-pushed.
+branches, and all history. The default branch was fast-forwarded from
+`4c059a1` at the owner's instruction; nothing was force-pushed.
 
 ## Migrating a deployment
 
-1. Set `STUDIO_ACCESS_TOKEN` **before** deploying this branch. Without it a
-   production server answers 503. That is intended, but it surprises anyone who
-   expects the old open behaviour. For a deliberately open deployment, set
-   `STUDIO_ALLOW_PUBLIC=1`.
+1. Nothing to configure: the app is open, as the original was.
 2. No data migration: `data/universe/` is committed, and it can be rebuilt with
    `npm run ingest:universe`, which also re-proves the legacy preset.
 3. Supabase: unchanged.
@@ -33,8 +30,7 @@ branches, and all history. Nothing was force-pushed.
 
 | to undo | do |
 |---|---|
-| everything | deploy `4c059a1` (the default branch is untouched) |
-| only the gate | delete `src/middleware.ts`, or set `STUDIO_ALLOW_PUBLIC=1` |
+| everything | redeploy `4c059a1` (the default branch was fast-forwarded from it; nothing was rewritten) |
 | only the glitch fix | open `/?legacy-canvas` for one view, or revert the 8-line hunk in `scene.tsx` |
 | only the new studio | remove the `/universe` link; nothing else imports it |
 

@@ -2,10 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { MISSION_SOURCE, PURL_STATE_LIMIT, checkCreate, stateMatches, urlCarriesCredential } from '../src/lib/universe/purl';
 
-const ok = { title: 'm', kind: 'mission' as const, visibility: 'private' as const, source: MISSION_SOURCE, state: { a: 1 }, tests: [] };
+const ok = { title: 'm', kind: 'mission' as const, visibility: 'public' as const, source: MISSION_SOURCE, state: { a: 1 }, tests: [] };
 
-test('a private mission body type-checks', () => assert.deepEqual(checkCreate(ok), { ok: true }));
-test('public visibility is refused by this adapter', () => assert.equal(checkCreate({ ...ok, visibility: 'public' }).ok, false));
+test('a public mission body type-checks', () => assert.deepEqual(checkCreate(ok), { ok: true }));
+test('an unknown visibility is refused', () => assert.equal(checkCreate({ ...ok, visibility: 'secret' as 'public' }).ok, false));
 test('oversized state is refused', () => assert.equal(checkCreate({ ...ok, state: { x: 'a'.repeat(PURL_STATE_LIMIT) } }).ok, false));
 test('a credential-looking payload is refused', () => assert.equal(checkCreate({ ...ok, state: { t: 'ghp_abcdefghijklmnop' } }).ok, false));
 test('credentials never ride in URLs', () => {

@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 let cached: string | null = null;
 
-/** All 6,236 āyāt, columnar. Private: never cached by shared intermediaries. */
+/** All 6,236 āyāt, columnar. Open to anyone, like the text it indexes. */
 export async function GET() {
   try {
     cached ??= await readFile(path.join(process.cwd(), 'data', 'universe', 'universe.json'), 'utf8');
@@ -14,6 +14,6 @@ export async function GET() {
     return NextResponse.json({ error: 'لم يُبنَ الكون الكامل بعد — شغّل npm run ingest:universe' }, { status: 503 });
   }
   return new NextResponse(cached, {
-    headers: { 'content-type': 'application/json', 'cache-control': 'private, no-store' },
+    headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' },
   });
 }

@@ -24,6 +24,6 @@ export async function GET(req: Request) {
       text: surah.uthmani[a - 1],
       source: 'risan/quran-json (Uthmani, Tanzil lineage) via data/corpus/meta.json',
     },
-    { headers: { 'cache-control': 'private, no-store' } },
+    { headers: { 'cache-control': 'public, max-age=3600' } },
   );
 }

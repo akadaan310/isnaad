@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const body = await readFile(path.join(process.cwd(), 'data', 'universe', 'manifest.json'), 'utf8');
-    return new NextResponse(body, { headers: { 'content-type': 'application/json', 'cache-control': 'private, no-store' } });
+    return new NextResponse(body, { headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=3600' } });
   } catch {
     return NextResponse.json({ error: 'لا يوجد بيان — شغّل npm run ingest:universe' }, { status: 503 });
   }

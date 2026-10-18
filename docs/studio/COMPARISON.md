@@ -1,6 +1,6 @@
 # Original and new, side by side
 
-| | original `/` (الكون, kept) | new `/universe` (الاستوديو الخاص) |
+| | original `/` (الكون, kept) | new `/universe` (الكون الكامل) |
 |---|---|---|
 | āyāt drawn | 1,000 (score-ranked, ≤29 per sūrah, ≥3 words) | **6,236**, every one; the thousand flagged inside |
 | one-word āyāt | dropped (filter) | placed (28) |
@@ -16,7 +16,7 @@
 | at DPR ≥ 2 | **25% of the frame on screen** (GLITCH.md) | 100% (fixed in `/` as well; `?legacy-canvas` reproduces it) |
 | text | morphology-built by default (complete) | Uthmani with the U+065E glyph gap mapped for display |
 | first launch | the full control surface at once | 60-second, six-station tour, skippable and pausable |
-| sharing | public gallery, open | private by default (gate); handoff via fragment or file; PURL optional |
+| sharing | public gallery, open | open, no gate; handoff via link, file or the public mission PURL |
 
 What the original has that the new studio does not: السُّلَّم (the ladder),
 the three isnād points of view, the derived-basis comparison, the رِباط

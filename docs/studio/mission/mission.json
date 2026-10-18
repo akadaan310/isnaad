@@ -1,12 +1,12 @@
 {
   "format": "isnaad-mission/1",
-  "mission": "ISNAAD — Private Immersive Research Studio (Abed & 7u)",
+  "mission": "ISNAAD — Immersive Research Studio (Abed & 7u), open",
   "repository": "https://github.com/akadaan310/isnaad",
   "branch": "claude/new-session-g1qcwm",
   "baseline": "4c059a1691920a13ea973146e42518e83f31573c",
-  "built_from": "072323d0427fb512e08d49c08a9b3c4ce67a3111",
-  "working_tree_changes_at_build": 0,
-  "built_at": "2026-10-18T20:55:44.500Z",
+  "built_from": "7136a8fa15699c4b51bb1bfde1e996807ea1c5ac",
+  "working_tree_changes_at_build": 25,
+  "built_at": "2026-10-18T21:37:01.638Z",
   "previous_mission_reference": {
     "url": "https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
     "relation": "a different, earlier mission (PURLs × CGIT Hub launch). Read once, GET only, to learn the PURL contract; this mission does not continue, modify or claim it, and nothing here depends on reaching it"
@@ -85,12 +85,12 @@
     },
     {
       "id": "O5",
-      "title": "Portable private replay and a truthful 7u handoff",
-      "status": "met locally; PURL publication blocked",
+      "title": "Portable replay and a truthful 7u handoff",
+      "status": "met locally; mission PURL ready to publish (B1)",
       "results": [
         "recordings export/verify/replay",
         "fragment handoff round-trips in a fresh browser context",
-        "live PURL blocked: no verified identity on the service, no token"
+        "mission PURL: adapter ready (realize principal → create → compile → build → run → checkpoint → publish → anonymous read-back); not yet executed"
       ],
       "evidence": [
         "src/lib/universe/handoff.ts",
@@ -127,12 +127,22 @@
       "commit": "072323d0427fb512e08d49c08a9b3c4ce67a3111",
       "at": "2026-10-18T20:55:41+00:00",
       "subject": "closing demonstration: a fresh participant reconstructed the mission offline; fix what it could not"
+    },
+    {
+      "commit": "b1f768e4418081dadfbb5f64a9baeb41ac3ac3dd",
+      "at": "2026-10-18T20:55:44+00:00",
+      "subject": "mission package rebuilt after the closing demonstration"
+    },
+    {
+      "commit": "7136a8fa15699c4b51bb1bfde1e996807ea1c5ac",
+      "at": "2026-10-18T21:31:28+00:00",
+      "subject": "PURL adapter: no token — realize an agent principal, as the service intends"
     }
   ],
   "tests": {
     "unit": {
       "command": "npm test",
-      "pass": 38,
+      "pass": 33,
       "fail": 0
     },
     "exemplars": {
@@ -213,18 +223,18 @@
     },
     {
       "path": "docs/studio/COMPARISON.md",
-      "bytes": 2371,
-      "sha256": "219e4f2528a2e4010c5a3b35932ee9b6db5cdbacb3923976aed923e517292f4d"
+      "bytes": 2359,
+      "sha256": "837cfd2bf99b5f4b2fa343cc6153be6bf59d343ac47a9242f82afecf3be3aacb"
     },
     {
       "path": "docs/studio/GLITCH.md",
-      "bytes": 4112,
-      "sha256": "416e853406fad16a964b862c3e654760ad94874890165752c4c419a9e7a7ed97"
+      "bytes": 4075,
+      "sha256": "b670599054c3a89ee043ddf2d0e9d191805d68cb8baae0677aa2cc224e07c711"
     },
     {
       "path": "docs/studio/HANDOFF.md",
-      "bytes": 3644,
-      "sha256": "6f2bddc5cbd57776677af2abd03a630705046677aa8bacfcc6ce2a4a2247e41c"
+      "bytes": 3612,
+      "sha256": "ab81443d1c1e06573e8640ac4783fcb5bd91b7b513b90894a2b72aba6cfbe8ed"
     },
     {
       "path": "docs/studio/HYPOTHESES.md",
@@ -233,8 +243,13 @@
     },
     {
       "path": "docs/studio/MIGRATION.md",
-      "bytes": 2208,
-      "sha256": "3fe8a09c2aebc9e772c52ae6eb2d6dc0506895a030998299404c132c060aa1cd"
+      "bytes": 1915,
+      "sha256": "7fc633611d5c745b1a9f124bb8424f54a832639455828c7640b288112730e472"
+    },
+    {
+      "path": "docs/studio/OPENNESS.md",
+      "bytes": 1499,
+      "sha256": "d69d41d2a7e26c9f915bb3103bc0ac9315f54f717925f25580638c6a4b72e1e9"
     },
     {
       "path": "docs/studio/PERFORMANCE.md",
@@ -242,14 +257,9 @@
       "sha256": "5cc9240597e38e7d05ce11ad9fdccec704b1044c3b03e7c9d7db3ba20723edc0"
     },
     {
-      "path": "docs/studio/PRIVACY.md",
-      "bytes": 3121,
-      "sha256": "2386d3f556742570b005b46ba8e5a1c646adfe17733b1ba6325ffd7085ebe25b"
-    },
-    {
       "path": "docs/studio/PURL.md",
-      "bytes": 4028,
-      "sha256": "fc7d5abf657dd1f3eea79fb4d6f27cc3501fdbdccb65c592e6dcf68daf724834"
+      "bytes": 3332,
+      "sha256": "4720336110099ed0c42d33b3d99e779889e26830cb5afb9e2dbdb0648addf4e9"
     },
     {
       "path": "docs/studio/USABILITY.md",
@@ -398,8 +408,8 @@
     },
     {
       "path": "docs/studio/evidence/purl/adapter-runs.log",
-      "bytes": 278,
-      "sha256": "a2456756dd7f917b7b1cb7ba5295171ce4cda2dd94ae2aa51e1257846a38b2ea"
+      "bytes": 532,
+      "sha256": "fea17c2f6812cd8d1041a97870094f3499290e1b4a456536cf78f662d268f477"
     },
     {
       "path": "docs/studio/evidence/purl/catalog.json",
@@ -598,13 +608,13 @@
     },
     {
       "path": "scripts/mission-package.ts",
-      "bytes": 13514,
-      "sha256": "efb9e0cc0f34d98aed722c54cb6599b005733d49ac951b9a81e951b3787bec68"
+      "bytes": 13375,
+      "sha256": "a81ecbe187783c99f5a5677cc2fa478e2ccf074dedb512775dbcfb98895aedff"
     },
     {
       "path": "scripts/purl-adapter.ts",
-      "bytes": 4392,
-      "sha256": "5b215aee1fff55d4990f0eec78166a5b739f15442db37bb5a330ee1ce93c4f8d"
+      "bytes": 7595,
+      "sha256": "3a8255218e09fdd5c439e4374407374b66fe9fb1b56d34a93b6ab68f7198dd73"
     },
     {
       "path": "scripts/voyage-digest.ts",
@@ -613,23 +623,23 @@
     },
     {
       "path": "src/app/api/universe/ayah/route.ts",
-      "bytes": 1025,
-      "sha256": "ff6c75f621f4cc2e1637cef6ccdb6724ec7d1cf142cdba9cb91fa1c67b7b4e59"
+      "bytes": 1028,
+      "sha256": "d27f9ecf2d5a145770a781cfa994173d81cc46fd9332af4ba464c830da9941e1"
     },
     {
       "path": "src/app/api/universe/manifest/route.ts",
-      "bytes": 650,
-      "sha256": "bcbec00cba0c3f44c02700a496f76511704d9bac504dd92fb8e93c5325c269d4"
+      "bytes": 653,
+      "sha256": "4533f94512b96b404c3593068ad612aa9b3ea84106e0cb4f3cfb5ef8285f7bf6"
     },
     {
       "path": "src/app/api/universe/relations/route.ts",
-      "bytes": 706,
-      "sha256": "89db65e7a3498f12ab137a136b80be33e92068a87192a70662e125f45efd2024"
+      "bytes": 709,
+      "sha256": "59d7e015e21f7596478f5fb949c42baeab68251913394d7bd84070a169afa8f1"
     },
     {
       "path": "src/app/api/universe/route.ts",
-      "bytes": 715,
-      "sha256": "732a19adb9549de242640b6b7279c3165ba7470b4cbf5ee91a357f5e12911758"
+      "bytes": 712,
+      "sha256": "570c55946039a35348d60238b920bc94b2c5d2e1c514515ba38b3e12ed37a7b8"
     },
     {
       "path": "src/app/universe/page.tsx",
@@ -643,8 +653,8 @@
     },
     {
       "path": "src/components/universe/studio-shell.tsx",
-      "bytes": 51860,
-      "sha256": "3fe2fddd70a258157b35e6cf53b84cdc7e796068c1061d7a959e860f71ff12d0"
+      "bytes": 51842,
+      "sha256": "9d840f90407515124764ba06262e72bc4ad622033a39c1a2427cab70a7afe846"
     },
     {
       "path": "src/components/universe/tour.tsx",
@@ -655,11 +665,6 @@
       "path": "src/components/universe/universe-scene.tsx",
       "bytes": 38953,
       "sha256": "3317fe1162bb4886fe7efd14d4174a299f8cb06f1b9b96ef8c94e6dd0f08c4b7"
-    },
-    {
-      "path": "src/lib/access.ts",
-      "bytes": 2622,
-      "sha256": "efdd69f6b49b4cf11dcedf847b30c8fe469a404391cb0feda95f24f981951fd2"
     },
     {
       "path": "src/lib/cosmos/legacy-preset.ts",
@@ -688,8 +693,8 @@
     },
     {
       "path": "src/lib/universe/purl.ts",
-      "bytes": 3749,
-      "sha256": "44546c080b3eccbca2b71caabe6f875e4344d3830e1d912a9aeea08b6c8d88f0"
+      "bytes": 3885,
+      "sha256": "ba83249962fb598589ffde15aa52decbabc9202cf53a7850deb4320ada1cdf6f"
     },
     {
       "path": "src/lib/universe/recorder.ts",
@@ -722,29 +727,19 @@
       "sha256": "74402b8a894dde0fabd1c4ad0298bd70e8f17c809623612ac27bef291d66fb7f"
     },
     {
-      "path": "src/middleware.ts",
-      "bytes": 1469,
-      "sha256": "e03d383eb182db6e88785d1239e1e7bd5ad3e78ab5734bda91812fdc0b60cff9"
-    },
-    {
-      "path": "tests/access.test.ts",
-      "bytes": 2016,
-      "sha256": "3b54626565c2a7b44f779953d916170ccd2f0fe1d086ba30d9193a8912dafb6b"
-    },
-    {
       "path": "tests/browser/glitch-repro.mjs",
-      "bytes": 2862,
-      "sha256": "d4de88ba1bf2e4e1effbec4107d0eca803584cf0c9427422e5eaaca02210bad7"
+      "bytes": 2727,
+      "sha256": "7b0ccbd89d6f16b20aedc465baf4659228774a63a85755070adb78ad7322bc24"
     },
     {
       "path": "tests/browser/studio.mjs",
-      "bytes": 9779,
-      "sha256": "ee914b03c41f4cc14c4f59e7a4b03c5f4428ca9bd030c424fa80c52d006eb4f2"
+      "bytes": 9558,
+      "sha256": "e5e965d8343f48d6107064204b8977030051c735501d4dcfbdafb2471a0042b8"
     },
     {
       "path": "tests/purl.test.ts",
-      "bytes": 1375,
-      "sha256": "843d47428e69272ca22d67878a700de54ff04d35c45432c1606b6527001eacf6"
+      "bytes": 1373,
+      "sha256": "682c998ac494ad00bbaf7e8b4dcf8d3c6ae342fe10717952243eeb14e4563d3d"
     },
     {
       "path": "tests/universe.test.ts",
@@ -772,21 +767,15 @@
   "blockers": [
     {
       "id": "B1",
-      "what": "No live mission PURL",
-      "why": "GET /api/identity/config → available:false (PURL_OIDC_* not configured); only unverified guest principals exist; no PURL_TOKEN was provided",
-      "unblock": "Configure PURL identity or supply a Bearer token with resources:write, then: PURL_TOKEN=… npm run purl -- --execute"
+      "what": "Mission PURL not yet published",
+      "why": "No credential is involved (authority is realized via POST /api/identity/guest {kind:agent}); the publishing run was stopped by this session’s tool-permission policy, which classed the outbound write as possible data exfiltration",
+      "unblock": "Run npm run purl -- --execute from a session or machine permitted to write to purls-production.up.railway.app"
     },
     {
       "id": "B2",
       "what": "No real-device measurements",
       "why": "This session has headless Chromium (SwiftShader) only",
       "unblock": "Open /universe on the Android phone, fly 60 s, export the recording (المسجّل → صدّر JSON), add it to docs/studio/evidence/devices/"
-    },
-    {
-      "id": "B3",
-      "what": "No private hosting configured",
-      "why": "No deployment credentials were provided and public deployment is out of scope",
-      "unblock": "Follow docs/studio/PRIVACY.md (set STUDIO_ACCESS_TOKEN before the first deploy)"
     },
     {
       "id": "B4",
@@ -801,15 +790,14 @@
       "B2: record a real flight on the Android phone (/universe → المسجّل → صدّر JSON), save it in docs/studio/evidence/devices/, run npx tsx scripts/analyze-recording.ts on it — no credentials needed",
       "B4: a reader of the muṣḥaf confirms the U+065E → U+08F1 display mapping; then apply it to the reader, player and composer",
       "O3: one first-time human session (docs/studio/USABILITY.md, \"For the first human session\")",
-      "B1: with the owner’s token, PURL_TOKEN=… npm run purl -- --execute (private resource, verified by read-back)",
-      "B3: private hosting per docs/studio/PRIVACY.md"
+      "B1: npm run purl -- --execute (realizes an agent principal, publishes, verifies by anonymous read-back; no token)"
     ]
   },
   "package_location": "committed in the commit that follows built_from on this branch: git log -1 --format=%H -- docs/studio/mission/mission.json",
   "hash_rule": "package_sha256 = sha256 of JSON.stringify(package without package_sha256, keys sorted recursively), compact separators, raw UTF-8 (not the file’s own sha256)",
   "reproduce": {
     "unit": "npm ci && npm test && npm run verify",
-    "browser": "npm run build && STUDIO_ACCESS_TOKEN=t npm start & then CHROMIUM_PATH=<chromium or headless_shell> STUDIO_TOKEN=t node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1",
+    "browser": "npm run build && npm start & then CHROMIUM_PATH=<chromium or headless_shell> node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1",
     "ingest": "npm run ingest:universe (only manifest.builtAt changes on a rerun)"
   },
   "continuation": {
@@ -820,7 +808,7 @@
       "force-push or history rewrite",
       "changes to SNAD or FALAK"
     ],
-    "purl_publication": "PURL_TOKEN=<owner token> npm run purl -- --execute  (creates a PRIVATE resource and verifies by read-back)"
+    "purl_publication": "npm run purl -- --execute  (no token: realizes an agent principal; creates, compiles, builds, runs, checkpoints and publishes; verifies by anonymous read-back)"
   },
-  "package_sha256": "93e1812fec7d4c705e8db875905ac96378e16124666bdd7a89e86b4f25632189"
+  "package_sha256": "b935972f31a8b5691508b4e5d651e07a5223fe791099a70d3cfce2f09e9db6e7"
 }

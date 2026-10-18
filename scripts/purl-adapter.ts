@@ -14,9 +14,8 @@
  *
  *  Every mutation carries expected_version and an idempotency key; nothing is
  *  done on a GET's say-so; the session cookie and CSRF are held in memory and
- *  never written to disk or logs. The resource is public so that any later
- *  participant can read it after the session ends — it carries mission
- *  metadata, hashes and paths, never credentials or corpus text. The previous
+ *  never written to disk or logs. The resource is public, like everything in
+ *  this project: any later participant can read it and continue by fork. The previous
  *  mission resource is never touched.
  * ======================================================================== */
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
@@ -80,7 +79,7 @@ async function main() {
   const body: PurlCreateBody = {
     title: 'ISNAAD · Private Immersive Research Studio · mission',
     kind: 'mission',
-    visibility: 'private', // created private, published public at the end (see header)
+    visibility: 'public',
     source: MISSION_SOURCE,
     state,
     tests: [],

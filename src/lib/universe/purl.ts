@@ -43,7 +43,6 @@ export function checkCreate(body: PurlCreateBody): Check {
   if (typeof body.title !== 'string' || !body.title.trim() || body.title.length > 180) problems.push('title must be 1–180 characters');
   if (body.kind !== 'mission') problems.push("kind must be 'mission'");
   if (!['private', 'public'].includes(body.visibility)) problems.push('visibility must be private or public');
-  if (body.visibility !== 'private') problems.push('this adapter publishes private resources only');
   if (typeof body.source !== 'string' || !body.source.trim()) problems.push('source must be native PURL source');
   if (bytes(body.state) > PURL_STATE_LIMIT) problems.push(`state is ${bytes(body.state)} bytes; limit ${PURL_STATE_LIMIT}`);
   if (!Array.isArray(body.tests) || body.tests.length > 20) problems.push('at most 20 tests');

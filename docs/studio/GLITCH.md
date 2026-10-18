@@ -51,9 +51,9 @@ left at DPR 1 is pushed off-screen at DPR 2.625, while the panels are
 unchanged.
 
 ```bash
-npm run build && STUDIO_ACCESS_TOKEN=t npx next start -p 3200 &
+npm run build && npx next start -p 3200 &
 CHROMIUM_PATH=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell \
-STUDIO_TOKEN=t node tests/browser/glitch-repro.mjs http://127.0.0.1:3200 /tmp/out flag "/?legacy-canvas"
+node tests/browser/glitch-repro.mjs http://127.0.0.1:3200 /tmp/out flag "/?legacy-canvas"
 ```
 
 ## Fix
