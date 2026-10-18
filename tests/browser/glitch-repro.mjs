@@ -9,7 +9,7 @@ import path from 'node:path';
 
 const [base = 'http://localhost:3100', out = 'docs/studio/evidence/glitch', label = 'run', route = '/'] = process.argv.slice(2);
 mkdirSync(out, { recursive: true });
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'], ...(process.env.HTTPS_PROXY && /^https:/.test(process.argv[2] ?? '') ? { proxy: { server: process.env.HTTPS_PROXY } } : {}) });
 const results = [];
 for (const dpr of [1, 2, 2.625, 3]) {
   const ctx = await browser.newContext({ viewport: { width: 412, height: 860 }, deviceScaleFactor: dpr, isMobile: dpr > 1, hasTouch: dpr > 1 });

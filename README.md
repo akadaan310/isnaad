@@ -14,7 +14,7 @@ npm run dev      # http://localhost:3000
 `/data` is committed, so that works on a fresh clone with no network, no
 database, and no configuration.
 
-Everything is open: no login, no token, no gate (`docs/studio/OPENNESS.md`).
+Live at https://isnaad-bice.vercel.app/universe. Everything is open: no login, no token, no gate (`docs/studio/OPENNESS.md`).
 `npm test` runs the unit and property tests.
 
 | | |

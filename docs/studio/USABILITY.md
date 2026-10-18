@@ -5,8 +5,9 @@ from scripted runs on simulated devices**. The phone is a 393×852 viewport at
 DPR 2.75 with touch; the desktop is 1440×900. **No human first-time user has
 used the studio yet**, so O3 is only partly met until one does.
 
-Script: `tests/browser/studio.mjs`, currently 32/32 on the production build
-behind the access gate. Screenshots: `evidence/studio/`.
+Script: `tests/browser/studio.mjs`, currently 32/32 on the local production
+build and 32/32 on the live site (https://isnaad-bice.vercel.app,
+`evidence/live/`). Screenshots: `evidence/studio/`, `evidence/live/`.
 
 ## Observed failures
 

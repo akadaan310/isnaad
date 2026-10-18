@@ -10,6 +10,8 @@ mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || undefined,
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+  // In a sandbox that egresses through a proxy, reach remote deployments through it.
+  ...(process.env.HTTPS_PROXY && /^https:/.test(process.argv[2] ?? '') ? { proxy: { server: process.env.HTTPS_PROXY } } : {}),
 });
 const report = { base, simulated: true, steps: [], failures: [] };
 const step = (name, ok, detail = {}) => {

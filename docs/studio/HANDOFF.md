@@ -1,5 +1,7 @@
 # ISNAAD studio — start here
 
+**Live:** https://isnaad-bice.vercel.app/universe (the original field at `/`). Open to anyone.
+
 **Resumable checkpoint.** The machine-readable state is
 `docs/studio/mission/mission.json`, with `MISSION.md` as the plain fallback.
 The mission PURL is published by `npm run purl -- --execute` (PURL.md, B1).
