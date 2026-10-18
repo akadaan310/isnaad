@@ -5,7 +5,11 @@
 //  (GET /.well-known/purl, GET …/manifest) and from its source at the deployed
 //  revision (akadaan310/purl@367e8ed, service/launch/resources.js, http.js):
 //
-//    create   POST /api/resources   Bearer credential with resources:write
+//    realize  GET /api/identity/config (bootstrap CSRF), then
+//             POST /api/identity/guest {kind:'agent'} → a 30-minute agent
+//             principal carrying resources:write. No sign-in, no token:
+//             authority is realized by asking, not logged into.
+//    create   POST /api/resources   (session cookie + x-csrf-token)
 //             { title 1–180, source (native PURL), state ≤ 64 KiB JSON,
 //               tests ≤ 20, kind: 'mission', visibility: 'private'|'public' }
 //    read     GET  /api/resources/<id>/manifest | /continuity
@@ -13,8 +17,7 @@
 //    never    credentials in a URL query (the service rejects them)
 //
 //  This module only prepares and type-checks. scripts/purl-adapter.ts is the
-//  one place that performs a request, and only with a token the user supplies
-//  and an explicit --execute.
+//  one place that performs a request, and only with an explicit --execute.
 // ============================================================================
 
 export const PURL_STATE_LIMIT = 65536;

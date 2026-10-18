@@ -1,3 +1,5 @@
 2026-10-18T20:52:10.620Z GET 200 https://purls-production.up.railway.app/.well-known/purl
 2026-10-18T20:52:10.624Z type-check ok (state 7916 chars)
 2026-10-18T20:52:10.624Z dry run — no PURL_TOKEN; protocol PURL/launch-1, verified login available: false. Nothing was written.
+2026-10-18T21:29:52.753Z type-check ok (state 9400 chars)
+2026-10-18T21:29:52.800Z dry run (no --execute): nothing was written

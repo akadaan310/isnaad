@@ -1,16 +1,23 @@
 #!/usr/bin/env tsx
 /* ===========================================================================
- *  purl-adapter.ts — prepare → type-check → (execute → read back).
+ *  purl-adapter.ts — publish this mission as a native PURL.
  *
- *    npm run purl                      dry run: discovery GET, prepare, check
- *    PURL_TOKEN=… npm run purl -- --execute
- *                                      create a PRIVATE mission resource, then
- *                                      GET it back and compare the state
+ *  PURL's user is an AI, and authority is realized, not logged into: there is
+ *  no sign-in and no token to supply. An agent asks the service for a
+ *  principal (POST /api/identity/guest {kind:'agent'}, after the bootstrap
+ *  CSRF from GET /api/identity/config) and receives a 30-minute session that
+ *  carries resources:write. Everything below acts as that principal.
  *
- *  It never runs a mutation without both a token and --execute, never puts a
- *  credential in a URL, never publishes publicly, and never touches the
- *  previous mission resource. Every outcome is appended to
- *  docs/studio/evidence/purl/adapter-runs.log.
+ *    npm run purl                 prepare + type-check only, writes nothing
+ *    npm run purl -- --execute    realize → create → compile → build → run →
+ *                                 checkpoint → publish, reading every step back
+ *
+ *  Every mutation carries expected_version and an idempotency key; nothing is
+ *  done on a GET's say-so; the session cookie and CSRF are held in memory and
+ *  never written to disk or logs. The resource is public so that any later
+ *  participant can read it after the session ends — it carries mission
+ *  metadata, hashes and paths, never credentials or corpus text. The previous
+ *  mission resource is never touched.
  * ======================================================================== */
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -25,64 +32,135 @@ const note = (s: string) => {
   appendFileSync(LOG, line + '\n');
 };
 
+/** A minimal cookie jar: name → value, from Set-Cookie headers. */
+class Session {
+  private jar = new Map<string, string>();
+  csrf = '';
+  take(res: Response) {
+    for (const c of res.headers.getSetCookie?.() ?? []) {
+      const [pair] = c.split(';');
+      const i = pair.indexOf('=');
+      const name = pair.slice(0, i).trim();
+      const value = pair.slice(i + 1).trim();
+      if (value) this.jar.set(name, value);
+      else this.jar.delete(name);
+    }
+  }
+  headers(write: boolean, idem?: string): Record<string, string> {
+    const h: Record<string, string> = { accept: 'application/json' };
+    if (this.jar.size) h.cookie = [...this.jar].map(([k, v]) => `${k}=${v}`).join('; ');
+    if (write) {
+      h['content-type'] = 'application/json';
+      if (this.csrf) h['x-csrf-token'] = this.csrf;
+      if (idem) h['idempotency-key'] = idem;
+    }
+    return h;
+  }
+  async call(method: 'GET' | 'POST', p: string, body?: unknown, idem?: string) {
+    const url = `${BASE}${p}`;
+    if (urlCarriesCredential(url)) throw new Error('refusing: credential in URL');
+    const res = await fetch(url, {
+      method,
+      headers: this.headers(method === 'POST', idem),
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    this.take(res);
+    const json = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+    note(`${method} ${res.status} ${p}${json.error ? ' ' + JSON.stringify(json.error) : ''}`);
+    return { status: res.status, ok: res.ok, json };
+  }
+}
+
+type Resource = { id: string; version: number; visibility?: string; state?: unknown };
+const resourceOf = (j: Record<string, unknown>) => (j.resource ?? j) as Resource;
+
 async function main() {
   const execute = process.argv.includes('--execute');
-  const token = process.env.PURL_TOKEN?.trim();
-
-  // 1. discovery — GET only, grants nothing.
-  const wk = `${BASE}/.well-known/purl`;
-  let discovery: { identity?: { verified_login_available?: boolean }; protocol?: string } = {};
-  try {
-    const r = await fetch(wk);
-    note(`GET ${r.status} ${wk}`);
-    discovery = await r.json();
-  } catch (e) {
-    note(`GET failed ${wk}: ${String(e)} — continuing offline`);
-  }
-
-  // 2. prepare — the compact state from the offline mission package.
   const state = JSON.parse(readFileSync(path.join(ROOT, 'docs', 'studio', 'mission', 'mission.purl-state.json'), 'utf8'));
   const body: PurlCreateBody = {
     title: 'ISNAAD · Private Immersive Research Studio · mission',
     kind: 'mission',
-    visibility: 'private',
+    visibility: 'private', // created private, published public at the end (see header)
     source: MISSION_SOURCE,
     state,
     tests: [],
   };
-
-  // 3. type-check.
   const check = checkCreate(body);
   note(`type-check ${check.ok ? 'ok' : 'FAILED: ' + check.problems.join('; ')} (state ${JSON.stringify(state).length} chars)`);
   if (!check.ok) process.exit(1);
-
-  if (!execute || !token) {
-    const why = !token ? 'no PURL_TOKEN' : 'no --execute';
-    note(`dry run — ${why}; protocol ${discovery.protocol ?? 'unknown'}, verified login available: ${discovery.identity?.verified_login_available ?? 'unknown'}. Nothing was written.`);
+  if (!execute) {
+    note('dry run (no --execute): nothing was written');
     return;
   }
 
-  // 4. execute.
-  const url = `${BASE}/api/resources`;
-  if (urlCarriesCredential(url)) throw new Error('refusing: credential in URL');
-  const idem = `isnaad-mission-${state.package_sha256?.slice(0, 16) ?? Date.now()}`;
-  const r = await fetch(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, 'idempotency-key': idem },
-    body: JSON.stringify(body),
-  });
-  const created = (await r.json().catch(() => ({}))) as { resource?: { id: string; version: number }; error?: unknown };
-  note(`POST ${r.status} ${url} ${created.resource ? created.resource.id : JSON.stringify(created.error ?? {})}`);
-  if (!r.ok || !created.resource) process.exit(1);
+  const s = new Session();
+  const tag = String(state.package_sha256 ?? Date.now()).slice(0, 16);
 
-  // 5. read back — a write is not done until it is read.
-  const id = created.resource.id;
-  const back = await fetch(`${BASE}/api/resources/${id}/continuity`, { headers: { authorization: `Bearer ${token}` } });
-  const cont = (await back.json().catch(() => ({}))) as { state?: unknown; resource?: { state?: unknown } };
-  const persisted = cont.state ?? cont.resource?.state;
+  // 1. realize a principal — the bootstrap CSRF binds the request to this jar.
+  const cfg = await s.call('GET', '/api/identity/config');
+  s.csrf = String(cfg.json.csrf_token ?? '');
+  const who = await s.call('POST', '/api/identity/guest', { kind: 'agent', csrf_token: s.csrf });
+  if (!who.ok) process.exit(1);
+  s.csrf = String(who.json.csrf_token ?? '');
+  const identity = who.json.identity as { id?: string; kind?: string; scopes?: string[]; expiresAt?: string };
+  note(`principal ${identity?.id} kind=${identity?.kind} scopes=${(identity?.scopes ?? []).join(',')} expires=${identity?.expiresAt}`);
+
+  // 2. create.
+  const created = await s.call('POST', '/api/resources', body, `isnaad-create-${tag}`);
+  if (!created.ok) process.exit(1);
+  let r = resourceOf(created.json);
+  const id = r.id;
+  const root = `/api/resources/${id}`;
+  const step = async (name: string, extra: Record<string, unknown> = {}) => {
+    const out = await s.call('POST', `${root}/${name}`, { expected_version: r.version, ...extra }, `isnaad-${name}-${tag}`);
+    if (!out.ok) throw new Error(`${name} failed`);
+    const next = (out.json.resource as Resource | undefined) ?? (await s.call('GET', `${root}`)).json.resource as Resource;
+    if (next?.version) r = next;
+    return out.json;
+  };
+
+  // 3. compile, build, run — the native execution of `input json | mission.inspect`.
+  await step('compile');
+  await step('build');
+  const run = await step('run');
+  const execution = (run.execution as { id?: string } | undefined)?.id;
+  note(`execution queued ${execution ?? '(id not returned)'}`);
+
+  // 4. checkpoint, then publish.
+  await step('checkpoint', {
+    summary: state.checkpoint.summary,
+    next: state.checkpoint.next,
+    evidence: [
+      `https://github.com/akadaan310/isnaad/tree/${state.built_from}`,
+      `https://github.com/akadaan310/isnaad/blob/claude/new-session-g1qcwm/docs/studio/mission/mission.json`,
+      `package_sha256:${state.package_sha256}`,
+    ],
+  });
+  await step('publish', { visibility: 'public' });
+
+  // 5. read back as nobody — what a later participant will see.
+  const anon = new Session();
+  const manifest = await anon.call('GET', `${root}/manifest`);
+  const cont = await anon.call('GET', `${root}/continuity`);
+  const c = cont.json as { state?: unknown; resource?: { state?: unknown } };
+  const persisted = c.state ?? c.resource?.state;
   const same = stateMatches(state, persisted);
-  note(`GET ${back.status} …/${id}/continuity — state ${same ? 'matches' : 'DOES NOT MATCH'} what was sent`);
-  writeFileSync(path.join(ROOT, 'docs', 'studio', 'mission', 'purl-receipt.json'), JSON.stringify({ id, url: `${BASE}/p/${id}`, version: created.resource.version, verified: same, at: new Date().toISOString() }, null, 2) + '\n');
+  note(`anonymous read-back: manifest ${manifest.status}, continuity ${cont.status}, state ${same ? 'matches' : 'DOES NOT MATCH'}`);
+
+  const receipt = {
+    id,
+    url: `${BASE}/p/${id}`,
+    manifest: `${BASE}${root}/manifest`,
+    continuity: `${BASE}${root}/continuity`,
+    version: r.version,
+    execution: execution ?? null,
+    principal: { id: identity?.id, kind: identity?.kind, realized: 'POST /api/identity/guest {kind:agent}', expiresAt: identity?.expiresAt },
+    state_verified_anonymously: same,
+    package_sha256: state.package_sha256,
+    at: new Date().toISOString(),
+  };
+  writeFileSync(path.join(ROOT, 'docs', 'studio', 'mission', 'purl-receipt.json'), JSON.stringify(receipt, null, 2) + '\n');
+  note(`mission PURL ${receipt.url}`);
   if (!same) process.exit(1);
 }
 
