@@ -1,0 +1,33 @@
+{
+  "builtAt": "2026-10-18T20:03:08.082Z",
+  "version": 1,
+  "counts": {
+    "corpus": 6236,
+    "analyzed": 6236,
+    "detected": 5837,
+    "withDiscovery": 5468,
+    "placed": 6236,
+    "unattributed": 352,
+    "short": 204,
+    "legacyPreset": 1000,
+    "surahs": 114
+  },
+  "sha256": {
+    "universe.json": "0ed5478a34b6dd1a5afbc7a0f824c4bfff445018777f012d88e8697c841eb011",
+    "relations.json": "9fbcfeeeac0567c08849672103215aed54c6c7442f0f0a1b5313f3bb2e6cc2c1"
+  },
+  "legacy": {
+    "reconstructed": true,
+    "count": 1000,
+    "mismatches": 0,
+    "note": "legacy-highlight-1000: score-ranked, ≤29 per sūrah, ≥3 words. Kept as a named preset; not used by full-universe mode."
+  },
+  "sources": [
+    "data/corpus/*.txt",
+    "data/corpus/meta.json",
+    "data/index/roots.json",
+    "data/index/motifs.json",
+    "data/index/aalam.json",
+    "data/cosmos/nodes.json"
+  ]
+}
