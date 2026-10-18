@@ -127,10 +127,13 @@ const blockers = [
   { id: 'B4', what: 'Open-dammatan mapping unconfirmed', why: 'U+065E→U+08F1 is an inference about the source convention', unblock: 'A reader of the muṣḥaf confirms docs/studio/USABILITY.md §U5 before applying it to the legacy views' },
 ];
 
+// One ordering, the same as docs/studio/HANDOFF.md.
 const next = [
-  'Read docs/studio/HANDOFF.md, then run: npm ci && npm test && npm run build',
-  'Next permitted operation: resolve B2 (real-device recording) — it needs no credentials',
-  'Then B4 (human confirmation), then B1 (PURL publication with the owner’s token)',
+  'B2: record a real flight on the Android phone (/universe → المسجّل → صدّر JSON), save it in docs/studio/evidence/devices/, run npx tsx scripts/analyze-recording.ts on it — no credentials needed',
+  'B4: a reader of the muṣḥaf confirms the U+065E → U+08F1 display mapping; then apply it to the reader, player and composer',
+  'O3: one first-time human session (docs/studio/USABILITY.md, "For the first human session")',
+  'B1: with the owner’s token, PURL_TOKEN=… npm run purl -- --execute (private resource, verified by read-back)',
+  'B3: private hosting per docs/studio/PRIVACY.md',
 ];
 
 const pkg = {
@@ -144,7 +147,7 @@ const pkg = {
   built_at: new Date().toISOString(),
   previous_mission_reference: {
     url: 'https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316',
-    relation: 'read-only orientation; not modified, not claimed',
+    relation: 'a different, earlier mission (PURLs × CGIT Hub launch). Read once, GET only, to learn the PURL contract; this mission does not continue, modify or claim it, and nothing here depends on reaching it',
   },
   objectives,
   progress: events,
@@ -161,6 +164,13 @@ const pkg = {
   checkpoint: {
     summary: 'Full-universe studio built and tested on simulated devices; legacy preserved and reconstructible; one glitch root-caused; six hypotheses tested (1 supported, 5 refused); live PURL blocked on identity.',
     next,
+  },
+  package_location: 'committed in the commit that follows built_from on this branch: git log -1 --format=%H -- docs/studio/mission/mission.json',
+  hash_rule: 'package_sha256 = sha256 of JSON.stringify(package without package_sha256, keys sorted recursively), compact separators, raw UTF-8 (not the file’s own sha256)',
+  reproduce: {
+    unit: 'npm ci && npm test && npm run verify',
+    browser: 'npm run build && STUDIO_ACCESS_TOKEN=t npm start & then CHROMIUM_PATH=<chromium or headless_shell> STUDIO_TOKEN=t node tests/browser/studio.mjs http://127.0.0.1:3000 /tmp/out a35fb9a1',
+    ingest: 'npm run ingest:universe (only manifest.builtAt changes on a rerun)',
   },
   continuation: {
     next_permitted_operation: 'B2: capture a real-device flight recording — no credentials required',
@@ -188,7 +198,9 @@ writeFileSync(path.join(OUT, 'mission.purl-state.json'), JSON.stringify(state, n
 const md = [
   `# ISNAAD mission — offline package`,
   '',
-  `> Fallback for a mission PURL that could not be created (blocker B1). Machine-readable: \`mission.json\` (sha256 \`${package_sha256}\`).`,
+  `> Fallback for a mission PURL that could not be created (blocker B1). Machine-readable: \`mission.json\`.`,
+  `> Canonical package hash \`${package_sha256}\`: sha256 over JSON.stringify of the package minus \`package_sha256\`, keys sorted recursively, compact, raw UTF-8. It is not the sha256 of the file.`,
+  `> This package is committed in the commit after \`built_from\`: \`git log -1 -- docs/studio/mission/mission.json\`. Human entry point: \`docs/studio/HANDOFF.md\`.`,
   '',
   `- Repository: ${pkg.repository} · branch \`${BRANCH}\``,
   `- Baseline: \`${BASELINE}\` · built from: \`${head}\`${dirty ? ` (+${dirty} uncommitted files at build time)` : ''}`,
@@ -200,8 +212,17 @@ const md = [
   '## Blockers',
   ...blockers.map((b) => `- **${b.id}** ${b.what}. ${b.why}. → ${b.unblock}`),
   '',
-  '## Next',
+  '## Reproduce',
+  `- ${pkg.reproduce.unit}`,
+  `- Browser (needs a build, a token and a Chromium path): \`${pkg.reproduce.browser}\``,
+  `- ${pkg.reproduce.ingest}`,
+  '',
+  '## Next (same order as HANDOFF.md)',
   ...next.map((n, i) => `${i + 1}. ${n}`),
+  '',
+  `Previous mission PURL (${pkg.previous_mission_reference.url}): ${pkg.previous_mission_reference.relation}.`,
+  '',
+  'Evidence named `simulated-*` came from headless Chromium on SwiftShader, not from a device.',
   '',
   `**Next permitted operation:** ${pkg.continuation.next_permitted_operation}`,
   '',

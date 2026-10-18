@@ -8,7 +8,7 @@ B2).
 
 ## Measured (production build, `/universe`, during a seeded voyage)
 
-From the recorder exports in `evidence/studio/*-recording.json`, summarised
+From the recorder exports in `evidence/studio/simulated-*-recording.json`, summarised
 by `scripts/analyze-recording.ts` (`evidence/studio/recordings-summary.txt`):
 
 | simulated device | canvas (css / buffer) | frames | median | p95 | max |

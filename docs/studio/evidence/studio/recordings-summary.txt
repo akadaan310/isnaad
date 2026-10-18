@@ -1,5 +1,5 @@
 
-docs/studio/evidence/studio/phone-recording.json
+docs/studio/evidence/studio/simulated-phone-recording.json
   integrity ok · device simulated · ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
   viewport 393×852 · canvas 393×852css/786×1704buf@2
   frames 910 (dropped 0) · median 43.3 ms · p95 112.6 ms · max 348.8 ms · ~23 fps
@@ -12,7 +12,7 @@ docs/studio/evidence/studio/phone-recording.json
   ✓ shader: no shader or program errors logged
   ✓ device: recorded on simulated device; GPU "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)". A device-specific cause needs the same recording from real hardware.
 
-docs/studio/evidence/studio/desktop-recording.json
+docs/studio/evidence/studio/simulated-desktop-recording.json
   integrity ok · device simulated · ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)
   viewport 1440×900 · canvas 1440×900css/1440×900buf@1
   frames 709 (dropped 0) · median 56.2 ms · p95 115.1 ms · max 341.5 ms · ~18 fps

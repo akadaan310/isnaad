@@ -96,7 +96,7 @@ for (const device of [
   // Performance + provenance: export the flight recording the voyage produced.
   await page.getByRole('button', { name: 'المسجّل' }).click();
   const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'صدّر JSON' }).click()]);
-  const recPath = path.join(out, `${device.name}-recording.json`);
+  const recPath = path.join(out, `simulated-${device.name}-recording.json`);
   await dl.saveAs(recPath);
   step(`${device.name}: flight recording exported`, true, { file: recPath });
   await page.getByRole('button', { name: 'المسجّل' }).click();

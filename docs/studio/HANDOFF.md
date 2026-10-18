@@ -5,7 +5,7 @@
 There is no live mission PURL (PURL.md, blocker B1).
 
 - Repository: `akadaan310/isnaad` · branch `claude/new-session-g1qcwm`
-- Baseline: `4c059a1` (default branch, untouched)
+- Baseline: `4c059a1`, the head of the default branch `claude/quran-isnad-explorer-prototype-0ml0tp` (untouched)
 - Commits: `git log 4c059a1..claude/new-session-g1qcwm`
 
 ## Run it
