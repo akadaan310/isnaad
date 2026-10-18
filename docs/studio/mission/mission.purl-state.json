@@ -1,0 +1,245 @@
+{
+  "format": "isnaad-mission/1",
+  "mission": "ISNAAD — Private Immersive Research Studio (Abed & 7u)",
+  "repository": "https://github.com/akadaan310/isnaad",
+  "branch": "claude/new-session-g1qcwm",
+  "baseline": "4c059a1691920a13ea973146e42518e83f31573c",
+  "built_from": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
+  "working_tree_changes_at_build": 0,
+  "built_at": "2026-10-18T20:52:09.595Z",
+  "previous_mission_reference": {
+    "url": "https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
+    "relation": "read-only orientation; not modified, not claimed"
+  },
+  "objectives": [
+    {
+      "id": "O1",
+      "title": "100% corpus locus addressability, exact identity, zero silent omissions; legacy fixtures reconstructible",
+      "status": "met",
+      "results": [
+        "6236/6236 āyāt placed",
+        "352 unattributed āyāt on their own shell (were silently d=0.5)",
+        "legacy 1,000 re-derived with 0 mismatches"
+      ],
+      "evidence": [
+        "tests/universe.test.ts",
+        "data/universe/manifest.json"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "O2",
+      "title": "Reproducible seeded flight paths, rendering provenance; one glitch cause isolated",
+      "status": "met (simulated devices only)",
+      "results": [
+        "voyage digest identical in Node and in Chromium for the same seed",
+        "half-screen glitch: setSize(w,h,false) in the legacy scene — reproduced at dpr 2/2.625/3, fixed, ?legacy-canvas keeps the repro",
+        "not yet confirmed on real Android hardware"
+      ],
+      "evidence": [
+        "tests/voyage.test.ts",
+        "docs/studio/GLITCH.md",
+        "docs/studio/evidence/glitch/"
+      ],
+      "depends_on": [
+        "O1"
+      ]
+    },
+    {
+      "id": "O3",
+      "title": "Guided auto mode for a first-time user, deep expert mode; usability failures captured",
+      "status": "partly met — no human first-time user has tried it yet",
+      "results": [
+        "32/32 scripted browser checks",
+        "8 usability failures found and logged; 7 fixed"
+      ],
+      "evidence": [
+        "tests/browser/studio.mjs",
+        "docs/studio/USABILITY.md"
+      ],
+      "depends_on": [
+        "O1",
+        "O2"
+      ]
+    },
+    {
+      "id": "O4",
+      "title": "≥5 novel geometric/interaction hypotheses with baselines and counterexamples",
+      "status": "met",
+      "results": [
+        "H1 refused",
+        "H2 refused",
+        "H3 refused",
+        "H4 refused",
+        "H5 refused",
+        "H6 supported"
+      ],
+      "evidence": [
+        "scripts/hypotheses.ts",
+        "docs/studio/evidence/hypotheses.json",
+        "docs/studio/HYPOTHESES.md"
+      ],
+      "depends_on": [
+        "O1"
+      ]
+    },
+    {
+      "id": "O5",
+      "title": "Portable private replay and a truthful 7u handoff",
+      "status": "met locally; PURL publication blocked",
+      "results": [
+        "recordings export/verify/replay",
+        "fragment handoff round-trips in a fresh browser context",
+        "live PURL blocked: no verified identity on the service, no token"
+      ],
+      "evidence": [
+        "src/lib/universe/handoff.ts",
+        "src/lib/universe/recorder.ts",
+        "docs/studio/PURL.md"
+      ],
+      "depends_on": [
+        "O2"
+      ]
+    }
+  ],
+  "progress": [
+    {
+      "commit": "c43a61f7b65eea6f1e412e057762642e5887449d",
+      "at": "2026-10-18T20:06:39+00:00",
+      "subject": "الكون الكامل — every āyah placed, the thousand kept as a named preset"
+    },
+    {
+      "commit": "0dfc8ffdfcf5ab66030469448dc7e9081ba81579",
+      "at": "2026-10-18T20:31:18+00:00",
+      "subject": "الاستوديو الخاص — /universe: all 6,236 āyāt, two lenses, voyage, recorder, handoff"
+    },
+    {
+      "commit": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
+      "at": "2026-10-18T20:52:03+00:00",
+      "subject": "الخصوصية والتسليم والفرضيات — private by default, a truthful handoff, six tested claims"
+    }
+  ],
+  "tests": {
+    "unit": {
+      "command": "npm test",
+      "pass": 38,
+      "fail": 0
+    },
+    "exemplars": {
+      "command": "npm run verify",
+      "ok": true
+    },
+    "browser": {
+      "command": "node tests/browser/studio.mjs <base> <out> <digest>",
+      "passed": 32,
+      "total": 32,
+      "failures": [],
+      "devices": "simulated"
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "H1",
+      "verdict": "refused",
+      "claim": "Under the muṣḥaf-spiral placement, āyāt sharing a rare root lie closer in direction than random pairs — including across sūrahs — while the legacy برج placement shows no such locality."
+    },
+    {
+      "id": "H2",
+      "verdict": "refused",
+      "claim": "Lexical continuity across an isnād seam (the stitch half of رِباط = √(continuity × delta)) exceeds the continuity across an arbitrary non-seam point in the same sūrah."
+    },
+    {
+      "id": "H3",
+      "verdict": "refused",
+      "claim": "The last three āyāt of a sūrah sit nearer to direct address (lower discourse distance) than the sūrah's own average."
+    },
+    {
+      "id": "H4",
+      "verdict": "refused",
+      "claim": "A seeded voyage (evidence-weighted, with memory) visits more distinct sūrahs and revisits fewer āyāt in 40 legs than a uniform random walk over the same relations."
+    },
+    {
+      "id": "H5",
+      "verdict": "refused",
+      "claim": "At this field's scale, the floating origin is needed to keep vertex quantisation below visibility."
+    },
+    {
+      "id": "H6",
+      "verdict": "supported",
+      "claim": "Āyāt with no person mass are not spread evenly over the muṣḥaf; they concentrate in particular sūrahs beyond what sūrah length explains."
+    }
+  ],
+  "coverage": {
+    "corpus": 6236,
+    "analyzed": 6236,
+    "detected": 5837,
+    "withDiscovery": 5468,
+    "placed": 6236,
+    "unattributed": 352,
+    "short": 204,
+    "legacyPreset": 1000,
+    "surahs": 114
+  },
+  "artifacts": {
+    "count": 110,
+    "sha256_of_list": "fbce5694e7e9c85b3ef994d86865039b2ae21539df798b48cc9921878943631d",
+    "full_list": "docs/studio/mission/mission.json"
+  },
+  "sources": [
+    "2026-10-18T20:34:34Z 200 text/html; charset=utf-8 https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
+    "2026-10-18T20:34:35Z 200 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/api/resources/resource_95a5662789076892fe698316/manifest",
+    "2026-10-18T20:34:35Z 200 text/html; charset=utf-8 https://cgit-hub-production.up.railway.app",
+    "2026-10-18T20:34:35Z 200 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/.well-known/purl",
+    "2026-10-18T20:34:36Z 404 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/api",
+    "2026-10-18T20:34:50Z GET 200 https://purls-production.up.railway.app/api/identity/config",
+    "2026-10-18T20:34:50Z GET 200 https://purls-production.up.railway.app/api/resources",
+    "2026-10-18T20:34:51Z GET 200 https://purls-production.up.railway.app/api/catalog",
+    "2026-10-18T20:34:51Z POST(empty, unauthenticated) 400 /api/resources",
+    "  note: the POST above carried a malformed body (two curl data flags concatenated by mistake); rejected 400 invalid_json; no resource was created. No further writes were attempted."
+  ],
+  "blockers": [
+    {
+      "id": "B1",
+      "what": "No live mission PURL",
+      "why": "GET /api/identity/config → available:false (PURL_OIDC_* not configured); only unverified guest principals exist; no PURL_TOKEN was provided",
+      "unblock": "Configure PURL identity or supply a Bearer token with resources:write, then: PURL_TOKEN=… npm run purl -- --execute"
+    },
+    {
+      "id": "B2",
+      "what": "No real-device measurements",
+      "why": "This session has headless Chromium (SwiftShader) only",
+      "unblock": "Open /universe on the Android phone, fly 60 s, export the recording (المسجّل → صدّر JSON), add it to docs/studio/evidence/devices/"
+    },
+    {
+      "id": "B3",
+      "what": "No private hosting configured",
+      "why": "No deployment credentials were provided and public deployment is out of scope",
+      "unblock": "Follow docs/studio/PRIVACY.md (set STUDIO_ACCESS_TOKEN before the first deploy)"
+    },
+    {
+      "id": "B4",
+      "what": "Open-dammatan mapping unconfirmed",
+      "why": "U+065E→U+08F1 is an inference about the source convention",
+      "unblock": "A reader of the muṣḥaf confirms docs/studio/USABILITY.md §U5 before applying it to the legacy views"
+    }
+  ],
+  "checkpoint": {
+    "summary": "Full-universe studio built and tested on simulated devices; legacy preserved and reconstructible; one glitch root-caused; six hypotheses tested (1 supported, 5 refused); live PURL blocked on identity.",
+    "next": [
+      "Read docs/studio/HANDOFF.md, then run: npm ci && npm test && npm run build",
+      "Next permitted operation: resolve B2 (real-device recording) — it needs no credentials",
+      "Then B4 (human confirmation), then B1 (PURL publication with the owner’s token)"
+    ]
+  },
+  "continuation": {
+    "next_permitted_operation": "B2: capture a real-device flight recording — no credentials required",
+    "not_permitted_without_owner": [
+      "any PURL write",
+      "any public deployment",
+      "force-push or history rewrite",
+      "changes to SNAD or FALAK"
+    ],
+    "purl_publication": "PURL_TOKEN=<owner token> npm run purl -- --execute  (creates a PRIVATE resource and verifies by read-back)"
+  },
+  "package_sha256": "5d35e04b425c31c76860d483826849c10f60d68175d6203999b33afe64b754d7"
+}

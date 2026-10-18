@@ -1,0 +1,792 @@
+{
+  "format": "isnaad-mission/1",
+  "mission": "ISNAAD — Private Immersive Research Studio (Abed & 7u)",
+  "repository": "https://github.com/akadaan310/isnaad",
+  "branch": "claude/new-session-g1qcwm",
+  "baseline": "4c059a1691920a13ea973146e42518e83f31573c",
+  "built_from": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
+  "working_tree_changes_at_build": 0,
+  "built_at": "2026-10-18T20:52:09.595Z",
+  "previous_mission_reference": {
+    "url": "https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
+    "relation": "read-only orientation; not modified, not claimed"
+  },
+  "objectives": [
+    {
+      "id": "O1",
+      "title": "100% corpus locus addressability, exact identity, zero silent omissions; legacy fixtures reconstructible",
+      "status": "met",
+      "results": [
+        "6236/6236 āyāt placed",
+        "352 unattributed āyāt on their own shell (were silently d=0.5)",
+        "legacy 1,000 re-derived with 0 mismatches"
+      ],
+      "evidence": [
+        "tests/universe.test.ts",
+        "data/universe/manifest.json"
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "O2",
+      "title": "Reproducible seeded flight paths, rendering provenance; one glitch cause isolated",
+      "status": "met (simulated devices only)",
+      "results": [
+        "voyage digest identical in Node and in Chromium for the same seed",
+        "half-screen glitch: setSize(w,h,false) in the legacy scene — reproduced at dpr 2/2.625/3, fixed, ?legacy-canvas keeps the repro",
+        "not yet confirmed on real Android hardware"
+      ],
+      "evidence": [
+        "tests/voyage.test.ts",
+        "docs/studio/GLITCH.md",
+        "docs/studio/evidence/glitch/"
+      ],
+      "depends_on": [
+        "O1"
+      ]
+    },
+    {
+      "id": "O3",
+      "title": "Guided auto mode for a first-time user, deep expert mode; usability failures captured",
+      "status": "partly met — no human first-time user has tried it yet",
+      "results": [
+        "32/32 scripted browser checks",
+        "8 usability failures found and logged; 7 fixed"
+      ],
+      "evidence": [
+        "tests/browser/studio.mjs",
+        "docs/studio/USABILITY.md"
+      ],
+      "depends_on": [
+        "O1",
+        "O2"
+      ]
+    },
+    {
+      "id": "O4",
+      "title": "≥5 novel geometric/interaction hypotheses with baselines and counterexamples",
+      "status": "met",
+      "results": [
+        "H1 refused",
+        "H2 refused",
+        "H3 refused",
+        "H4 refused",
+        "H5 refused",
+        "H6 supported"
+      ],
+      "evidence": [
+        "scripts/hypotheses.ts",
+        "docs/studio/evidence/hypotheses.json",
+        "docs/studio/HYPOTHESES.md"
+      ],
+      "depends_on": [
+        "O1"
+      ]
+    },
+    {
+      "id": "O5",
+      "title": "Portable private replay and a truthful 7u handoff",
+      "status": "met locally; PURL publication blocked",
+      "results": [
+        "recordings export/verify/replay",
+        "fragment handoff round-trips in a fresh browser context",
+        "live PURL blocked: no verified identity on the service, no token"
+      ],
+      "evidence": [
+        "src/lib/universe/handoff.ts",
+        "src/lib/universe/recorder.ts",
+        "docs/studio/PURL.md"
+      ],
+      "depends_on": [
+        "O2"
+      ]
+    }
+  ],
+  "progress": [
+    {
+      "commit": "c43a61f7b65eea6f1e412e057762642e5887449d",
+      "at": "2026-10-18T20:06:39+00:00",
+      "subject": "الكون الكامل — every āyah placed, the thousand kept as a named preset"
+    },
+    {
+      "commit": "0dfc8ffdfcf5ab66030469448dc7e9081ba81579",
+      "at": "2026-10-18T20:31:18+00:00",
+      "subject": "الاستوديو الخاص — /universe: all 6,236 āyāt, two lenses, voyage, recorder, handoff"
+    },
+    {
+      "commit": "e0589bde71bc387e84aadef53a3cf12ed3afa62f",
+      "at": "2026-10-18T20:52:03+00:00",
+      "subject": "الخصوصية والتسليم والفرضيات — private by default, a truthful handoff, six tested claims"
+    }
+  ],
+  "tests": {
+    "unit": {
+      "command": "npm test",
+      "pass": 38,
+      "fail": 0
+    },
+    "exemplars": {
+      "command": "npm run verify",
+      "ok": true
+    },
+    "browser": {
+      "command": "node tests/browser/studio.mjs <base> <out> <digest>",
+      "passed": 32,
+      "total": 32,
+      "failures": [],
+      "devices": "simulated"
+    }
+  },
+  "hypotheses": [
+    {
+      "id": "H1",
+      "verdict": "refused",
+      "claim": "Under the muṣḥaf-spiral placement, āyāt sharing a rare root lie closer in direction than random pairs — including across sūrahs — while the legacy برج placement shows no such locality."
+    },
+    {
+      "id": "H2",
+      "verdict": "refused",
+      "claim": "Lexical continuity across an isnād seam (the stitch half of رِباط = √(continuity × delta)) exceeds the continuity across an arbitrary non-seam point in the same sūrah."
+    },
+    {
+      "id": "H3",
+      "verdict": "refused",
+      "claim": "The last three āyāt of a sūrah sit nearer to direct address (lower discourse distance) than the sūrah's own average."
+    },
+    {
+      "id": "H4",
+      "verdict": "refused",
+      "claim": "A seeded voyage (evidence-weighted, with memory) visits more distinct sūrahs and revisits fewer āyāt in 40 legs than a uniform random walk over the same relations."
+    },
+    {
+      "id": "H5",
+      "verdict": "refused",
+      "claim": "At this field's scale, the floating origin is needed to keep vertex quantisation below visibility."
+    },
+    {
+      "id": "H6",
+      "verdict": "supported",
+      "claim": "Āyāt with no person mass are not spread evenly over the muṣḥaf; they concentrate in particular sūrahs beyond what sūrah length explains."
+    }
+  ],
+  "coverage": {
+    "corpus": 6236,
+    "analyzed": 6236,
+    "detected": 5837,
+    "withDiscovery": 5468,
+    "placed": 6236,
+    "unattributed": 352,
+    "short": 204,
+    "legacyPreset": 1000,
+    "surahs": 114
+  },
+  "artifacts": [
+    {
+      "path": "data/universe/manifest.json",
+      "bytes": 888,
+      "sha256": "8b5523a9f1260e9fc7df66fe7611900c7cc0f4622ca293e21baedaf943b2d8d9"
+    },
+    {
+      "path": "data/universe/relations.json",
+      "bytes": 536263,
+      "sha256": "9fbcfeeeac0567c08849672103215aed54c6c7442f0f0a1b5313f3bb2e6cc2c1"
+    },
+    {
+      "path": "data/universe/universe.json",
+      "bytes": 397063,
+      "sha256": "0ed5478a34b6dd1a5afbc7a0f824c4bfff445018777f012d88e8697c841eb011"
+    },
+    {
+      "path": "docs/studio/BASELINE.md",
+      "bytes": 3958,
+      "sha256": "57958f4152e6ad783e19d80e1e3533e06710961bd6501a3771bcd8748ed3f80d"
+    },
+    {
+      "path": "docs/studio/COMPARISON.md",
+      "bytes": 2371,
+      "sha256": "219e4f2528a2e4010c5a3b35932ee9b6db5cdbacb3923976aed923e517292f4d"
+    },
+    {
+      "path": "docs/studio/GLITCH.md",
+      "bytes": 4112,
+      "sha256": "416e853406fad16a964b862c3e654760ad94874890165752c4c419a9e7a7ed97"
+    },
+    {
+      "path": "docs/studio/HANDOFF.md",
+      "bytes": 3581,
+      "sha256": "083c39d7924be1250b26eb7524ffeb17c14afc9975a1ba212d64a2b8b24f4dfa"
+    },
+    {
+      "path": "docs/studio/HYPOTHESES.md",
+      "bytes": 4820,
+      "sha256": "e01d8283a3a569f883b825ab5313d7f7ab107ab75447abf67de01580f0873356"
+    },
+    {
+      "path": "docs/studio/MIGRATION.md",
+      "bytes": 2208,
+      "sha256": "3fe8a09c2aebc9e772c52ae6eb2d6dc0506895a030998299404c132c060aa1cd"
+    },
+    {
+      "path": "docs/studio/PERFORMANCE.md",
+      "bytes": 2342,
+      "sha256": "dcb5d09a73a16f5114d128b496e50a8c863822b21b961d0a127ceb1c13299737"
+    },
+    {
+      "path": "docs/studio/PRIVACY.md",
+      "bytes": 3121,
+      "sha256": "2386d3f556742570b005b46ba8e5a1c646adfe17733b1ba6325ffd7085ebe25b"
+    },
+    {
+      "path": "docs/studio/PURL.md",
+      "bytes": 4028,
+      "sha256": "fc7d5abf657dd1f3eea79fb4d6f27cc3501fdbdccb65c592e6dcf68daf724834"
+    },
+    {
+      "path": "docs/studio/USABILITY.md",
+      "bytes": 3453,
+      "sha256": "e04402bac5a1790f76db6598c866ec6f409ffedd8c62892529b6cc5933b61d8f"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/after-dpr1.png",
+      "bytes": 151365,
+      "sha256": "dda6ffb0e6154db7006ee33e71189a70bba7974077668b7d31a8f2e555ffeab4"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/after-dpr2.625.png",
+      "bytes": 506684,
+      "sha256": "efa12ca3b02081889ec418f51d913a2c71b13dca0daeb71f35465dd2ef43cdb8"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/after-dpr2.png",
+      "bytes": 279036,
+      "sha256": "d40f1be9da96186b89f3916b8864786fe28030906b25d8466b2acb2ca3219930"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/after-dpr3.png",
+      "bytes": 589967,
+      "sha256": "f3a6861b9679e0ca03d65e67fd3e24d5a4e1d384f3cbc35c9344217abb245274"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/after.json",
+      "bytes": 1767,
+      "sha256": "ce980efa63244a9b1ea0dd19ca7a8a88646c5ae3623de5ad99598a542c596622"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/before-dpr1.png",
+      "bytes": 150190,
+      "sha256": "378d871c1aa4eaff92c2369cfc1f79c030162baaae6d24f6f57d42c2e7b88258"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/before-dpr2.625.png",
+      "bytes": 335391,
+      "sha256": "3d90464b0701707988ec92166e49635c0d215e030ac9f1216ac7721ecfcf6389"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/before-dpr2.png",
+      "bytes": 215233,
+      "sha256": "2396f7e83ae97c93ce06548509127530100490fbee6d4bbcf396e17a7c1f45f0"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/before-dpr3.png",
+      "bytes": 352649,
+      "sha256": "0fc5f564430231da5e349bd8d50684b450d80a7704ca84f830396aed1baa81eb"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/before.json",
+      "bytes": 1772,
+      "sha256": "118b6ca77b6df8968d794ee7faee7dc6a35ce7551abbf2f5e2d071b9f6c8bb71"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/flag-dpr1.png",
+      "bytes": 151375,
+      "sha256": "d8259b0f9af586e2e9674ca118579ea0bcf623d882e9e77e562b1c2972265438"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/flag-dpr2.625.png",
+      "bytes": 336890,
+      "sha256": "49b58d5270da8e53755802b11f18622eab2d803c41725325b70374627031624c"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/flag-dpr2.png",
+      "bytes": 216093,
+      "sha256": "116f0fc4d5ed54e4c1090f2d09d6c6860fee34ee1e566c53aa2e041bee177a71"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/flag-dpr3.png",
+      "bytes": 353644,
+      "sha256": "8fffc72818bda3d9307ff5b0a93ecbd9044e5acf16eb7455875a23c35a47de53"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/flag.json",
+      "bytes": 1776,
+      "sha256": "b30335bd1e5506a950d365d71b25d500f9074dbc2fff86621e7be14e1841eb00"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/rihla-dpr1.png",
+      "bytes": 142312,
+      "sha256": "3bcac0039418817c1205a7ab7f7c91b088fbb09c5564bdf6d3567bd93d40ed87"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/rihla-dpr2.625.png",
+      "bytes": 690559,
+      "sha256": "51bd42176d95146962e5249d1633bbedaab9bce5e67fdbc54ba234a7d82693de"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/rihla-dpr2.png",
+      "bytes": 481787,
+      "sha256": "d1d8a656ddcb4b533e65989259c02e4c8886514b87fcf0bc26cc467ccd648ebf"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/rihla-dpr3.png",
+      "bytes": 730848,
+      "sha256": "35ea9e1c5fb0db24477b4623e60862750e255b09a6e3cee88c557447cf9e2fd9"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/rihla.json",
+      "bytes": 2464,
+      "sha256": "95adc4e734915634326975b8deded8dff3dba7c30f84e3037963c2ffd1460b1d"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/universe-prod-dpr1.png",
+      "bytes": 348588,
+      "sha256": "17a8ced45bf1655f6c2e86108deb63a1320fe19b600b27c15054bec2c29edaf3"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/universe-prod-dpr2.625.png",
+      "bytes": 1662021,
+      "sha256": "7604e2e48cacaa13cf92e12ac4c93cbfd9edcf0ed41d900c94f1442fcf718bf0"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/universe-prod-dpr2.png",
+      "bytes": 907737,
+      "sha256": "3e05e8d0cb70e803e46435d52f785ae90e573184810cb1e15a81cf7795eb71bf"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/universe-prod-dpr3.png",
+      "bytes": 1991286,
+      "sha256": "813fd3b0df011673bdd172c96e87e924586f66bc0196504f0872dad8aceb7dcb"
+    },
+    {
+      "path": "docs/studio/evidence/glitch/universe-prod.json",
+      "bytes": 1822,
+      "sha256": "6180e1b9ee3151b5a0a6ce1ddb79871087ae2adc38bdc33f0502d50a47e5a7e2"
+    },
+    {
+      "path": "docs/studio/evidence/hypotheses.json",
+      "bytes": 5590,
+      "sha256": "d2d4f68bcd5bc11c554da27dc736e988d058ab58386dc90fd1da41bfdaa5b310"
+    },
+    {
+      "path": "docs/studio/evidence/purl/catalog.json",
+      "bytes": 121635,
+      "sha256": "9b897445439118be5595d1c1744f7619567fdc8ea54058ede7beca94d09d23a4"
+    },
+    {
+      "path": "docs/studio/evidence/purl/cgit-hub-production_up_railway_app.body",
+      "bytes": 1238,
+      "sha256": "3146a53ab47f5a109a243b97dac1e651ad7f295779924cb1dee5b4f6c541832e"
+    },
+    {
+      "path": "docs/studio/evidence/purl/config.json",
+      "bytes": 408,
+      "sha256": "2568b35683f7aa93d8637b64b642307a62444e78a0eeec9a49a7e795c2e537f9"
+    },
+    {
+      "path": "docs/studio/evidence/purl/example-manifest.json",
+      "bytes": 10092,
+      "sha256": "cc56d9e7847b0c68693708118663f8b23fbc7cf05fbb219fff6470c61ecab20d"
+    },
+    {
+      "path": "docs/studio/evidence/purl/post-unauth.json",
+      "bytes": 71,
+      "sha256": "4a1cdc470433640c61f0f48afac9a55128b4b712ff1bd5a4443a4c10f365fdd7"
+    },
+    {
+      "path": "docs/studio/evidence/purl/probes.log",
+      "bytes": 1106,
+      "sha256": "6439a2cfe65021c6defcd6d9b0c58a6792f9a30a42690e48758dcf0500fe9260"
+    },
+    {
+      "path": "docs/studio/evidence/purl/purls-production_up_railway_app_api.body",
+      "bytes": 57,
+      "sha256": "a3d7b4448a979374792258e35c0ba64c7188ea53243187f9691048cf9e3fed1d"
+    },
+    {
+      "path": "docs/studio/evidence/purl/purls-production_up_railway_app_p_resource_95a5662789076892fe698316.body",
+      "bytes": 1599,
+      "sha256": "1fcd07b1dd9102cab3d55933d4a745892966795d63356f50b63583225c961e08"
+    },
+    {
+      "path": "docs/studio/evidence/purl/resources.json",
+      "bytes": 12,
+      "sha256": "eef46741adfc3a9f76294d3b78f37a45f113092ac9d44ee77c7a038a88ff09a1"
+    },
+    {
+      "path": "docs/studio/evidence/purl/well-known-purl.json",
+      "bytes": 1168,
+      "sha256": "4c7bbb4d4122c6adfb8b51ea642aa8a899368d7fdaef4443d20d0d11420f2beb"
+    },
+    {
+      "path": "docs/studio/evidence/sample-voyage.json",
+      "bytes": 1935,
+      "sha256": "295f053f81bfe74f4482bf69152d1186c49ef3db92568b2f2b3540181b32ebcd"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-01-tour-step1.png",
+      "bytes": 609409,
+      "sha256": "47545fe32719d4dd1109bac67393a6dc50beb466e6b5f788d8a285e825268536"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-02-tour-inspect.png",
+      "bytes": 564422,
+      "sha256": "22191794cca054b38c0f3f7ce40d95a9ff6132393f9a8619dc3bd91b9f30d4d0"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-03-tour-voyage.png",
+      "bytes": 140876,
+      "sha256": "7e65c173bfcab0ad410b47264c3c7fc34e0921ae323bb393ba5ea0bfdc332059"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-04-inspect-50-2.png",
+      "bytes": 101541,
+      "sha256": "a65be65e48d030a9d5f16e6e434cf3627c70196b98ede7e590fb0dd2b987a2e6"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-05-overlay.png",
+      "bytes": 135220,
+      "sha256": "3586128b7424607d9f3f91f849ee4417435536e783561372bd6c058d45eb171c"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-06-voyage.png",
+      "bytes": 148851,
+      "sha256": "e8b84695d23e30f390a55f5cbdc83b1ad75c149ff26dc4f2ffb5f7cd6beb2c16"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-07-celestial.png",
+      "bytes": 64429,
+      "sha256": "45f00503458112ac7349813bb4493fe1cf53a915bb1cb95672bd47bdf3ab0372"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-08-coverage.png",
+      "bytes": 641387,
+      "sha256": "e1595ffb1cbaa037faceb3ac9cfe925586f103a05d13ceea11aee093ce12c6aa"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-09-recorder.png",
+      "bytes": 630404,
+      "sha256": "311d4aa8e053948b84adce2062b80196aedafdb5a8d2be61d3455317163ba30f"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-10-handoff.png",
+      "bytes": 612175,
+      "sha256": "64622c9e32136a4f648f4422858f8f1fd79dfe13041358887a30a1c6a21dcac0"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-11-handoff-received.png",
+      "bytes": 796576,
+      "sha256": "158fdca40171d07153c6ef91b4dbd0c07fac89f6887aa01a5d9eb13646017d38"
+    },
+    {
+      "path": "docs/studio/evidence/studio/desktop-recording.json",
+      "bytes": 195044,
+      "sha256": "fc627ecd37f9e1bb0dd0ba3366cb5fd4dbae21e9a13a4645f35840af6efd35a3"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-01-tour-step1.png",
+      "bytes": 1233991,
+      "sha256": "52403b3685e6a9caeb70ec34e0b986a7c774456eb9279a7c6c4df106aa63e771"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-02-tour-inspect.png",
+      "bytes": 541018,
+      "sha256": "77bec68b81f28067f77ab8a34ef3dee57eb5327231647e18dada37b1ed15afc5"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-03-tour-voyage.png",
+      "bytes": 211036,
+      "sha256": "5ec6239654795f5f93cd0ac02d56f57f39e64439a54866c1c3bb931a42258170"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-04-inspect-50-2.png",
+      "bytes": 243652,
+      "sha256": "40c9dd183e5b7904ca66121df993e8814b5df4f383b89316b4b720ad1d33e40e"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-05-overlay.png",
+      "bytes": 349592,
+      "sha256": "b87aa24b8596c185ef3a5e57dff038814b01a94e95e42baca58ab6d64a991ff3"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-06-voyage.png",
+      "bytes": 149779,
+      "sha256": "590339f328358a42efb7f1ccd88c47c0c6b9378c3277a46ee54faea9d5b22363"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-07-celestial.png",
+      "bytes": 151227,
+      "sha256": "667382fb3af5748da5a7734499978dc0944926f0d46eab2a6204c7cb302fb1ef"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-08-coverage.png",
+      "bytes": 1133069,
+      "sha256": "86090e36a4797067f2cc1f281e63e7964acd3c48e05f65adb91537bba92b1dd2"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-09-recorder.png",
+      "bytes": 810094,
+      "sha256": "dec14674add01316083975aeba42fb17a45f3be6cba4e0f73e6c1c8ea296bbe8"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-10-handoff.png",
+      "bytes": 764001,
+      "sha256": "679fbdebbe225949e85bb6da376bd77a1eb16e6b5efc62eb63276b81597e91a5"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-11-handoff-received.png",
+      "bytes": 818845,
+      "sha256": "97a62a5657d2224839d565530764968b32391fad4c29ae486b846732151a29e9"
+    },
+    {
+      "path": "docs/studio/evidence/studio/phone-recording.json",
+      "bytes": 251871,
+      "sha256": "037eb3fd84ba6db3af9e351d09886eb86e10f638e99be5e2b9603edba8b7c2ee"
+    },
+    {
+      "path": "docs/studio/evidence/studio/recordings-summary.txt",
+      "bytes": 1984,
+      "sha256": "ee303af3eacbb5293a9620dc21bfd2d667f8cc366414ac1aa2dade0acbe0424b"
+    },
+    {
+      "path": "docs/studio/evidence/studio/report.json",
+      "bytes": 4645,
+      "sha256": "5d9a042d63f15f2abe2b8989857e352b74d85a6589c1e9e7ed39365fa4ddf48f"
+    },
+    {
+      "path": "scripts/hypotheses.ts",
+      "bytes": 17266,
+      "sha256": "85e84623b309c29b6b7d651b7bafb334bf5cbb8b3fb5b73a30a463f1dadabc3a"
+    },
+    {
+      "path": "scripts/ingest-universe.ts",
+      "bytes": 8285,
+      "sha256": "5b1fa2c4fe080ef2e86f192754a1214ea4ff7b19132622b6d0b91eb60e364046"
+    },
+    {
+      "path": "scripts/mission-package.ts",
+      "bytes": 11525,
+      "sha256": "994097e09a5dc8d3ccb22c7fc0442da204b95112aabad142199b321b2df8f73f"
+    },
+    {
+      "path": "scripts/purl-adapter.ts",
+      "bytes": 4392,
+      "sha256": "5b215aee1fff55d4990f0eec78166a5b739f15442db37bb5a330ee1ce93c4f8d"
+    },
+    {
+      "path": "scripts/voyage-digest.ts",
+      "bytes": 1641,
+      "sha256": "8121d520734a1c1987de53ed7cf5c65b1481ea86af85f76f9c611d7a5e1416e0"
+    },
+    {
+      "path": "src/app/api/universe/ayah/route.ts",
+      "bytes": 1025,
+      "sha256": "ff6c75f621f4cc2e1637cef6ccdb6724ec7d1cf142cdba9cb91fa1c67b7b4e59"
+    },
+    {
+      "path": "src/app/api/universe/manifest/route.ts",
+      "bytes": 650,
+      "sha256": "bcbec00cba0c3f44c02700a496f76511704d9bac504dd92fb8e93c5325c269d4"
+    },
+    {
+      "path": "src/app/api/universe/relations/route.ts",
+      "bytes": 706,
+      "sha256": "89db65e7a3498f12ab137a136b80be33e92068a87192a70662e125f45efd2024"
+    },
+    {
+      "path": "src/app/api/universe/route.ts",
+      "bytes": 715,
+      "sha256": "732a19adb9549de242640b6b7279c3165ba7470b4cbf5ee91a357f5e12911758"
+    },
+    {
+      "path": "src/app/universe/page.tsx",
+      "bytes": 454,
+      "sha256": "97034ed8deacd7e14da393ca4a5c808dcb642fd4f33882186bb94867464a504f"
+    },
+    {
+      "path": "src/components/universe/minimap.tsx",
+      "bytes": 3729,
+      "sha256": "87c41d83a103a99cade73a926cd4d83063b7e23184e71bf36309ba7321a56ad4"
+    },
+    {
+      "path": "src/components/universe/studio-shell.tsx",
+      "bytes": 51860,
+      "sha256": "3fe2fddd70a258157b35e6cf53b84cdc7e796068c1061d7a959e860f71ff12d0"
+    },
+    {
+      "path": "src/components/universe/tour.tsx",
+      "bytes": 5316,
+      "sha256": "ec135c0564e3a5788225ff903f52e44311b2c7e78481904166179d798b868d0b"
+    },
+    {
+      "path": "src/components/universe/universe-scene.tsx",
+      "bytes": 38953,
+      "sha256": "3317fe1162bb4886fe7efd14d4174a299f8cb06f1b9b96ef8c94e6dd0f08c4b7"
+    },
+    {
+      "path": "src/lib/access.ts",
+      "bytes": 2622,
+      "sha256": "efdd69f6b49b4cf11dcedf847b30c8fe469a404391cb0feda95f24f981951fd2"
+    },
+    {
+      "path": "src/lib/cosmos/legacy-preset.ts",
+      "bytes": 2916,
+      "sha256": "8e53d7c11f64d57f74f4513ce65854fa6775029393d2f5d044f13133377d16c3"
+    },
+    {
+      "path": "src/lib/universe/build.ts",
+      "bytes": 3730,
+      "sha256": "31eae6327b1248d10ddb13613d9a7e1fac3d4e22fd3b0c3827f8a8d6479ce741"
+    },
+    {
+      "path": "src/lib/universe/display-text.ts",
+      "bytes": 1198,
+      "sha256": "a0e606d67812b8ff40b2b106c8b6954b45e4356bb1af237064181a3af47fc926"
+    },
+    {
+      "path": "src/lib/universe/handoff.ts",
+      "bytes": 5394,
+      "sha256": "228c2bcbbc7ac2ec1adc18b3dcb6a7bf5d8a37fde8c1b5a8eb658bc671bf8877"
+    },
+    {
+      "path": "src/lib/universe/placement.ts",
+      "bytes": 4107,
+      "sha256": "45de669156f4c2e3157f93ff8a8ca2495a9cf0acbba5ec72bc625fab15689503"
+    },
+    {
+      "path": "src/lib/universe/purl.ts",
+      "bytes": 3749,
+      "sha256": "44546c080b3eccbca2b71caabe6f875e4344d3830e1d912a9aeea08b6c8d88f0"
+    },
+    {
+      "path": "src/lib/universe/recorder.ts",
+      "bytes": 11662,
+      "sha256": "dac56bfe9a0cfb4c7e53d4c0cafcf137da5884d4b83260718f71324d02024d90"
+    },
+    {
+      "path": "src/lib/universe/relations.ts",
+      "bytes": 5311,
+      "sha256": "0eae193632b922e9a4d36a65c89d8b0502a89c7a57a1df08015b2175ed90f1b6"
+    },
+    {
+      "path": "src/lib/universe/research-notes.ts",
+      "bytes": 2175,
+      "sha256": "a387e530deb2a284c074b966cb9aa50eb74328b761b25ff000c6dc892f0e8271"
+    },
+    {
+      "path": "src/lib/universe/rng.ts",
+      "bytes": 1981,
+      "sha256": "bfecd4110d79f0a78bcf304d35a3f9b28fd9e46d13a906df22a6117f789e6623"
+    },
+    {
+      "path": "src/lib/universe/types.ts",
+      "bytes": 4812,
+      "sha256": "4c20b163a4396c85ea578fd80fd4bee76e0a4317e163a6974953f503c80c83fd"
+    },
+    {
+      "path": "src/lib/universe/voyage.ts",
+      "bytes": 9037,
+      "sha256": "74402b8a894dde0fabd1c4ad0298bd70e8f17c809623612ac27bef291d66fb7f"
+    },
+    {
+      "path": "src/middleware.ts",
+      "bytes": 1469,
+      "sha256": "e03d383eb182db6e88785d1239e1e7bd5ad3e78ab5734bda91812fdc0b60cff9"
+    },
+    {
+      "path": "tests/access.test.ts",
+      "bytes": 2016,
+      "sha256": "3b54626565c2a7b44f779953d916170ccd2f0fe1d086ba30d9193a8912dafb6b"
+    },
+    {
+      "path": "tests/browser/glitch-repro.mjs",
+      "bytes": 2862,
+      "sha256": "d4de88ba1bf2e4e1effbec4107d0eca803584cf0c9427422e5eaaca02210bad7"
+    },
+    {
+      "path": "tests/browser/studio.mjs",
+      "bytes": 9769,
+      "sha256": "35282e45ba9074143c9655a20356c8beabea77a01e7091c3fb8361862657913d"
+    },
+    {
+      "path": "tests/purl.test.ts",
+      "bytes": 1375,
+      "sha256": "843d47428e69272ca22d67878a700de54ff04d35c45432c1606b6527001eacf6"
+    },
+    {
+      "path": "tests/universe.test.ts",
+      "bytes": 7530,
+      "sha256": "1b8a24707b8073faed4f3f981c17a02851f9a1aa3c14b3c6ef2649497dfff3ba"
+    },
+    {
+      "path": "tests/voyage.test.ts",
+      "bytes": 9889,
+      "sha256": "5b507da49199a9f5bad73ee952e18b6cd29699681d58e4af7fe78cc5903f2e5c"
+    }
+  ],
+  "sources": [
+    "2026-10-18T20:34:34Z 200 text/html; charset=utf-8 https://purls-production.up.railway.app/p/resource_95a5662789076892fe698316",
+    "2026-10-18T20:34:35Z 200 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/api/resources/resource_95a5662789076892fe698316/manifest",
+    "2026-10-18T20:34:35Z 200 text/html; charset=utf-8 https://cgit-hub-production.up.railway.app",
+    "2026-10-18T20:34:35Z 200 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/.well-known/purl",
+    "2026-10-18T20:34:36Z 404 application/purl+json; charset=utf-8 https://purls-production.up.railway.app/api",
+    "2026-10-18T20:34:50Z GET 200 https://purls-production.up.railway.app/api/identity/config",
+    "2026-10-18T20:34:50Z GET 200 https://purls-production.up.railway.app/api/resources",
+    "2026-10-18T20:34:51Z GET 200 https://purls-production.up.railway.app/api/catalog",
+    "2026-10-18T20:34:51Z POST(empty, unauthenticated) 400 /api/resources",
+    "  note: the POST above carried a malformed body (two curl data flags concatenated by mistake); rejected 400 invalid_json; no resource was created. No further writes were attempted."
+  ],
+  "blockers": [
+    {
+      "id": "B1",
+      "what": "No live mission PURL",
+      "why": "GET /api/identity/config → available:false (PURL_OIDC_* not configured); only unverified guest principals exist; no PURL_TOKEN was provided",
+      "unblock": "Configure PURL identity or supply a Bearer token with resources:write, then: PURL_TOKEN=… npm run purl -- --execute"
+    },
+    {
+      "id": "B2",
+      "what": "No real-device measurements",
+      "why": "This session has headless Chromium (SwiftShader) only",
+      "unblock": "Open /universe on the Android phone, fly 60 s, export the recording (المسجّل → صدّر JSON), add it to docs/studio/evidence/devices/"
+    },
+    {
+      "id": "B3",
+      "what": "No private hosting configured",
+      "why": "No deployment credentials were provided and public deployment is out of scope",
+      "unblock": "Follow docs/studio/PRIVACY.md (set STUDIO_ACCESS_TOKEN before the first deploy)"
+    },
+    {
+      "id": "B4",
+      "what": "Open-dammatan mapping unconfirmed",
+      "why": "U+065E→U+08F1 is an inference about the source convention",
+      "unblock": "A reader of the muṣḥaf confirms docs/studio/USABILITY.md §U5 before applying it to the legacy views"
+    }
+  ],
+  "checkpoint": {
+    "summary": "Full-universe studio built and tested on simulated devices; legacy preserved and reconstructible; one glitch root-caused; six hypotheses tested (1 supported, 5 refused); live PURL blocked on identity.",
+    "next": [
+      "Read docs/studio/HANDOFF.md, then run: npm ci && npm test && npm run build",
+      "Next permitted operation: resolve B2 (real-device recording) — it needs no credentials",
+      "Then B4 (human confirmation), then B1 (PURL publication with the owner’s token)"
+    ]
+  },
+  "continuation": {
+    "next_permitted_operation": "B2: capture a real-device flight recording — no credentials required",
+    "not_permitted_without_owner": [
+      "any PURL write",
+      "any public deployment",
+      "force-push or history rewrite",
+      "changes to SNAD or FALAK"
+    ],
+    "purl_publication": "PURL_TOKEN=<owner token> npm run purl -- --execute  (creates a PRIVATE resource and verifies by read-back)"
+  },
+  "package_sha256": "5d35e04b425c31c76860d483826849c10f60d68175d6203999b33afe64b754d7"
+}
